@@ -2,4 +2,7 @@
 !.gitignore
 !*.c
 !*.h
+!Makefile
+!*.obj
+!*.mtl
 !*/
