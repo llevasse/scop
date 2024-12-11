@@ -16,7 +16,9 @@ LIBFT_LIB		=	-L $(LIBFT_PATH) -l ft
 
 #---SCOP_VAR---------------------------------------
 SRC				=	srcs/main.c \
-					srcs/opener.c
+					srcs/opener.c \
+					srcs/parse.c \
+					srcs/garbage_collector.c
 
 OBJS_DIR		=	.OBJS/
 OBJS			=	$(addprefix $(OBJS_DIR), $(SRC:.c=.o))
@@ -26,7 +28,7 @@ INC_FILE		=	include/scop.h
 
 BASE_INCLUDE	=	-I $(INC_DIR)
 
-FLAGS			=	-Wall -Werror -Wextra
+FLAGS			=	-Wall -Werror -Wextra -g
 INCLUDES		=	$(BASE_INCLUDE) ${LIBFT_INCLUDE}
 LIBS			=	${LIBFT_LIB}
 

@@ -1,5 +1,8 @@
 #include "../include/scop.h"
 
+extern struct s_garbage	*g_garbage_collector_root;
+extern struct s_garbage	*g_garbage_collector;
+
 int open_obj(char *path){
 	if (ft_strcmp(path + (ft_strlen(path) - 4), ".obj")){
 		dprintf(2, "Wrong file extension\n");
@@ -12,3 +15,7 @@ int open_obj(char *path){
 	}
 	return (fd);
 }
+/*
+int open_mtl(char *path){
+
+}*/
