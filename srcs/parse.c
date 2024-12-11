@@ -12,28 +12,47 @@ t_obj *parse_obj(int fd){
 	while (s){
 		line_content = ft_split(s, ' ');
 		line_content_size = 0;
+		for (; line_content[line_content_size]; line_content_size++);
 		if (*s != '#'){
 			if (!line_content){
 				free(obj);
 				dprintf(2, "Couldn't allocate memory\n");
 				exit(1);
 			}
-			for (; line_content[line_content_size]; line_content_size++);
 			if (!ft_strcmp(line_content[0], "mtllib")){
+				if (line_content[1]){
+					obj->material_list = parse_mtl(line_content[1]);
+					if (!obj->material_list){
+						free_tab(line_content, line_content_size);
+						free(s);
+						free_garbage();
+					}
 
+				}
+				else{
+					dprintf(2,"Missing path to .mtl file");
+					free(s);
+					free_tab(line_content, line_content_size);
+					free_garbage();
+				}
 			}
 
 		}
 		if (line_content){
-			for (int i=0; line_content[i]; i++){
-				free(line_content[i]);
-				line_content[i] = 0x0;
-			}
-			free(line_content);
-			line_content = 0x0;
+			line_content = free_tab(line_content, line_content_size);
+			line_content_size = 0;
 		}
 		free(s);
 		s = get_next_line(fd);
 	}
 	return (obj);
+}
+
+t_material_list	*parse_mtl(char *path){
+	int fd = open_file(path, ".mtl");
+	if (fd < 0)
+		return (0x0);
+	t_material_list *list = malloc(sizeof(struct s_material_list));
+	add_to_garbage(list);
+	return (list);
 }

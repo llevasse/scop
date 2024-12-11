@@ -7,7 +7,7 @@
 # include <errno.h>
 # include "../libft/libft.h"
 
-int open_obj(char *path);
+int open_file(char *path, char *extension);
 
 
 typedef struct s_garbage{
@@ -49,7 +49,7 @@ typedef struct s_obj{
 }	t_obj;
 
 t_obj *parse_obj(int fd);
-t_material_list *parse_material_file(int path);
+t_material_list	*parse_mtl(char *path);
 
 void add_to_garbage(void *addr);
 void free_garbage();

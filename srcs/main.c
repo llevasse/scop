@@ -19,9 +19,9 @@ int main(int argc, char **argv){
 		g_garbage_collector->addr = 0x0;
 	}
 
-	int fd = open_obj(argv[1]);
-	if (fd == -1)
-		exit(1);
+	int fd = open_file(argv[1], ".obj");
+	if (fd < 0)
+		free_garbage();
 	t_obj *obj = parse_obj(fd);
 	(void)obj;
 	free_garbage();

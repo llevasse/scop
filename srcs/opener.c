@@ -3,19 +3,17 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-int open_obj(char *path){
-	if (ft_strcmp(path + (ft_strlen(path) - 4), ".obj")){
+int open_file(char *path, char *extension){
+	char *trim_path = ft_strtrim(path, " \n\t\r");	//TODO handle relative path
+	if (!trim_path)
+		return (-1);
+	printf("%s, %s (%zu)\n", trim_path, extension, ft_strlen(extension));
+	if (ft_strcmp(trim_path + (ft_strlen(trim_path) - ft_strlen(extension)), extension)){
 		dprintf(2, "Wrong file extension\n");
+		free(trim_path);
 		return (-1);
 	}
-	int fd = open(path, O_RDONLY);
-	if (fd == -1){
-		perror("Error");
-		exit(errno);
-	}
+	int fd = open(trim_path, O_RDONLY);
+	free(trim_path);
 	return (fd);
 }
-/*
-int open_mtl(char *path){
-
-}*/
