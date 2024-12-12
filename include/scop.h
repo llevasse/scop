@@ -24,11 +24,17 @@ typedef struct s_vertex_normals{
 typedef struct s_texture_coordinates{
 } t_texture_coordinates;
 
+typedef struct s_litle_rgb{
+	float					r;
+	float					g;
+	float					b;
+}	t_litle_rgb;
+
 typedef struct s_material{
 	char					*name;
-	float 					ambient_color;	//said 'ka'
-	float					diffuse_color;	//said 'kd'
-	float					specular_color;	//said 'ks'
+	t_litle_rgb				*ambient_color;	//said 'ka'
+	t_litle_rgb				*diffuse_color;	//said 'kd'
+	t_litle_rgb				*specular_color;	//said 'ks'
 	float					shininess;		//said 'ns'
 	float					dissolve;		//said 'd'
 	
