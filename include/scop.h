@@ -32,12 +32,14 @@ typedef struct s_litle_rgb{
 
 typedef struct s_material{
 	char					*name;
-	t_litle_rgb				*ambient_color;	//said 'ka'
-	t_litle_rgb				*diffuse_color;	//said 'kd'
-	t_litle_rgb				*specular_color;	//said 'ks'
-	float					shininess;		//said 'ns'
-	float					dissolve;		//said 'd'
-	
+	t_litle_rgb				*ambient_color;      //said 'ka'
+	t_litle_rgb				*diffuse_color;      //said 'kd'
+	t_litle_rgb				*specular_color;     //said 'ks'
+	float					shininess;		     //said 'ns'
+	float					optical_density;	 //said 'Ni',1.0 is default
+	float					dissolve;		     //said 'd'
+	int						illum;				 //from 0 to 10
+
 	t_vertices				**vertices;
 	t_vertex_normals		**vertex_normals;
 	t_texture_coordinates	**vertex_tertures;

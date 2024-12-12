@@ -48,6 +48,73 @@ t_obj *parse_obj(int fd){
 	return (obj);
 }
 
+void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
+	t_litle_rgb *rgb = 0x0;
+	float		float_value = 1;
+	float		min = 0, max = 1;
+	char		*possible_float_key[4] = {"Ns", "Ni", "d", "illum"};
+	char		*possible_rgb_key[3] = {"Ka", "Kd", "Ks"};
+	
+	for (int i=0;i<3;i++){
+		if (!ft_strcmp(possible_rgb_key[i], tab[0])){
+			rgb = malloc(sizeof(struct s_litle_rgb));
+			add_to_garbage(rgb);
+			if (tab_size < 4){
+				dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
+				free_garbage();
+			}
+			rgb->r = atof(tab[1]);
+			rgb->g = atof(tab[2]);
+			rgb->b = atof(tab[3]);
+			min = 0.0;
+			max = 1.0;
+			if (!ft_strcmp(possible_rgb_key[0], tab[0]))
+				material->ambient_color = rgb;
+			if (!ft_strcmp(possible_rgb_key[1], tab[0]))
+				material->diffuse_color = rgb;
+			if (!ft_strcmp(possible_rgb_key[2], tab[0]))
+				material->specular_color = rgb;
+			break ;
+		}
+	}
+	for (int i=0; i<4;i++){
+		if (!ft_strcmp(possible_float_key[i], tab[0])){
+			if (tab_size < 2){
+				dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
+				free_garbage();
+			}
+			float_value = atof(tab[1]);
+			if (!ft_strcmp(tab[0], "Ns")){
+				min = 0.0;
+				max = 1000.0;
+				material->shininess = float_value;
+			}
+			else if (!ft_strcmp(tab[0], "Ni")){
+				min = 0.001;
+				max = 10.0;
+				material->optical_density = float_value;
+			}
+			else if (!ft_strcmp(tab[0], "d")){
+				min = 0.0;
+				max = 1.0;
+				material->dissolve = float_value;
+			}
+			else{
+				min = 0.0;
+				max = 10.0;
+				material->illum = float_value;
+			}
+			break;
+		}
+	}
+	
+	if ((rgb && ((rgb->r < min || rgb->r > max) || (rgb->g < min || rgb->g > max) || (rgb->b < min || rgb->b > max))) 
+		|| (float_value < min || float_value > max)){
+		dprintf(2, "%s on line %d value out of bound (should be between %.2f and %.2f)\n", tab[0], line_nb, min, max);
+		free_garbage();
+	}
+}
+
 t_material_list	*parse_mtl(char *path){
 	int fd = open_file(path, ".mtl");
 	if (fd < 0)
@@ -64,89 +131,41 @@ t_material_list	*parse_mtl(char *path){
 	int		line = 1;
 	while (s){
 		if (*s != '#'){
-			tab = ft_split(s);
+			tab = ft_split(s, ' ');
 			add_to_garbage(tab);
 			tab_size = 0;
 			for (; tab[tab_size];tab_size++){
 				add_to_garbage(tab[tab_size]);
 			}
-			if (!ft_strcmp(tab[0], "newmtl")){
-				list->material = malloc(sizeof(struct s_material));
-				add_to_garbage(list->material);
-				if (tab_size >= 2)
-					list->material->name = ft_strdup(tab[1]);
-				else{
-					dprintf(2,"newmtl on line %d is missing a name\n", line);
-				}
-			}
-			else if (!ft_strcmp(tab[0], "Ka")){
-				if (tab_size >= 4){
-					t_little_rgb *rgb = malloc(sizeof(struct s_litle_rgb));
-					add_to_garbage(rgb);
-					rgb->r = atof(tab[1]);
-					rgb->g = atof(tab[2]);
-					rgb->b = atof(tab[3]);
-					if ((rgb->r < 0.0 || rgb.r > 1.0) || (rgb->g < 0.0 || rgb.g > 1.0) || (rgb->b < 0.0 || rgb.b > 1.0)){
-						dprintf(2, "%s on line %d value out of bound (should be between 0.0 and 1.0)\n", tab[0], line);
-						free_garbage();
+			if (tab[0]){
+				if (!ft_strcmp(tab[0], "newmtl")){
+					list->material = malloc(sizeof(struct s_material));
+					add_to_garbage(list->material);
+					if (tab[1])
+						list->material->name = ft_strdup(tab[1]);
+					else{
+						dprintf(2,"newmtl on line %d is missing a name\n", line);
 					}
+					list->material->ambient_color = 0x0;
+					list->material->diffuse_color = 0x0;
+					list->material->specular_color = 0x0;
+					list->material->shininess = 1.0;
+					list->material->optical_density =1.0;
+					list->material->dissolve = 1.0;
+					list->material->illum = 0;
+					list->material->vertices = 0x0;
+					list->material->vertex_normals = 0x0;
+					list->material->vertex_tertures = 0x0;
 				}
-				else{
-					dprintf(2,"Ka on line %d is missing a float value\n", line);
-					free_garbage();
-				}
-			}
-			else if (!ft_strcmp(tab[0], "Kd")){
-				if (tab_size >= 4){
-					t_little_rgb *rgb = malloc(sizeof(struct s_litle_rgb));
-					add_to_garbage(rgb);
-					rgb->r = atof(tab[1]);
-					rgb->g = atof(tab[2]);
-					rgb->b = atof(tab[3]);
-					if ((rgb->r < 0.0 || rgb.r > 1.0) || (rgb->g < 0.0 || rgb.g > 1.0) || (rgb->b < 0.0 || rgb.b > 1.0)){
-						dprintf(2, "%s on line %d value out of bound (should be between 0.0 and 1.0)\n", tab[0], line);
-						free_garbage();
-					}
-				}
-				else{
-					dprintf(2,"Kd on line %d is missing a float value\n", line);
-					free_garbage();
-				}
-			}
-			else if (!ft_strcmp(tab[0], "Ks")){
-				if (tab_size >= 4){
-					t_little_rgb *rgb = malloc(sizeof(struct s_litle_rgb));
-					add_to_garbage(rgb);
-					rgb->r = atof(tab[1]);
-					rgb->g = atof(tab[2]);
-					rgb->b = atof(tab[3]);
-					if ((rgb->r < 0.0 || rgb.r > 1.0) || (rgb->g < 0.0 || rgb.g > 1.0) || (rgb->b < 0.0 || rgb.b > 1.0)){
-						dprintf(2, "%s on line %d value out of bound (should be between 0.0 and 1.0)\n", tab[0], line);
-						free_garbage();
-					}
-				}
-				else{
-					dprintf(2,"Ka on line %d is missing a float value\n", line);
-					free_garbage();
-				}
-			}
-			else if (!ft_strcmp(tab[0], "Ns")){
-				if (tab_size >= 2){
-					list->material->shininess = atof(tab[1]);
-					if (list->material->shininess < 0.0 || list->material->shininess > 1000.0){
-						dprintf(2, "Ns on line %d value out of bound (should be between 0.0 and 1000.0)\n", line);
-						free_garbage();
-					}
-				}
-				else{
-					dprintf(2,"Ka on line %d is missing a float value\n", line);
+				else {
+					parse_mtl_line(tab, tab_size, list->material, line);
 				}
 			}
 		}
-		s = ft_strtrim(get_next_line(fd));
+		s = ft_strtrim(get_next_line(fd), " \t\r\n");
 		add_to_garbage(s);
 		line++;
 	}
 	list->next = 0x0;
-	return (list);
+	return (root);
 }
