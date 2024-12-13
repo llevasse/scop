@@ -70,11 +70,11 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 			rgb->b = atof(tab[3]);
 			min = 0.0;
 			max = 1.0;
-			if (!ft_strcmp(possible_rgb_key[0], tab[0]))
+			if (i == 0)
 				material->ambient_color = rgb;
-			if (!ft_strcmp(possible_rgb_key[1], tab[0]))
+			if (i == 1)
 				material->diffuse_color = rgb;
-			if (!ft_strcmp(possible_rgb_key[2], tab[0]))
+			if (i == 2)
 				material->specular_color = rgb;
 			break ;
 		}
@@ -88,11 +88,11 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 			float_value = atof(tab[1]);
 			min = possible_float_min[i];
 			max = possible_float_max[i];
-			if (!ft_strcmp(tab[0], "Ns"))
+			if (i == 0)
 				material->shininess = float_value;
-			else if (!ft_strcmp(tab[0], "Ni"))
+			else if (i == 1)
 				material->optical_density = float_value;
-			else if (!ft_strcmp(tab[0], "d"))
+			else if (i == 2)
 				material->dissolve = float_value;
 			else
 				material->illum = float_value;
@@ -106,7 +106,21 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 		free_garbage();
 	}
 }
-
+/*
+void print_material(t_material *material){
+	printf("\t%s material\n", material->name);
+	if (material->ambient_color)
+		printf("\t\tr: %f g: %f b: %f ka\n", material->ambient_color->r, material->ambient_color->g, material->ambient_color->b);
+	if (material->diffuse_color)
+		printf("\t\tr: %f g: %f b: %f kd\n", material->diffuse_color->r, material->diffuse_color->g, material->diffuse_color->b);
+	if (material->specular_color)
+		printf("\t\tr: %f g: %f b: %f ks\n", material->specular_color->r, material->specular_color->g, material->specular_color->b);
+	printf("\t\t%f ns\n", material->shininess);
+	printf("\t\t%f ni\n", material->optical_density);
+	printf("\t\t%f d\n", material->dissolve);
+	printf("\t\t%d illum\n", material->illum);
+}
+*/
 t_material_list	*parse_mtl(char *path){
 	int fd = open_file(path, ".mtl");
 	if (fd < 0)
@@ -131,6 +145,13 @@ t_material_list	*parse_mtl(char *path){
 			}
 			if (tab[0]){
 				if (!ft_strcmp(tab[0], "newmtl")){
+					if (list->material){
+						list->next = malloc(sizeof(struct s_material_list));
+						add_to_garbage(list->next);
+						list = list->next;
+						list->next = 0x0;
+						list->material = 0x0;
+					}
 					list->material = malloc(sizeof(struct s_material));
 					add_to_garbage(list->material);
 					if (tab[1])
