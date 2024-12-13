@@ -53,6 +53,8 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 	float		float_value = 1;
 	float		min = 0, max = 1;
 	char		*possible_float_key[4] = {"Ns", "Ni", "d", "illum"};
+	float		possible_float_min[4] = {0.0, 0.001, 0.0, 0.0};
+	float		possible_float_max[4] = {1000.0, 10.0, 1.0, 10.0};
 	char		*possible_rgb_key[3] = {"Ka", "Kd", "Ks"};
 	
 	for (int i=0;i<3;i++){
@@ -84,26 +86,16 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 				free_garbage();
 			}
 			float_value = atof(tab[1]);
-			if (!ft_strcmp(tab[0], "Ns")){
-				min = 0.0;
-				max = 1000.0;
+			min = possible_float_min[i];
+			max = possible_float_max[i];
+			if (!ft_strcmp(tab[0], "Ns"))
 				material->shininess = float_value;
-			}
-			else if (!ft_strcmp(tab[0], "Ni")){
-				min = 0.001;
-				max = 10.0;
+			else if (!ft_strcmp(tab[0], "Ni"))
 				material->optical_density = float_value;
-			}
-			else if (!ft_strcmp(tab[0], "d")){
-				min = 0.0;
-				max = 1.0;
+			else if (!ft_strcmp(tab[0], "d"))
 				material->dissolve = float_value;
-			}
-			else{
-				min = 0.0;
-				max = 10.0;
+			else
 				material->illum = float_value;
-			}
 			break;
 		}
 	}
