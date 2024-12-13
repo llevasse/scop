@@ -24,6 +24,7 @@ void free_garbage(){
 	t_garbage *tmp = g_garbage_collector_root;
 	while (g_garbage_collector_root){
 		free(g_garbage_collector_root->addr);
+		tmp = g_garbage_collector_root;
 		g_garbage_collector_root = g_garbage_collector_root->next;
 		free(tmp);
 	}

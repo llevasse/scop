@@ -11,11 +11,13 @@ t_obj *parse_obj(int fd){
 	size_t	line_content_size = 0;
 	while (s){
 		line_content = ft_split(s, ' ');	//TODO add tab to garbage collector
+		add_to_garbage(line_content);
 		line_content_size = 0;
-		for (; line_content[line_content_size]; line_content_size++);
+		for (; line_content[line_content_size]; line_content_size++){
+			add_to_garbage(line_content[line_content_size]);
+		}
 		if (*s != '#'){
 			if (!line_content){
-				free(obj);
 				dprintf(2, "Couldn't allocate memory\n");
 				exit(1);
 			}
@@ -23,7 +25,6 @@ t_obj *parse_obj(int fd){
 				if (line_content[1]){
 					obj->material_list = parse_mtl(line_content[1]);
 					if (!obj->material_list){
-						free_tab(line_content, line_content_size);
 						free(s);
 						free_garbage();
 					}
@@ -32,14 +33,13 @@ t_obj *parse_obj(int fd){
 				else{
 					dprintf(2,"Missing path to .mtl file");
 					free(s);
-					free_tab(line_content, line_content_size);
 					free_garbage();
 				}
 			}
 
 		}
 		if (line_content){
-			line_content = free_tab(line_content, line_content_size);
+			line_content = 0x0;
 			line_content_size = 0;
 		}
 		free(s);
@@ -106,7 +106,7 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 		free_garbage();
 	}
 }
-/*
+
 void print_material(t_material *material){
 	printf("\t%s material\n", material->name);
 	if (material->ambient_color)
@@ -120,7 +120,7 @@ void print_material(t_material *material){
 	printf("\t\t%f d\n", material->dissolve);
 	printf("\t\t%d illum\n", material->illum);
 }
-*/
+
 t_material_list	*parse_mtl(char *path){
 	int fd = open_file(path, ".mtl");
 	if (fd < 0)
@@ -130,14 +130,16 @@ t_material_list	*parse_mtl(char *path){
 	t_material_list *root = list;
 	list->material = 0x0;
 	list->next = 0x0;
-	char	*s = ft_strtrim(get_next_line(fd), " \n\t\r");
-	add_to_garbage(s);
+	char	*s = get_next_line(fd);
+	char	*s_trim = ft_strtrim(s, " \n\t\r");
+	free(s);
+	add_to_garbage(s_trim);
 	char	**tab;
 	int		tab_size;
 	int		line = 1;
-	while (s){
-		if (*s != '#'){
-			tab = ft_split(s, ' ');
+	while (s_trim){
+		if (*s_trim != '#'){
+			tab = ft_split(s_trim, ' ');
 			add_to_garbage(tab);
 			tab_size = 0;
 			for (; tab[tab_size];tab_size++){
@@ -154,8 +156,10 @@ t_material_list	*parse_mtl(char *path){
 					}
 					list->material = malloc(sizeof(struct s_material));
 					add_to_garbage(list->material);
-					if (tab[1])
+					if (tab[1]){
 						list->material->name = ft_strdup(tab[1]);
+						add_to_garbage(list->material->name);
+					}
 					else{
 						dprintf(2,"newmtl on line %d is missing a name\n", line);
 					}
@@ -175,10 +179,14 @@ t_material_list	*parse_mtl(char *path){
 				}
 			}
 		}
-		s = ft_strtrim(get_next_line(fd), " \t\r\n");
-		add_to_garbage(s);
+		s = get_next_line(fd);
+		s_trim = ft_strtrim(s, " \t\r\n");
+		free(s);
+		if (s_trim)
+			add_to_garbage(s_trim);
 		line++;
 	}
+
 	list->next = 0x0;
 	return (root);
 }
