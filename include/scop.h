@@ -48,12 +48,8 @@
 		t_vertices				*vertices;
 		t_vertices				*vertex_normals;
 		t_texture_coordinates	*vertex_tertures;
+		struct s_material		*next;
 	}	t_material;
-
-	typedef struct s_material_list{
-		t_material 				*material;
-		struct s_material_list	*next;
-	}	t_material_list;
 
 	typedef struct s_obj{
 		char					*name;
@@ -63,7 +59,7 @@
 		t_vertices				*vertices_current;
 		t_vertices				*vertices_root;
 		t_vertices				**vertices_tab;
-		
+
 		t_vertices				*vertex_normals_current;
 		t_vertices				*vertex_normals_root;
 		t_vertices				**vertex_normals_tab;
@@ -77,7 +73,7 @@
 	typedef struct s_scene{
 		int						material_fd;
 		char					*material_path;
-		t_material_list			*material_list;
+		t_material				*material_list;
 		t_obj					*objs_list;
 	}	t_scene;
 
@@ -93,7 +89,7 @@
 	void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
-	t_material_list	*parse_mtl(char *path);
+	t_material	*parse_mtl(char *path);
 	void	pass_obj_list_to_tab(t_obj *obj);
 
 	void add_to_garbage(void *addr);

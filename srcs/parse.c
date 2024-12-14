@@ -287,15 +287,14 @@ void print_material(t_material *material){
 	printf("\t\t%d illum\n", material->illum);
 }
 
-t_material_list	*parse_mtl(char *path){
+t_material	*parse_mtl(char *path){
 	int fd = open_file(path, ".mtl");
 	if (fd < 0)
 		return (0x0);
-	t_material_list *list = malloc(sizeof(struct s_material_list));
-	add_to_garbage(list);
-	t_material_list *root = list;
-	list->material = 0x0;
-	list->next = 0x0;
+	t_material *material = malloc(sizeof(struct s_material));
+	add_to_garbage(material);
+	t_material *root = material;
+	material->next = 0x0;
 	char	*s = get_next_line(fd);
 	char	*s_trim = ft_strtrim(s, " \n\t\r");
 	free(s);
@@ -313,35 +312,27 @@ t_material_list	*parse_mtl(char *path){
 			}
 			if (tab[0]){
 				if (!ft_strcmp(tab[0], "newmtl")){
-					if (list->material){
-						list->next = malloc(sizeof(struct s_material_list));
-						add_to_garbage(list->next);
-						list = list->next;
-						list->next = 0x0;
-						list->material = 0x0;
-					}
-					list->material = malloc(sizeof(struct s_material));
-					add_to_garbage(list->material);
+					material->next = malloc(sizeof(struct s_material));
+					add_to_garbage(material->next);
+					material = material->next;
+					material->next = 0x0;
 					if (tab[1]){
-						list->material->name = ft_strdup(tab[1]);
-						add_to_garbage(list->material->name);
+						material->name = ft_strdup(tab[1]);
+						add_to_garbage(material->name);
 					}
 					else{
 						dprintf(2,"newmtl on line %d is missing a name\n", line);
 					}
-					list->material->ambient_color = 0x0;
-					list->material->diffuse_color = 0x0;
-					list->material->specular_color = 0x0;
-					list->material->shininess = 1.0;
-					list->material->optical_density =1.0;
-					list->material->dissolve = 1.0;
-					list->material->illum = 0;
-					list->material->vertices = 0x0;
-					list->material->vertex_normals = 0x0;
-					list->material->vertex_tertures = 0x0;
+					material->ambient_color = 0x0;
+					material->diffuse_color = 0x0;
+					material->specular_color = 0x0;
+					material->shininess = 1.0;
+					material->optical_density =1.0;
+					material->dissolve = 1.0;
+					material->illum = 0;
 				}
 				else {
-					parse_mtl_line(tab, tab_size, list->material, line);
+					parse_mtl_line(tab, tab_size, material, line);
 				}
 			}
 		}
@@ -353,6 +344,6 @@ t_material_list	*parse_mtl(char *path){
 		line++;
 	}
 
-	list->next = 0x0;
+	material->next = 0x0;
 	return (root);
 }
