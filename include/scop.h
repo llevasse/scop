@@ -53,9 +53,15 @@
 
 	typedef struct s_obj{
 		char					*name;
-		size_t					vertices_count;
-		size_t					vertex_normals_count;
-		size_t					texture_coordinates_count;
+		struct s_obj			*next;
+	}	t_obj;
+
+	typedef struct s_scene{
+		int						material_fd;
+		char					*material_path;
+		t_material				*material_list;
+		t_obj					*objs_list;
+
 		t_vertices				*vertices_current;
 		t_vertices				*vertices_root;
 		t_vertices				**vertices_tab;
@@ -67,14 +73,10 @@
 		t_texture_coordinates	*texture_coordinates_current;
 		t_texture_coordinates	*texture_coordinates_root;
 		t_texture_coordinates	**texture_coordinates_tab;
-		struct s_obj			*next;
-	}	t_obj;
 
-	typedef struct s_scene{
-		int						material_fd;
-		char					*material_path;
-		t_material				*material_list;
-		t_obj					*objs_list;
+		size_t					vertices_count;
+		size_t					vertex_normals_count;
+		size_t					texture_coordinates_count;
 	}	t_scene;
 
 	typedef struct s_scene_parser{
@@ -90,7 +92,7 @@
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
 	t_material	*parse_mtl(char *path);
-	void	pass_obj_list_to_tab(t_obj *obj);
+	void	pass_obj_list_to_tab(t_scene *scene);
 
 	void add_to_garbage(void *addr);
 	void free_garbage();
