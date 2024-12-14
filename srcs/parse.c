@@ -3,12 +3,18 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-t_obj *parse_obj(int fd){
- 	t_obj *obj = malloc(sizeof(struct s_obj));
-	add_to_garbage(obj);
+t_scene *parse_scene(int fd){
+ 	t_scene *scene = malloc(sizeof(struct s_scene));
+	add_to_garbage(scene);
+ 	t_scene_parser *scene_parser = malloc(sizeof(struct s_scene_parser));
+	add_to_garbage(scene_parser);
+ 	t_obj_list *root_obj_list = 0x0;
+	scene->objs_list = 0x0;
+	scene_parser = 0x0;
 	char	*s = get_next_line(fd);
 	char	**line_content = 0x0;
 	size_t	line_content_size = 0;
+	size_t	line_count = 1;
 	while (s){
 		line_content = ft_split(s, ' ');	//TODO add tab to garbage collector
 		add_to_garbage(line_content);
@@ -16,15 +22,15 @@ t_obj *parse_obj(int fd){
 		for (; line_content[line_content_size]; line_content_size++){
 			add_to_garbage(line_content[line_content_size]);
 		}
-		if (*s != '#'){
+		if (*s != '#' && line_content[0]){
 			if (!line_content){
 				dprintf(2, "Couldn't allocate memory\n");
 				exit(1);
 			}
 			if (!ft_strcmp(line_content[0], "mtllib")){
 				if (line_content[1]){
-					obj->material_list = parse_mtl(line_content[1]);
-					if (!obj->material_list){
+					scene->material_list = parse_mtl(line_content[1]);
+					if (!scene->material_list){
 						free(s);
 						free_garbage();
 					}
@@ -36,7 +42,11 @@ t_obj *parse_obj(int fd){
 					free_garbage();
 				}
 			}
-
+			else {
+				parse_scene_line(line_content, line_content_size, scene, line_count);
+				if (!root_obj_list && scene->objs_list)
+					root_obj_list = scene->objs_list;
+			}
 		}
 		if (line_content){
 			line_content = 0x0;
@@ -44,12 +54,40 @@ t_obj *parse_obj(int fd){
 		}
 		free(s);
 		s = get_next_line(fd);
+		line_count++;
 	}
-	return (obj);
+	return (scene);
+}
+
+t_vertices *create_vertices(float x, float y, float z){
+	t_vertices *p = malloc(sizeof(struct s_vertices));
+	add_to_garbage(p);
+	p->x = x;
+	p->y = y;
+	p->z = z;
+	return (p);
+}
+
+void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
+	if (!scene->objs_list){
+		scene->objs_list = malloc(sizeof(struct s_obj_list));
+		add_to_garbage((scene->objs_list));
+		scene->objs_list->obj = malloc(sizeof(struct s_obj));
+		add_to_garbage((scene->objs_list->obj));
+		scene->objs_list->next = 0x0;
+		scene->objs_list->vertex_root = 0x0;
+	}
+	
+	void *values;
+	
+	char	**possible_key = {"v", "f", "vn", "vt", "g", "o", "usemtl"};
+	if (!ft_strcmp(tab[0], "v")){
+		
+	}
 }
 
 void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
-	t_litle_rgb *rgb = 0x0;
+	t_litle_rgb *rgb = 0x0;						// TODO also parse map_Kd and map_Ks
 	float		float_value = 1;
 	float		min = 0, max = 1;
 	char		*possible_float_key[4] = {"Ns", "Ni", "d", "illum"};

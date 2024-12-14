@@ -22,7 +22,7 @@ int main(int argc, char **argv){
 	int fd = open_file(argv[1], ".obj");
 	if (fd < 0)
 		free_garbage();
-	t_obj *obj = parse_obj(fd);
-	(void)obj;
+	t_scene *scene = parse_scene(fd);
+	(void)scene;
 	free_garbage();
 }

@@ -16,7 +16,15 @@ typedef struct s_garbage{
 }	t_garbage;
 
 typedef struct s_vertices{
+	float					x;
+	float					y;
+	float					z;
 } t_vertices;
+
+typedef struct s_vertices_list{
+	t_vertices				*vertices;
+	struct s_vertices_list	*next;
+}	t_vertices_list;
 
 typedef struct s_vertex_normals{
 } t_vertex_normals;
@@ -40,9 +48,9 @@ typedef struct s_material{
 	float					dissolve;		     //said 'd'
 	int						illum;				 //from 0 to 10
 
-	t_vertices				**vertices;
-	t_vertex_normals		**vertex_normals;
-	t_texture_coordinates	**vertex_tertures;
+	t_vertices_list			*vertices;
+	t_vertex_normals		*vertex_normals;
+	t_texture_coordinates	*vertex_tertures;
 }	t_material;
 
 typedef struct s_material_list{
@@ -51,12 +59,28 @@ typedef struct s_material_list{
 }	t_material_list;
 
 typedef struct s_obj{
+	char					*name;
+	t_vertices_list			*vertices_list;
+}	t_obj;
+
+typedef struct s_obj_list{
+	t_obj					*obj;
+	t_vertices_list			*vertex_root;
+	struct s_obj_list		*next;
+}	t_obj_list;
+
+typedef struct s_scene{
 	int						material_fd;
 	char					*material_path;
 	t_material_list			*material_list;
-}	t_obj;
+	t_obj_list					*objs_list;
+}	t_scene;
 
-t_obj *parse_obj(int fd);
+typedef struct s_scene_parser{
+	t_vertices_list			*current_vertices;
+}	t_scene_parser;
+
+t_scene *parse_scene(int fd);
 t_material_list	*parse_mtl(char *path);
 
 void add_to_garbage(void *addr);
