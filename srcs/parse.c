@@ -8,7 +8,7 @@ t_scene *parse_scene(int fd){
 	add_to_garbage(scene);
  	t_scene_parser *scene_parser = malloc(sizeof(struct s_scene_parser));
 	add_to_garbage(scene_parser);
- 	t_obj_list *root_obj_list = 0x0;
+ 	t_obj *root_obj_list = 0x0;
 	scene->objs_list = 0x0;
 	scene_parser = 0x0;
 	char	*s = get_next_line(fd);
@@ -59,30 +59,97 @@ t_scene *parse_scene(int fd){
 	return (scene);
 }
 
+void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
+	if (tab_size < 4){
+		dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
+		free_garbage();
+	}
+	if (!scene->objs_list->vertices_current){
+		scene->objs_list->vertices_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->objs_list->vertices_root = scene->objs_list->vertices_current;
+	}
+	else{
+		scene->objs_list->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->objs_list->vertices_current = scene->objs_list->vertices_current->next;
+	}
+}
+
+void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb){
+	if (tab_size < 4){
+		dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
+		free_garbage();
+	}
+	if (!scene->objs_list->vertex_normals_current){
+		scene->objs_list->vertex_normals_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->objs_list->vertex_normals_root = scene->objs_list->vertex_normals_current;
+	}
+	else{
+		scene->objs_list->vertex_normals_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->objs_list->vertex_normals_current = scene->objs_list->vertex_normals_current->next;
+	}
+}
+
+void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb){
+		if (tab_size < 2){
+			dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
+			free_garbage();
+		}
+		if (!scene->objs_list->texture_coordinates_current){
+			scene->objs_list->texture_coordinates_current = create_texture_coordinates(tab, tab_size);
+			scene->objs_list->texture_coordinates_root = scene->objs_list->texture_coordinates_current;
+		}
+		else{
+			scene->objs_list->texture_coordinates_current->next = create_texture_coordinates(tab, tab_size);
+			scene->objs_list->texture_coordinates_current = scene->objs_list->texture_coordinates_current->next;
+		}
+}
+
 t_vertices *create_vertices(float x, float y, float z){
 	t_vertices *p = malloc(sizeof(struct s_vertices));
 	add_to_garbage(p);
 	p->x = x;
 	p->y = y;
 	p->z = z;
+	p->next = 0x0;
 	return (p);
+}
+
+t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size){
+	t_texture_coordinates *t = malloc(sizeof(struct s_texture_coordinates));
+	add_to_garbage(t);
+	t->u = atof(tab[1]);
+	if (tab_size >= 3)
+		t->v = atof(tab[2]);
+	if (tab_size >= 4)
+		t->w = atof(tab[3]);
+	t->next = 0x0;
+	return (t);
 }
 
 void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	if (!scene->objs_list){
-		scene->objs_list = malloc(sizeof(struct s_obj_list));
+		scene->objs_list = malloc(sizeof(struct s_obj));
 		add_to_garbage((scene->objs_list));
-		scene->objs_list->obj = malloc(sizeof(struct s_obj));
-		add_to_garbage((scene->objs_list->obj));
 		scene->objs_list->next = 0x0;
-		scene->objs_list->vertex_root = 0x0;
+		scene->objs_list->vertices_root = 0x0;
+		scene->objs_list->vertices_current = 0x0;
+		scene->objs_list->vertex_normals_root = 0x0;
+		scene->objs_list->vertex_normals_current = 0x0;
+		scene->objs_list->texture_coordinates_root = 0x0;
+		scene->objs_list->texture_coordinates_current = 0x0;
 	}
 	
-	void *values;
+	//void *values;
 	
-	char	**possible_key = {"v", "f", "vn", "vt", "g", "o", "usemtl"};
+	//char	**possible_key = {"v", "f", "vn", "vt", "g", "o", "usemtl"};
 	if (!ft_strcmp(tab[0], "v")){
-		
+		parse_vertices(tab, tab_size, scene, line_nb);
+	}
+	else if (!ft_strcmp(tab[0], "vn")){
+		parse_vertex_normals(tab, tab_size, scene, line_nb);
+	}
+	else if (!ft_strcmp(tab[0], "vt")){
+		parse_texture_coordinates(tab, tab_size, scene, line_nb);
 	}
 }
 
