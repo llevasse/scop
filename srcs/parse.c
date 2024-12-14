@@ -140,10 +140,31 @@ void	pass_obj_list_to_tab(t_obj *obj){
 			obj->vertices_tab[i++] = tmp;
 			tmp = tmp->next;
 		}
-		obj->vertices_tab[i++] = 0x0;/*
-		for (i=0;obj->vertices_tab[i];i++){
-			printf("%zu : %f %f %f\n", i, obj->vertices_tab[i]->x, obj->vertices_tab[i]->y, obj->vertices_tab[i]->z);
-		}*/
+		obj->vertices_tab[i++] = 0x0;
+		i = 0;
+	}
+	if (obj->vertex_normals_root){
+		obj->vertex_normals_tab = malloc((obj->vertex_normals_count + 1) * sizeof(t_vertices *));
+		add_to_garbage(obj->vertex_normals_tab);
+		t_vertices *tmp = obj->vertex_normals_root;
+		obj->vertex_normals_root = 0x0;
+		while (tmp && i < obj->vertex_normals_count){
+			obj->vertex_normals_tab[i++] = tmp;
+			tmp = tmp->next;
+		}
+		obj->vertex_normals_tab[i++] = 0x0;
+		i = 0;
+	}
+	if (obj->texture_coordinates_root){
+		obj->texture_coordinates_tab = malloc((obj->texture_coordinates_count + 1) * sizeof(t_texture_coordinates *));
+		add_to_garbage(obj->texture_coordinates_tab);
+		t_texture_coordinates *tmp = obj->texture_coordinates_root;
+		obj->texture_coordinates_root = 0x0;
+		while (tmp && i < obj->texture_coordinates_count){
+			obj->texture_coordinates_tab[i++] = tmp;
+			tmp = tmp->next;
+		}
+		obj->texture_coordinates_tab[i++] = 0x0;
 	}
 }
 

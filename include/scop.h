@@ -63,6 +63,7 @@
 		t_vertices				*vertices_current;
 		t_vertices				*vertices_root;
 		t_vertices				**vertices_tab;
+		
 		t_vertices				*vertex_normals_current;
 		t_vertices				*vertex_normals_root;
 		t_vertices				**vertex_normals_tab;
