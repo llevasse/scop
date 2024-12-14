@@ -35,6 +35,14 @@
 		float					b;
 	}	t_litle_rgb;
 
+	typedef struct s_faces{
+		t_vertices				**vertices;
+		t_vertices				**vertex_normals;
+		t_texture_coordinates	**texture_coordinates;
+		struct s_faces			*next;
+		struct s_material		*material;
+	}	t_faces;
+
 	typedef struct s_material{
 		char					*name;
 		t_litle_rgb				*ambient_color;      //said 'ka'
@@ -45,14 +53,14 @@
 		float					dissolve;		     //said 'd'
 		int						illum;				 //from 0 to 10
 
-		t_vertices				*vertices;
-		t_vertices				*vertex_normals;
-		t_texture_coordinates	*vertex_tertures;
+		t_faces					*faces;
 		struct s_material		*next;
 	}	t_material;
 
 	typedef struct s_obj{
 		char					*name;
+		t_material				*material;
+		t_faces					*faces;
 		struct s_obj			*next;
 	}	t_obj;
 
@@ -96,4 +104,7 @@
 
 	void add_to_garbage(void *addr);
 	void free_garbage();
+
+	void print_material(t_material *material);
+
 #endif
