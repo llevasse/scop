@@ -72,6 +72,7 @@ void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
 		scene->objs_list->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
 		scene->objs_list->vertices_current = scene->objs_list->vertices_current->next;
 	}
+	scene->objs_list->vertices_count++;
 }
 
 void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb){
@@ -87,6 +88,7 @@ void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb)
 		scene->objs_list->vertex_normals_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
 		scene->objs_list->vertex_normals_current = scene->objs_list->vertex_normals_current->next;
 	}
+	scene->objs_list->vertex_normals_count++;
 }
 
 void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb){
@@ -102,6 +104,7 @@ void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int lin
 			scene->objs_list->texture_coordinates_current->next = create_texture_coordinates(tab, tab_size);
 			scene->objs_list->texture_coordinates_current = scene->objs_list->texture_coordinates_current->next;
 		}
+	scene->objs_list->texture_coordinates_count++;
 }
 
 t_vertices *create_vertices(float x, float y, float z){
@@ -126,6 +129,24 @@ t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size){
 	return (t);
 }
 
+void	pass_obj_list_to_tab(t_obj *obj){
+	size_t i=0;
+	if (obj->vertices_root){
+		obj->vertices_tab = malloc((obj->vertices_count + 1) * sizeof(t_vertices *));
+		add_to_garbage(obj->vertices_tab);
+		t_vertices *tmp = obj->vertices_root;
+		obj->vertices_root = 0x0;
+		while (tmp && i < obj->vertices_count){
+			obj->vertices_tab[i++] = tmp;
+			tmp = tmp->next;
+		}
+		obj->vertices_tab[i++] = 0x0;/*
+		for (i=0;obj->vertices_tab[i];i++){
+			printf("%zu : %f %f %f\n", i, obj->vertices_tab[i]->x, obj->vertices_tab[i]->y, obj->vertices_tab[i]->z);
+		}*/
+	}
+}
+
 void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	if (!scene->objs_list){
 		scene->objs_list = malloc(sizeof(struct s_obj));
@@ -133,10 +154,16 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		scene->objs_list->next = 0x0;
 		scene->objs_list->vertices_root = 0x0;
 		scene->objs_list->vertices_current = 0x0;
+		scene->objs_list->vertices_tab = 0x0;
+		scene->objs_list->vertices_count = 0;
 		scene->objs_list->vertex_normals_root = 0x0;
 		scene->objs_list->vertex_normals_current = 0x0;
+		scene->objs_list->vertex_normals_tab = 0x0;
+		scene->objs_list->vertex_normals_count = 0;
 		scene->objs_list->texture_coordinates_root = 0x0;
 		scene->objs_list->texture_coordinates_current = 0x0;
+		scene->objs_list->texture_coordinates_tab = 0x0;
+		scene->objs_list->texture_coordinates_count = 0;
 	}
 	
 	//void *values;
@@ -150,6 +177,19 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	}
 	else if (!ft_strcmp(tab[0], "vt")){
 		parse_texture_coordinates(tab, tab_size, scene, line_nb);
+	}
+	else if (!ft_strcmp(tab[0], "o")){
+		if (tab_size < 2){
+			dprintf(2,"%s on line %d is missing a name value\n", tab[0], line_nb);
+			free_garbage();
+		}
+		else {
+			scene->objs_list->name = ft_strdup(tab[1]);
+			add_to_garbage(scene->objs_list->name);
+		}
+	}
+	else if (!ft_strcmp(tab[0], "f")){	// f v/vt/vn
+		pass_obj_list_to_tab(scene->objs_list);
 	}
 }
 
