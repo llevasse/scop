@@ -51,6 +51,10 @@ int main(int argc, char **argv){
 	glutInitErrorFunc(print_error);
 	glutInitWarningFunc(print_error);
 	window_fd = glutCreateWindow("Scop");
+	GLenum err = glewInit();
+	if (err != GLEW_OK){
+		dprintf(2, "%s\n", glewGetErrorString(err));
+	}
 	glutKeyboardFunc(input_handler);
 	glutMainLoop();
 	free_garbage();

@@ -36,7 +36,7 @@ BASE_INCLUDE			=	-I $(INC_DIR)
 
 FLAGS					=	-Wall -Werror -Wextra -g
 INCLUDES				=	$(BASE_INCLUDE) ${LIBFT_INCLUDE}
-LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lGL
+LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lGL -lGLEW
 
 #---RULES----------------------------------------
 

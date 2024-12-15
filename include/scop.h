@@ -5,9 +5,9 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <errno.h>
+# include <GL/glew.h>
 # include "../libft/libft.h"
 # include "../freeglut-3.6.0/include/GL/freeglut.h"
-# include <GL/glut.h>
 
 	int open_file(char *path, char *extension);
 
