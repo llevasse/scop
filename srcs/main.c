@@ -10,6 +10,13 @@ void	print_error(const char *fmt, va_list ap){
 void	input_handler(unsigned char key, int x, int y){
 	printf("%d %d %d\n", key, x, y);
 	if (key == 27){
+		t_garbage *tmp = g_garbage_collector_root;
+		while (g_garbage_collector_root){
+			free(g_garbage_collector_root->addr);
+			tmp = g_garbage_collector_root;
+			g_garbage_collector_root = g_garbage_collector_root->next;
+			free(tmp);
+		}
 		glutLeaveMainLoop();
 		glutDestroyWindow(window_fd);
 		exit(0);
@@ -31,12 +38,6 @@ int main(int argc, char **argv){
 		g_garbage_collector->next = 0x0;
 		g_garbage_collector->addr = 0x0;
 	}
-/*
-	int fd = open_file(argv[1], ".obj");
-	if (fd < 0)
-		free_garbage();
-	t_scene *scene = parse_scene(fd);
-	(void)scene;*/
 	(void)argv;
 	int foo = 1;
 	char	*bar[1]= {" "};
@@ -51,11 +52,16 @@ int main(int argc, char **argv){
 	glutInitErrorFunc(print_error);
 	glutInitWarningFunc(print_error);
 	window_fd = glutCreateWindow("Scop");
+	glutKeyboardFunc(input_handler);
 	GLenum err = glewInit();
 	if (err != GLEW_OK){
 		dprintf(2, "%s\n", glewGetErrorString(err));
 	}
-	glutKeyboardFunc(input_handler);
+	int fd = open_file(argv[1], ".obj");
+	if (fd < 0)
+		free_garbage();
+	t_scene *scene = parse_scene(fd);
+	(void)scene;
+
 	glutMainLoop();
-	free_garbage();
 }
