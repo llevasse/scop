@@ -73,7 +73,7 @@ clean:
 fclean:			clean
 				@echo "$(RED)Deleting scop executable..."
 				make fclean -C ${LIBFT_PATH}
-				rm -r ${FREEGLUT_PATH}build
+				rm -rf ${FREEGLUT_PATH}build
 				rm -f $(NAME)
 				@echo "$(GREEN)Done\n"
 

@@ -1,10 +1,8 @@
-*
-!.gitignore
-!*.c
-!*.h
-!Makefile
-!*.obj
-!*.mtl
-!*.pdf
-!*/
+*.o
+*.swp
+*.log
+*.text
+scop
+a.out
+.OBJS/
 freeglut-3.6.0/build
