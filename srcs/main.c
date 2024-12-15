@@ -2,9 +2,18 @@
 
 struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
-
+int					window_fd = -1;
 void	print_error(const char *fmt, va_list ap){
 	vdprintf(2, fmt, ap);
+}
+
+void	input_handler(unsigned char key, int x, int y){
+	printf("%d %d %d\n", key, x, y);
+	if (key == 27){
+		glutLeaveMainLoop();
+		glutDestroyWindow(window_fd);
+		exit(0);
+	}
 }
 
 int main(int argc, char **argv){
@@ -35,16 +44,14 @@ int main(int argc, char **argv){
 	glutInitContextVersion(4, 0);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutSetOption(
-		GLUT_ACTION_ON_WINDOW_CLOSE,
-		GLUT_ACTION_GLUTMAINLOOP_RETURNS
-	);
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_CONTINUE_EXECUTION);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(700, 700);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitErrorFunc(print_error);
 	glutInitWarningFunc(print_error);
-	glutCreateWindow("Scop");
+	window_fd = glutCreateWindow("Scop");
+	glutKeyboardFunc(input_handler);
 	glutMainLoop();
 	free_garbage();
 }

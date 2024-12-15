@@ -7,6 +7,7 @@
 # include <errno.h>
 # include "../libft/libft.h"
 # include "../freeglut-3.6.0/include/GL/freeglut.h"
+# include <GL/glut.h>
 
 	int open_file(char *path, char *extension);
 
