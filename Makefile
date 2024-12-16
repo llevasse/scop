@@ -24,7 +24,8 @@ FREEGLUT_LIB			=	-L $(FREEGLUT_PATH)build/lib -lglut
 SRC						=	srcs/main.c \
 							srcs/opener.c \
 							srcs/parse.c \
-							srcs/garbage_collector.c
+							srcs/garbage_collector.c \
+							srcs/matrices.c
 
 OBJS_DIR				=	.OBJS/
 OBJS					=	$(addprefix $(OBJS_DIR), $(SRC:.c=.o))

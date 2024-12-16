@@ -6,8 +6,11 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <GL/glew.h>
+# include <math.h>
 # include "../libft/libft.h"
 # include "../freeglut-3.6.0/include/GL/freeglut.h"
+# define PI 3.1415926535
+# define RADIAN 0.017453292519444445
 
 	int open_file(char *path, char *extension);
 
@@ -22,6 +25,10 @@
 		float					y;
 		float					z;
 		float					w;			//optional, weight default is 1.0;
+
+		float					matrixed_x;
+		float					matrixed_y;
+		float					matrixed_z;
 		struct s_vertices		*next;
 	}	t_vertices;
 
@@ -88,6 +95,11 @@
 		size_t					vertices_count;
 		size_t					vertex_normals_count;
 		size_t					texture_coordinates_count;
+
+		float					fov;
+		float					near_plane_distance;
+		float					far_plane_distance;
+		float					matrix[4][4];
 	}	t_scene;
 
 	typedef struct s_scene_parser{
@@ -105,9 +117,12 @@
 	t_material	*parse_mtl(char *path);
 	void	pass_obj_list_to_tab(t_scene *scene);
 
-	void add_to_garbage(void *addr);
-	void free_garbage();
+	void	add_to_garbage(void *addr);
+	void	free_garbage();
 
-	void print_material(t_material *material);
+	void	print_material(t_material *material);
+
+	void	setMatrix(t_scene *scene);
+	void	multiplyPointWithMatric(t_scene *scene, t_vertices *p);
 
 #endif

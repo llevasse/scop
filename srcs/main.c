@@ -61,7 +61,9 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	t_scene *scene = parse_scene(fd);
-	(void)scene;
+	scene->fov = 90;
+	scene->far_plane_distance = 100;
+	scene->near_plane_distance = .1;
 
 	glutMainLoop();
 }
