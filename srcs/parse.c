@@ -6,11 +6,8 @@ extern struct s_garbage	*g_garbage_collector;
 t_scene *parse_scene(int fd){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
- 	t_scene_parser *scene_parser = malloc(sizeof(struct s_scene_parser));
-	add_to_garbage(scene_parser);
  	t_obj *root_obj_list = 0x0;
 	scene->objs_list = 0x0;
-	scene_parser = 0x0;
 	scene->vertices_root = 0x0;
 	scene->vertices_current = 0x0;
 	scene->vertices_tab = 0x0;
@@ -68,6 +65,7 @@ t_scene *parse_scene(int fd){
 		s = get_next_line(fd);
 		line_count++;
 	}
+	scene->objs_list = root_obj_list;
 	return (scene);
 }
 
@@ -229,6 +227,7 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 		free_garbage();
 	}
 	t_faces *face = malloc(sizeof(struct s_faces));
+	face->next = 0x0;
 	add_to_garbage(face);
 	face->vertices = malloc((tab_size) * sizeof(t_vertices *));
 	add_to_garbage(face->vertices);
@@ -260,6 +259,15 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 			}
 		}
 	}
+	if (!scene->objs_list->faces)
+		scene->objs_list->faces = face;
+	else{
+		t_faces *tmp = scene->objs_list->faces;
+		while (tmp->next){
+			tmp = tmp->next;
+		}
+		tmp->next = face;
+	}
 }
 
 void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
@@ -267,7 +275,9 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	if (!scene->objs_list){
 		scene->objs_list = malloc(sizeof(struct s_obj));
 		add_to_garbage((scene->objs_list));
+		scene->objs_list->name	= 0x0;
 		scene->objs_list->next = 0x0;
+		scene->objs_list->faces = 0x0;
 		scene->vertices_root = 0x0;
 		scene->vertex_normals_root = 0x0;
 		scene->texture_coordinates_root = 0x0;
@@ -288,6 +298,13 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 			free_garbage();
 		}
 		else {
+			if (scene->objs_list->name){
+				scene->objs_list->next = malloc(sizeof(struct s_obj));
+				add_to_garbage(scene->objs_list->next);
+				scene->objs_list = scene->objs_list->next;
+				scene->objs_list->next = 0x0;
+				scene->objs_list->faces = 0x0;
+			}
 			scene->objs_list->name = ft_strdup(tab[1]);
 			add_to_garbage(scene->objs_list->name);
 		}
