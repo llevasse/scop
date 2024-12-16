@@ -72,17 +72,23 @@ t_scene *parse_scene(int fd){
 }
 
 void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
+	float	weight = 1.0;
 	if (tab_size < 4){
 		dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
 		free_garbage();
 	}
+	if (tab[4]){
+		weight = atof(tab[4]);
+	}
 	if (!scene->vertices_current){
 		scene->vertices_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->vertices_current->w = weight;
 		scene->vertices_root = scene->vertices_current;
 	}
 	else{
 		scene->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
 		scene->vertices_current = scene->vertices_current->next;
+		scene->vertices_current->w = weight;
 	}
 	scene->vertices_count++;
 }
@@ -125,6 +131,7 @@ t_vertices *create_vertices(float x, float y, float z){
 	p->x = x;
 	p->y = y;
 	p->z = z;
+	p->w = 1.0;
 	p->next = 0x0;
 	return (p);
 }

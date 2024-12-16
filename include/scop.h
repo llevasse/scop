@@ -21,6 +21,7 @@
 		float					x;
 		float					y;
 		float					z;
+		float					w;			//optional, weight default is 1.0;
 		struct s_vertices		*next;
 	}	t_vertices;
 
