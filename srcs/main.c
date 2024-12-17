@@ -2,6 +2,7 @@
 
 struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
+struct s_scene		*scene;
 int					window_fd = -1;
 void	print_error(const char *fmt, va_list ap){
 	vdprintf(2, fmt, ap);
@@ -21,6 +22,12 @@ void	input_handler(unsigned char key, int x, int y){
 		glutDestroyWindow(window_fd);
 		exit(0);
 	}
+}
+
+void	render(){
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	render_obj(scene, scene->objs_list);
 }
 
 int main(int argc, char **argv){
@@ -60,10 +67,10 @@ int main(int argc, char **argv){
 	int fd = open_file(argv[1], ".obj");
 	if (fd < 0)
 		free_garbage();
-	t_scene *scene = parse_scene(fd);
+	scene = parse_scene(fd);
 	scene->fov = 90;
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;
-
+	glutDisplayFunc(render);
 	glutMainLoop();
 }

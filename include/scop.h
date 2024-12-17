@@ -100,11 +100,8 @@
 		float					near_plane_distance;
 		float					far_plane_distance;
 		float					matrix[4][4];
-	}	t_scene;
 
-	typedef struct s_scene_parser{
-		t_vertices				*current_vertices;
-	}	t_scene_parser;
+	}	t_scene;
 
 	t_scene *parse_scene(int fd);
 	t_vertices *create_vertices(float x, float y, float z);
@@ -123,6 +120,7 @@
 	void	print_material(t_material *material);
 
 	void	setMatrix(t_scene *scene);
-	void	multiplyPointWithMatric(t_scene *scene, t_vertices *p);
+	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p);
 
+	void	render_obj(t_scene *scene, t_obj *obj);
 #endif

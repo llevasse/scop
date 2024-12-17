@@ -25,7 +25,8 @@ SRC						=	srcs/main.c \
 							srcs/opener.c \
 							srcs/parse.c \
 							srcs/garbage_collector.c \
-							srcs/matrices.c
+							srcs/matrices.c \
+							srcs/renderers.c
 
 OBJS_DIR				=	.OBJS/
 OBJS					=	$(addprefix $(OBJS_DIR), $(SRC:.c=.o))
@@ -37,7 +38,7 @@ BASE_INCLUDE			=	-I $(INC_DIR)
 
 FLAGS					=	-Wall -Werror -Wextra -g
 INCLUDES				=	$(BASE_INCLUDE) ${LIBFT_INCLUDE}
-LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lGL -lGLEW
+LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lGL -lGLEW -lm
 
 #---RULES----------------------------------------
 
