@@ -99,7 +99,7 @@
 		float					fov;
 		float					near_plane_distance;
 		float					far_plane_distance;
-		float					matrix[4][4];
+		double					matrix[4][4];
 
 	}	t_scene;
 

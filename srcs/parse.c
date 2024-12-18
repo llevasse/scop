@@ -236,7 +236,15 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	face->texture_coordinates = malloc((tab_size) * sizeof(t_texture_coordinates *));
 	add_to_garbage(face->texture_coordinates);
 	face->material = scene->objs_list->material;
+
+	face->vertices[tab_size-1] = 0x0;
+	face->vertex_normals[tab_size-1] = 0x0;
+	face->texture_coordinates[tab_size-1] = 0x0;
+	
 	for (size_t i=0; i< tab_size - 1 ; i++){
+		face->vertices[i] = 0x0;
+		face->vertex_normals[i] = 0x0;
+		face->texture_coordinates[i] = 0x0;
 		int index = atoi(tab[i+1]);
 		int texture_index = 0;
 		int vertex_normal_index = 0;

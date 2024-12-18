@@ -27,6 +27,7 @@ void	input_handler(unsigned char key, int x, int y){
 void	render(){
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	setMatrix(scene);
 	render_obj(scene, scene->objs_list);
 }
 
