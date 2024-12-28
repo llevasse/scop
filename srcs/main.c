@@ -4,6 +4,7 @@ struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
 struct s_scene		*scene;
 int					window_fd = -1;
+GLuint 				programID = -1;
 void	print_error(const char *fmt, va_list ap){
 	vdprintf(2, fmt, ap);
 }
@@ -26,9 +27,16 @@ void	input_handler(unsigned char key, int x, int y){
 
 void	render(){
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	setMatrix(scene);
 	render_obj(scene, scene->objs_list);
+	glEnableVertexAttribArray(0);
+	glUseProgram(programID);
+	glutSwapBuffers();
+}
+
+void	reshape(int w, int h){
+	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 }
 
 int main(int argc, char **argv){
@@ -50,7 +58,7 @@ int main(int argc, char **argv){
 	int foo = 1;
 	char	*bar[1]= {" "};
 	glutInit(&foo, bar);
-	glutInitContextVersion(4, 0);
+	glutInitContextVersion(3, 3);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_CONTINUE_EXECUTION);
@@ -72,6 +80,8 @@ int main(int argc, char **argv){
 	scene->fov = 90;
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;
+	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
+	glutReshapeFunc(reshape);
 	glutDisplayFunc(render);
 	glutMainLoop();
 }

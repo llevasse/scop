@@ -26,7 +26,9 @@ SRC						=	srcs/main.c \
 							srcs/parse.c \
 							srcs/garbage_collector.c \
 							srcs/matrices.c \
-							srcs/renderers.c
+							srcs/renderers.c \
+							srcs/loadShaders.c
+							
 
 OBJS_DIR				=	.OBJS/
 OBJS					=	$(addprefix $(OBJS_DIR), $(SRC:.c=.o))

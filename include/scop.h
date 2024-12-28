@@ -123,4 +123,7 @@
 	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p);
 
 	void	render_obj(t_scene *scene, t_obj *obj);
+	
+	GLuint	loadShaders(const char *vertex_path, const char *fragment_path);
+	
 #endif
