@@ -5,8 +5,8 @@ struct s_garbage	*g_garbage_collector = 0x0;
 struct s_scene		*scene;
 int					window_fd = -1;
 GLuint 				programID = -1, vertexArrayId = -1;
-GLuint				vertexbuffer;
-GLfloat				*g_vertex_buffer_data;
+GLuint				vertexbuffer, colourBuffer;
+GLfloat				*g_vertex_buffer_data, *g_colour_buffer_data;
 
 void	print_error(const char *fmt, va_list ap){
 	vdprintf(2, fmt, ap);
@@ -32,16 +32,22 @@ void	render(){
 	setMatrix(scene);
 	
 	render_obj(scene, scene->objs_list);
-	for (size_t i=0; i<scene->vertices_count * 3; ){
+
+	/*for (size_t i=0; i<scene->vertices_count * 3; ){
 		printf("%f ", g_vertex_buffer_data[i++]);
 		printf("%f ", g_vertex_buffer_data[i++]);
 		printf("%f\n", g_vertex_buffer_data[i++]);
-	}
+	}*/
 	
 
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, scene->vertices_count * 3, g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, scene->display_vertices_count * 3, g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+	glGenBuffers(1, &colourBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+	glBufferData(GL_ARRAY_BUFFER, scene->display_vertices_count * 3, g_colour_buffer_data, GL_STATIC_DRAW);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 	glUseProgram(programID);
@@ -55,18 +61,24 @@ void	render(){
 		0,                  // stride
 		(void*)0            // array buffer offset
 	);
+	
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+	glVertexAttribPointer(
+		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
 
 	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, scene->vertices_count * 3); // 3 indices starting at 0 -> 1 triangle
+	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count * 3); // 3 indices starting at 0 -> 1 triangle
 
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	glutSwapBuffers();
-
-	/*glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnableVertexAttribArray(0);
-	glUseProgram(programID);
-	glutSwapBuffers();*/
 }
 
 void	reshape(int w, int h){
@@ -99,7 +111,7 @@ int main(int argc, char **argv){
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_CONTINUE_EXECUTION);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(700, 700);
+	glutInitWindowSize(1920, 1080);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitErrorFunc(print_error);
 	glutInitWarningFunc(print_error);
@@ -113,8 +125,14 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd);
-	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->vertices_count * 3) + 1));
+	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 3) + 1));
 	add_to_garbage(g_vertex_buffer_data);
+	g_colour_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 3) + 1));
+	add_to_garbage(g_colour_buffer_data);
+	for (size_t i = 0; i<=(scene->display_vertices_count * 3);i++){
+		g_vertex_buffer_data[i] = 0.0;
+		g_colour_buffer_data[i] = 0.0;
+	}
 	scene->fov = 90;
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;

@@ -12,6 +12,7 @@ t_scene *parse_scene(int fd){
 	scene->vertices_current = 0x0;
 	scene->vertices_tab = 0x0;
 	scene->vertices_count = 0;
+	scene->display_vertices_count = 0;
 	scene->vertex_normals_root = 0x0;
 	scene->vertex_normals_current = 0x0;
 	scene->vertex_normals_tab = 0x0;
@@ -65,86 +66,34 @@ t_scene *parse_scene(int fd){
 		s = get_next_line(fd);
 		line_count++;
 	}
+	
+	
+	
 	scene->objs_list = root_obj_list;
+	link_faces_to_materials(scene);
+	printf("%zu, %zu\n", scene->vertices_count, scene->display_vertices_count);
 	return (scene);
 }
 
-void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
-	float	weight = 1.0;
-	if (tab_size < 4){
-		dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
-		free_garbage();
-	}
-	if (tab[4]){
-		weight = atof(tab[4]);
-	}
-	if (!scene->vertices_current){
-		scene->vertices_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
-		scene->vertices_current->w = weight;
-		scene->vertices_root = scene->vertices_current;
-	}
-	else{
-		scene->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
-		scene->vertices_current = scene->vertices_current->next;
-		scene->vertices_current->w = weight;
-	}
-	scene->vertices_count++;
-}
-
-void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb){
-	if (tab_size < 4){
-		dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
-		free_garbage();
-	}
-	if (!scene->vertex_normals_current){
-		scene->vertex_normals_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
-		scene->vertex_normals_root = scene->vertex_normals_current;
-	}
-	else{
-		scene->vertex_normals_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
-		scene->vertex_normals_current = scene->vertex_normals_current->next;
-	}
-	scene->vertex_normals_count++;
-}
-
-void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb){
-		if (tab_size < 2){
-			dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
-			free_garbage();
+void	link_faces_to_materials(t_scene *scene){
+	t_obj	*obj = scene->objs_list;
+	t_faces	*face = 0x0;
+	
+	while (obj){
+		face = obj->faces;
+		while (face){
+			if (!face->material->faces){
+				face->material->faces = malloc(sizeof(struct s_faces) * (face->material->nb_faces + 1));
+				add_to_garbage(face->material->faces);
+				face->material->faces[face->material->nb_faces] = 0x0;
+			}
+			face->material->faces[face->material->face_index++] = face;
+			face = face->next;
 		}
-		if (!scene->texture_coordinates_current){
-			scene->texture_coordinates_current = create_texture_coordinates(tab, tab_size);
-			scene->texture_coordinates_root = scene->texture_coordinates_current;
-		}
-		else{
-			scene->texture_coordinates_current->next = create_texture_coordinates(tab, tab_size);
-			scene->texture_coordinates_current = scene->texture_coordinates_current->next;
-		}
-	scene->texture_coordinates_count++;
+		obj = obj->next;
+	}
 }
 
-t_vertices *create_vertices(float x, float y, float z){
-	t_vertices *p = malloc(sizeof(struct s_vertices));
-	add_to_garbage(p);
-	p->x = x;
-	p->y = y;
-	p->z = z;
-	p->w = 1.0;
-	p->next = 0x0;
-	return (p);
-}
-
-t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size){
-	t_texture_coordinates *t = malloc(sizeof(struct s_texture_coordinates));
-	add_to_garbage(t);
-	t->u = atof(tab[1]);
-	if (tab_size >= 3)
-		t->v = atof(tab[2]);
-	if (tab_size >= 4)
-		t->w = atof(tab[3]);
-	t->next = 0x0;
-	return (t);
-}
 
 void	pass_obj_list_to_tab(t_scene *scene){
 	size_t i=0;
@@ -218,63 +167,6 @@ void	pass_obj_list_to_tab(t_scene *scene){
 			tmp = tmp->next;
 		}
 		scene->texture_coordinates_tab[i++] = 0x0;
-	}
-}
-
-void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
-	if (tab_size < 3){
-		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
-		free_garbage();
-	}
-	t_faces *face = malloc(sizeof(struct s_faces));
-	face->next = 0x0;
-	add_to_garbage(face);
-	face->vertices = malloc((tab_size) * sizeof(t_vertices *));
-	add_to_garbage(face->vertices);
-	face->vertex_normals = malloc((tab_size) * sizeof(t_vertices *));
-	add_to_garbage(face->vertex_normals);
-	face->texture_coordinates = malloc((tab_size) * sizeof(t_texture_coordinates *));
-	add_to_garbage(face->texture_coordinates);
-	face->material = scene->objs_list->material;
-
-	face->vertices[tab_size-1] = 0x0;
-	face->vertex_normals[tab_size-1] = 0x0;
-	face->texture_coordinates[tab_size-1] = 0x0;
-	
-	for (size_t i=0; i< tab_size - 1 ; i++){
-		face->vertices[i] = 0x0;
-		face->vertex_normals[i] = 0x0;
-		face->texture_coordinates[i] = 0x0;
-		int index = atoi(tab[i+1]);
-		int texture_index = 0;
-		int vertex_normal_index = 0;
-		face->vertices[i] = scene->vertices_tab[index - 1];
-		if (tab[i+1][get_int_len(index)] == '/'){
-			texture_index = atoi(tab[i+1] + get_int_len(index) + 1);
-			if (texture_index == 0){
-				face->texture_coordinates[i] = 0x0;
-				if (tab[i+1][get_int_len(index)+1] == '/'){
-					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + 2);
-					face->vertex_normals[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
-				}
-			}
-			else {
-				face->texture_coordinates[i] = scene->texture_coordinates_tab[texture_index - 1];
-				if (tab[i + 1][get_int_len(index) + 1 + get_int_len(texture_index)] == '/'){
-					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + get_int_len(texture_index) + 2);
-					face->vertex_normals[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
-				}
-			}
-		}
-	}
-	if (!scene->objs_list->faces)
-		scene->objs_list->faces = face;
-	else{
-		t_faces *tmp = scene->objs_list->faces;
-		while (tmp->next){
-			tmp = tmp->next;
-		}
-		tmp->next = face;
 	}
 }
 
@@ -455,6 +347,9 @@ t_material	*parse_mtl(char *path){
 					material->optical_density =1.0;
 					material->dissolve = 1.0;
 					material->illum = 0;
+					material->nb_faces = 0;
+					material->faces = 0x0;
+					material->face_index = 0;
 				}
 				else {
 					parse_mtl_line(tab, tab_size, material, line);

@@ -63,7 +63,9 @@
 		float					dissolve;		     //said 'd'
 		int						illum;				 //from 0 to 10
 
-		t_faces					*faces;
+		t_faces					**faces;
+		size_t					nb_faces;
+		size_t					face_index;
 		struct s_material		*next;
 	}	t_material;
 
@@ -93,6 +95,7 @@
 		t_texture_coordinates	**texture_coordinates_tab;
 
 		size_t					vertices_count;
+		size_t					display_vertices_count;		//if 1 vertices is used by two faces, it will count as 2 vertices
 		size_t					vertex_normals_count;
 		size_t					texture_coordinates_count;
 
@@ -106,9 +109,11 @@
 	t_scene *parse_scene(int fd);
 	t_vertices *create_vertices(float x, float y, float z);
 	t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size);
+	void	link_faces_to_materials(t_scene *scene);
 	void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb);
+	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
 	t_material	*parse_mtl(char *path);

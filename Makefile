@@ -24,6 +24,8 @@ FREEGLUT_LIB			=	-L $(FREEGLUT_PATH)build/lib -lglut
 SRC						=	srcs/main.c \
 							srcs/opener.c \
 							srcs/parse.c \
+							srcs/parse_vertices.c \
+							srcs/parse_faces.c \
 							srcs/garbage_collector.c \
 							srcs/matrices.c \
 							srcs/renderers.c \
