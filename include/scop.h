@@ -102,7 +102,8 @@
 		float					fov;
 		float					near_plane_distance;
 		float					far_plane_distance;
-		double					matrix[4][4];
+		float					matrix[4][4];
+		float					matrix_camera[4][4];
 
 	}	t_scene;
 
@@ -125,7 +126,7 @@
 	void	print_material(t_material *material);
 
 	void	setMatrix(t_scene *scene);
-	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p);
+	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]);
 
 	void	render_obj(t_scene *scene, t_obj *obj);
 	

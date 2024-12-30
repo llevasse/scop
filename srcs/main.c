@@ -111,7 +111,7 @@ int main(int argc, char **argv){
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_CONTINUE_EXECUTION);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(1920, 1080);
+	glutInitWindowSize(720, 720);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitErrorFunc(print_error);
 	glutInitWarningFunc(print_error);
