@@ -67,8 +67,6 @@ t_scene *parse_scene(int fd){
 		line_count++;
 	}
 	
-	
-	
 	scene->objs_list = root_obj_list;
 	link_faces_to_materials(scene);
 	printf("%zu, %zu\n", scene->vertices_count, scene->display_vertices_count);

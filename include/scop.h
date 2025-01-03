@@ -29,6 +29,7 @@
 		float					matrixed_x;
 		float					matrixed_y;
 		float					matrixed_z;
+		size_t					id;
 		struct s_vertices		*next;
 	}	t_vertices;
 

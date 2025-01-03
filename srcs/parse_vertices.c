@@ -22,7 +22,7 @@ void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
 		scene->vertices_current = scene->vertices_current->next;
 		scene->vertices_current->w = weight;
 	}
-	scene->vertices_count++;
+	scene->vertices_current->id = scene->vertices_count++;
 }
 
 void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb){
