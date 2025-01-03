@@ -19,32 +19,29 @@ void	render_obj(t_scene *scene, t_obj *obj){
 	(void)obj;
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	while (obj){
-		if (!ft_strncmp(obj->name, "Island", 6) || 1){
-			t_faces	*face = obj->faces;
-			while (face){
-				i = 0;
-				while (face->vertices[i]){
-					face->vertices[i]->matrixed_x = face->vertices[i]->x;
-					face->vertices[i]->matrixed_y = face->vertices[i]->y;
-					face->vertices[i]->matrixed_z = face->vertices[i]->z;
-					//multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
-					multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
-					g_colour_buffer_data[j] = face->material->diffuse_color->r;
-					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
-					
-					g_colour_buffer_data[j] = face->material->diffuse_color->g;
-					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
-					
-					g_colour_buffer_data[j] = face->material->diffuse_color->b;
-					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
-					printf("point %zu xyz: %f %f %f\n", pnt_nb, face->vertices[i]->matrixed_x, face->vertices[i]->matrixed_y, face->vertices[i]->matrixed_z);
-					pnt_nb++;
-					i++;
-				}
-				face = face->next;
-				count++;
+		t_faces	*face = obj->faces;
+		while (face){
+			i = 0;
+			while (face->vertices[i]){
+				face->vertices[i]->matrixed_x = face->vertices[i]->x;
+				face->vertices[i]->matrixed_y = face->vertices[i]->y;
+				face->vertices[i]->matrixed_z = face->vertices[i]->z;
+				//multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
+				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->r;
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->g;
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->b;
+				
+				
+//					printf("point %zu xyz: %f %f %f\n", pnt_nb, face->vertices[i]->matrixed_x, face->vertices[i]->matrixed_y, face->vertices[i]->matrixed_z);
+				pnt_nb++;
+				i++;
 			}
-			break; 
+			face = face->next;
+			count++;
 		}
 		obj = obj->next;
 	}

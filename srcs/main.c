@@ -29,9 +29,6 @@ void	input_handler(unsigned char key, int x, int y){
 }
 
 void	render(){
-	int nrAttributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
 	setMatrix(scene);
 	
 	render_obj(scene, scene->objs_list);
@@ -45,28 +42,22 @@ void	render(){
 
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 3) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-
-	glGenBuffers(1, &colourBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 3) * sizeof(float), g_colour_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 6) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 	glUseProgram(programID);
-	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 	
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	// Draw the triangle !
 	glDrawArrays(GL_LINES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(1);
 	glutSwapBuffers();
 }
 
@@ -114,13 +105,10 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd);
-	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 3) + 1));
+	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
 	add_to_garbage(g_vertex_buffer_data);
-	g_colour_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 3) + 1));
-	add_to_garbage(g_colour_buffer_data);
-	for (size_t i = 0; i<=(scene->display_vertices_count * 3);i++){
+	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
 		g_vertex_buffer_data[i] = 0.0;
-		g_colour_buffer_data[i] = 0.0;
 	}
 	scene->fov = 90;
 	scene->far_plane_distance = 100;
