@@ -29,6 +29,9 @@ void	input_handler(unsigned char key, int x, int y){
 }
 
 void	render(){
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
 	setMatrix(scene);
 	
 	render_obj(scene, scene->objs_list);
@@ -42,42 +45,28 @@ void	render(){
 
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, scene->display_vertices_count * 3, g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 3) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 
 	glGenBuffers(1, &colourBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glBufferData(GL_ARRAY_BUFFER, scene->display_vertices_count * 3, g_colour_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 3) * sizeof(float), g_colour_buffer_data, GL_STATIC_DRAW);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 	glUseProgram(programID);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
-	glVertexAttribPointer(
-		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count * 3); // 3 indices starting at 0 -> 1 triangle
+	glDrawArrays(GL_LINES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(1);
 	glutSwapBuffers();
 }
 

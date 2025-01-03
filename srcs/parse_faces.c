@@ -12,7 +12,7 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	face->next = 0x0;
 	add_to_garbage(face);
 	face->vertices = malloc((tab_size) * sizeof(t_vertices *));
-	scene->display_vertices_count += tab_size;
+	scene->display_vertices_count += tab_size - 1;
 	add_to_garbage(face->vertices);
 	face->vertex_normals = malloc((tab_size) * sizeof(t_vertices *));
 	add_to_garbage(face->vertex_normals);

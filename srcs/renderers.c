@@ -17,7 +17,7 @@ void	initVertexBuffer(const float *vertexPositions){
 void	render_obj(t_scene *scene, t_obj *obj){
 	(void)scene;
 	(void)obj;
-	size_t	i = 0, j = 0, count = 0;
+	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	while (obj){
 		if (!ft_strncmp(obj->name, "Island", 6) || 1){
 			t_faces	*face = obj->faces;
@@ -37,6 +37,8 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					
 					g_colour_buffer_data[j] = face->material->diffuse_color->b;
 					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
+					printf("point %zu xyz: %f %f %f\n", pnt_nb, face->vertices[i]->matrixed_x, face->vertices[i]->matrixed_y, face->vertices[i]->matrixed_z);
+					pnt_nb++;
 					i++;
 				}
 				face = face->next;
