@@ -108,6 +108,9 @@
 		float					matrix[4][4];
 		float					matrix_camera[4][4];
 
+		short					wireframe_view;
+		float					zoom;
+
 	}	t_scene;
 
 	t_scene *parse_scene(int fd);
@@ -139,4 +142,5 @@
 	void	input_handler(GLFWwindow *window);
 	void	render(GLFWwindow *window);
 	void	resizeViewport(GLFWwindow *window, int width, int height);
+	void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset);
 #endif

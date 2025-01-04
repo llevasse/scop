@@ -6,8 +6,12 @@ struct s_scene		*scene;
 int					window_fd = -1;
 GLuint 				programID = -1, VAO = -1;
 GLuint				VBO, EBO;
-GLfloat				*g_vertex_buffer_data;
-GLuint				*g_element_buffer_data;
+GLfloat				g_vertex_buffer_data[] = {	 0.5f,  0.5f, 0.0f,  .5f, .5f,  .5f,
+    											 0.5f, -0.5f, 0.0f, 1.0f, .0f,  .0f,
+    											-0.5f, -0.5f, 0.0f,  .5f, .5f,  .5f,
+    											-0.5f,  0.5f, 0.0f,  .0f, .0f, 1.0f};
+GLuint				g_element_buffer_data[] = { 0, 1, 3,
+    											1, 2, 3}, number_of_segment_to_display = 6;
 
 int main(int argc, char **argv){
 	if (argc != 2){
@@ -30,22 +34,24 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd);
-	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
+	/*g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
 	add_to_garbage(g_vertex_buffer_data);
 	g_element_buffer_data = malloc(sizeof(GLuint) * (scene->display_vertices_count * 2) + 1);
 	add_to_garbage(g_element_buffer_data);
 	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
-	scene->fov = 90;
+	*/scene->fov = 90;
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;
+	scene->wireframe_view = 0;
+	scene->zoom = 1;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Scop", NULL, NULL);
 	if (window == NULL)
 	{
 		dprintf(2, "Failed to create GLFW window\n");
@@ -54,6 +60,8 @@ int main(int argc, char **argv){
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, resizeViewport);
+	glfwSetScrollCallback(window, scroll_handler);
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
 		dprintf(2, "Failed to initialize GLAD\n");
@@ -66,7 +74,8 @@ int main(int argc, char **argv){
 
 		render(window);
 
-		glfwPollEvents();
+		//glfwPollEvents();
+		glfwWaitEvents();
 	}
 	glfwTerminate();
 	t_garbage *tmp = g_garbage_collector_root;
@@ -85,20 +94,54 @@ void	print_error(const char *fmt, va_list ap){
 }
 
 void	input_handler(GLFWwindow *window){
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE)){
 		glfwSetWindowShouldClose(window, 1);
 	}
+	else if (glfwGetKey(window, GLFW_KEY_W)){
+		scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_KP_ADD)){
+		if (scene->zoom + .1 > 2)
+			scene->zoom = 2;
+		else 
+			scene->zoom += .1;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)){
+		if (scene->zoom - .1 < .1)
+			scene->zoom = .1;
+		else 
+			scene->zoom -= .1;
+	}
+}
+
+void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset){
+	//printf("%f %f\n", xOffset, yOffset);
+	if (yOffset > 0){
+		number_of_segment_to_display += 2;
+	}
+	else if (yOffset < 0 && number_of_segment_to_display > 1){
+		number_of_segment_to_display -= 2;
+	}
+	printf("Number of segment to display : %u\n", number_of_segment_to_display);
+//	if (number_of_segment_to_display > 1)
+//		printf("\tpoints : %d-%d\n", g_element_buffer_data[number_of_segment_to_display - 1], g_element_buffer_data[number_of_segment_to_display - 2]);
+	(void)window;
+	(void)xOffset;
 }
 
 void	render(GLFWwindow *window){
 	setMatrix(scene);
 	
-	render_obj(scene, scene->objs_list);
+	//render_obj(scene, scene->objs_list);
 
-	/*for (size_t i=0; i<(scene->display_vertices_count * 2) - 1; i += 2){
-		printf("%d(%f %f) %d(%f %f)\n", g_element_buffer_data[i], scene->vertices_tab[g_element_buffer_data[i]]->matrixed_x, scene->vertices_tab[g_element_buffer_data[i]]->matrixed_y, g_element_buffer_data[i + 1], scene->vertices_tab[g_element_buffer_data[i + 1]]->matrixed_x, scene->vertices_tab[g_element_buffer_data[i + 1]]->matrixed_y);
-	}*/
-	
+	printf("wireframe view : %d\n", scene->wireframe_view);
+	printf("zoom : %f\n", scene->zoom);
+	for (size_t i=0; i<number_of_segment_to_display; i += 2){
+		printf("%d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1]);
+	}
+	printf("\n\n\n");
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -121,7 +164,10 @@ void	render(GLFWwindow *window){
 	glEnableVertexAttribArray(1);
 
 	// Draw the triangle !
-	glDrawElements(GL_LINES, scene->display_vertices_count * 2, GL_UNSIGNED_INT, 0);
+	if (number_of_segment_to_display > 6)
+		number_of_segment_to_display = 6;
+	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
+	glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, 0);
 	//glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);

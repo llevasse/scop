@@ -54,9 +54,9 @@ void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
         p->matrixed_z /= w; 
     }
  
-	p->matrixed_x *= .5;
-	p->matrixed_y *= .5;
-	p->matrixed_z *= .5;
+	p->matrixed_x *= scene->zoom;
+	p->matrixed_y *= scene->zoom;
+	p->matrixed_z *= scene->zoom;
 
 	/*printf("processed : \n");
 	printf("\t%f :\t%f\n", p->x, p->matrixed_x);
