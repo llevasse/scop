@@ -29,7 +29,8 @@ SRC						=	srcs/main.c \
 							srcs/garbage_collector.c \
 							srcs/matrices.c \
 							srcs/renderers.c \
-							srcs/loadShaders.c
+							srcs/loadShaders.c \
+							glad/src/glad.c
 							
 
 OBJS_DIR				=	.OBJS/
@@ -42,7 +43,7 @@ BASE_INCLUDE			=	-I $(INC_DIR)
 
 FLAGS					=	-Wall -Werror -Wextra -g
 INCLUDES				=	$(BASE_INCLUDE) ${LIBFT_INCLUDE}
-LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lGL -lGLEW -lm
+LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lglfw -lGL -lGLEW -lm
 
 #---RULES----------------------------------------
 

@@ -5,8 +5,10 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <errno.h>
-# include <GL/glew.h>
+//# include <GL/glew.h>
 # include <math.h>
+# include "../glad/include/glad/glad.h"
+# include <GLFW/glfw3.h>
 # include "../libft/libft.h"
 # include "../freeglut-3.6.0/include/GL/freeglut.h"
 # define PI 3.1415926535
@@ -132,5 +134,9 @@
 	void	render_obj(t_scene *scene, t_obj *obj);
 	
 	GLuint	loadShaders(const char *vertex_path, const char *fragment_path);
-	
+
+	void	print_error(const char *fmt, va_list ap);
+	void	input_handler(GLFWwindow *window);
+	void	render(GLFWwindow *window);
+	void	resizeViewport(GLFWwindow *window, int width, int height);
 #endif
