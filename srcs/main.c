@@ -6,12 +6,17 @@ struct s_scene		*scene;
 int					window_fd = -1;
 GLuint 				programID = -1, VAO = -1;
 GLuint				VBO, EBO;
+/*
 GLfloat				g_vertex_buffer_data[] = {	 0.5f,  0.5f, 0.0f,  .5f, .5f,  .5f,
     											 0.5f, -0.5f, 0.0f, 1.0f, .0f,  .0f,
     											-0.5f, -0.5f, 0.0f,  .5f, .5f,  .5f,
     											-0.5f,  0.5f, 0.0f,  .0f, .0f, 1.0f};
 GLuint				g_element_buffer_data[] = { 0, 1, 3,
     											1, 2, 3}, number_of_segment_to_display = 6;
+												*/
+
+GLfloat				*g_vertex_buffer_data;
+GLuint				*g_element_buffer_data, number_of_segment_to_display = 0;
 
 int main(int argc, char **argv){
 	if (argc != 2){
@@ -34,18 +39,19 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd);
-	/*g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
+	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
 	add_to_garbage(g_vertex_buffer_data);
-	g_element_buffer_data = malloc(sizeof(GLuint) * (scene->display_vertices_count * 2) + 1);
+	g_element_buffer_data = malloc(sizeof(unsigned int) * (scene->display_vertices_count + 1));
 	add_to_garbage(g_element_buffer_data);
 	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
-	*/scene->fov = 90;
+	scene->fov = 90;
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;
 	scene->wireframe_view = 0;
-	scene->zoom = 1;
+	scene->zoom = .1;
+	number_of_segment_to_display = scene->display_vertices_count;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -68,10 +74,10 @@ int main(int argc, char **argv){
         return -1;
     }
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-
+	glDisable(GL_CULL_FACE);
 	while (!glfwWindowShouldClose(window)){
 		input_handler(window);
-
+		openglObjInit();
 		render(window);
 
 		//glfwPollEvents();
@@ -132,50 +138,32 @@ void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset){
 void	render(GLFWwindow *window){
 	setMatrix(scene);
 	
-	//render_obj(scene, scene->objs_list);
+	render_obj(scene, scene->objs_list);
 
 	printf("wireframe view : %d\n", scene->wireframe_view);
 	printf("zoom : %f\n", scene->zoom);
-	for (size_t i=0; i<number_of_segment_to_display; i += 2){
+	/*for (size_t i=0; i<number_of_segment_to_display; i += 2){
 		printf("%d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1]);
-	}
-	printf("\n\n\n");
+	}*/
+	printf("\n\n");
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 6) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (scene->display_vertices_count * 2) * sizeof(unsigned int), g_element_buffer_data, GL_STATIC_DRAW);
 
 	glClear( GL_COLOR_BUFFER_BIT );
 	glUseProgram(programID);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
 	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+
 
 	// Draw the triangle !
-	if (number_of_segment_to_display > 6)
-		number_of_segment_to_display = 6;
+	/*if (number_of_segment_to_display > scene->display_vertices_count * 2)
+		number_of_segment_to_display = scene->display_vertices_count * 2;*/
+	glBindVertexArray(VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
-	glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
+	glDrawElements(GL_TRIANGLES, scene->display_vertices_count, GL_UNSIGNED_INT, (void*)0);
+//	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void	reshape(int w, int h){
@@ -185,4 +173,28 @@ void	reshape(int w, int h){
 void	resizeViewport(GLFWwindow *window, int width, int height){
 	(void)window;
 	glViewport(0, 0, width, height);
+	openglObjInit();
+}
+
+void	openglObjInit(){
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 6) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (scene->display_vertices_count) * sizeof(GLuint), g_element_buffer_data, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

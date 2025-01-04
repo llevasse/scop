@@ -23,7 +23,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 		while (face){
 			i = 0;
 			while (face->vertices[i]){
-				g_element_buffer_data[segment_idx++] = face->vertices[i]->id;
 				face->vertices[i]->matrixed_x = face->vertices[i]->x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z;
@@ -40,14 +39,26 @@ void	render_obj(t_scene *scene, t_obj *obj){
 //					printf("point %zu xyz: %f %f %f\n", pnt_nb, face->vertices[i]->matrixed_x, face->vertices[i]->matrixed_y, face->vertices[i]->matrixed_z);
 				pnt_nb++;
 				i++;
-				if (face->vertices[i])
-					g_element_buffer_data[segment_idx++] = face->vertices[i]->id;
-				else
-					g_element_buffer_data[segment_idx++] = face->vertices[0]->id;
 			}
+			g_element_buffer_data[segment_idx++] = face->vertices[0]->id;
+			g_element_buffer_data[segment_idx++] = face->vertices[1]->id;
+			g_element_buffer_data[segment_idx++] = face->vertices[2]->id;
 			face = face->next;
 			count++;
 		}
 		obj = obj->next;
+	}
+	g_vertex_buffer_data[3] = 0;
+	g_vertex_buffer_data[4] = 1;
+	g_vertex_buffer_data[9] = 0;
+	g_vertex_buffer_data[11] = 1;
+	printf("%zu faces\n", count);
+	for (size_t i=0; i< scene->display_vertices_count * 6; i+=6){
+		for (size_t j=i; j < i + 6;j++)
+			printf("%.2f ", g_vertex_buffer_data[j]);
+		printf("\n");
+	}
+	for (size_t i=0; i< scene->display_vertices_count; i+=3){
+		printf("%d %d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1], g_element_buffer_data[i + 2]);
 	}
 }
