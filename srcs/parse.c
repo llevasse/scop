@@ -69,7 +69,11 @@ t_scene *parse_scene(int fd){
 	
 	scene->objs_list = root_obj_list;
 	link_faces_to_materials(scene);
-	printf("%zu, %zu\n", scene->vertices_count, scene->display_vertices_count);
+	/*printf("unique vertices : %zu, displaied vertices : %zu\n", scene->vertices_count, scene->display_vertices_count);
+
+	for (size_t i=0; i<scene->vertices_count;i++){
+		printf("\tvertices[%zu] : id : %zu; xyz : %f %f %f\n", i, scene->vertices_tab[i]->id, scene->vertices_tab[i]->x, scene->vertices_tab[i]->y, scene->vertices_tab[i]->z);
+	}*/
 	return (scene);
 }
 

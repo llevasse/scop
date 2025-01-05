@@ -6,6 +6,7 @@ struct s_scene		*scene;
 int					window_fd = -1;
 GLuint 				programID = -1, VAO = -1;
 GLuint				VBO, EBO;
+unsigned long long	iteration = 0;
 /*
 GLfloat				g_vertex_buffer_data[] = {	 0.5f,  0.5f, 0.0f,  .5f, .5f,  .5f,
     											 0.5f, -0.5f, 0.0f, 1.0f, .0f,  .0f,
@@ -17,6 +18,7 @@ GLuint				g_element_buffer_data[] = { 0, 1, 3,
 
 GLfloat				*g_vertex_buffer_data;
 GLuint				*g_element_buffer_data, number_of_segment_to_display = 0;
+short				*g_matrixed_vertices_check;
 
 int main(int argc, char **argv){
 	if (argc != 2){
@@ -43,6 +45,10 @@ int main(int argc, char **argv){
 	add_to_garbage(g_vertex_buffer_data);
 	g_element_buffer_data = malloc(sizeof(unsigned int) * (scene->display_vertices_count + 1));
 	add_to_garbage(g_element_buffer_data);
+	g_matrixed_vertices_check = malloc(sizeof(short) * (scene->vertices_count + 1));
+	add_to_garbage(g_matrixed_vertices_check);
+	for (size_t i = 0; i<scene->vertices_count;i++)
+		g_matrixed_vertices_check[i] = 0;
 	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
@@ -140,8 +146,8 @@ void	render(GLFWwindow *window){
 	
 	render_obj(scene, scene->objs_list);
 
-	printf("wireframe view : %d\n", scene->wireframe_view);
-	printf("zoom : %f\n", scene->zoom);
+	//printf("wireframe view : %d\n", scene->wireframe_view);
+	//printf("zoom : %f\n", scene->zoom);
 	/*for (size_t i=0; i<number_of_segment_to_display; i += 2){
 		printf("%d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1]);
 	}*/
@@ -158,6 +164,13 @@ void	render(GLFWwindow *window){
 		number_of_segment_to_display = scene->display_vertices_count * 2;*/
 	glBindVertexArray(VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
+	printf("draw %llu\n", iteration++);
+	printf("size : %zu\n", scene->display_vertices_count);
+	for (size_t i=0; i<scene->vertices_count * 6;i+=6){
+		for (int j = 0; j < 6; j++)
+			printf("%f ", g_vertex_buffer_data[i + j]);
+		printf("\n");
+	}
 	glDrawElements(GL_TRIANGLES, scene->display_vertices_count, GL_UNSIGNED_INT, (void*)0);
 //	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 
