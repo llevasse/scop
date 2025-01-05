@@ -35,6 +35,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_z = face->vertices[i]->z;
 				//multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
+				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;

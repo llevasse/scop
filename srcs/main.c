@@ -57,6 +57,9 @@ int main(int argc, char **argv){
 	scene->near_plane_distance = .1;
 	scene->wireframe_view = 0;
 	scene->zoom = .1;
+	scene->x_angle = 0;
+	scene->y_angle = 0;
+	scene->z_angle = 0;
 	number_of_segment_to_display = scene->display_vertices_count;
 
 	glfwInit();
@@ -123,6 +126,26 @@ void	input_handler(GLFWwindow *window){
 			scene->zoom = .1;
 		else 
 			scene->zoom -= .1;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_LEFT)){
+		scene->y_angle--;
+		if (scene->y_angle < 0)
+			scene->y_angle = 360;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
+		scene->y_angle++;
+		if (scene->y_angle > 360)
+			scene->y_angle = 0;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_DOWN)){
+		scene->z_angle--;
+		if (scene->x_angle < 0)
+			scene->x_angle = 360;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_UP)){
+		scene->z_angle++;
+		if (scene->x_angle > 360)
+			scene->x_angle = 0;
 	}
 }
 

@@ -107,6 +107,13 @@
 		float					far_plane_distance;
 		float					matrix[4][4];
 		float					matrix_camera[4][4];
+		
+		double					x_angle;
+		double					y_angle;
+		double					z_angle;
+		double					matrix_x_rotation[3][3];
+		double					matrix_y_rotation[3][3];
+		double					matrix_z_rotation[3][3];
 
 		short					wireframe_view;
 		float					zoom;
@@ -133,7 +140,8 @@
 
 	void	setMatrix(t_scene *scene);
 	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]);
-
+	void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p);
+	
 	void	render_obj(t_scene *scene, t_obj *obj);
 	
 	GLuint	loadShaders(const char *vertex_path, const char *fragment_path);
