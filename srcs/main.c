@@ -84,6 +84,7 @@ int main(int argc, char **argv){
     }
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
 	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window)){
 		input_handler(window);
 		openglObjInit();
@@ -177,7 +178,8 @@ void	render(GLFWwindow *window){
 	printf("\n\n");
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glDepthFunc(GL_LESS);
 	glUseProgram(programID);
 	
 
@@ -189,9 +191,14 @@ void	render(GLFWwindow *window){
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 	printf("draw %llu\n", iteration++);
 	printf("size : %zu\n", scene->display_vertices_count);
-	for (size_t i=0; i<scene->vertices_count * 6;i+=6){
-		for (int j = 0; j < 6; j++)
-			printf("%f ", g_vertex_buffer_data[i + j]);
+	for (size_t i=0; i<scene->display_vertices_count; i+= 3){
+		for (int j = 0; j < 3;j++){
+			printf("vertex %u : ", g_element_buffer_data[i + j]);
+			for (int l=0;l < 6;l++){
+				printf("%f ", g_vertex_buffer_data[(g_element_buffer_data[i + j] * 6) + l]);
+			}
+			printf("\n");
+		}
 		printf("\n");
 	}
 	glDrawElements(GL_TRIANGLES, scene->display_vertices_count, GL_UNSIGNED_INT, (void*)0);

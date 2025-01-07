@@ -29,11 +29,13 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					i++;
 					continue;
 				}
-				printf("j : %zu, v id : %zu\n", j, face->vertices[i]->id);
+				j = face->vertices[i]->id * 6;
+				printf("g_vertex_buffer_data position : %zu, v id : %zu\n", j, face->vertices[i]->id);
+				printf ("\t%f %f %f\n", face->vertices[i]->x, face->vertices[i]->y, face->vertices[i]->z);
 				face->vertices[i]->matrixed_x = face->vertices[i]->x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z;
-				//multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
+				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/scop",
-            "args": ["model/Low_Cube/triangulated.obj"],
+            "args": ["model/Low_Cube/plane.obj"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
