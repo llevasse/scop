@@ -24,12 +24,12 @@ void	render_obj(t_scene *scene, t_obj *obj){
 		t_faces	*face = obj->faces;
 		while (face){
 			i = 0;
-			while (face->vertices[i]){
+			while (face->vertices[i]){/*
 				if (g_matrixed_vertices_check[face->vertices[i]->id]){
 					i++;
 					continue;
 				}
-				j = face->vertices[i]->id * 6;
+				j = face->vertices[i]->id * 6;*/
 				printf("g_vertex_buffer_data position : %zu, v id : %zu\n", j, face->vertices[i]->id);
 				printf ("\t%f %f %f\n", face->vertices[i]->x, face->vertices[i]->y, face->vertices[i]->z);
 				face->vertices[i]->matrixed_x = face->vertices[i]->x;
@@ -41,6 +41,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
+				
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->r;
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->g;
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->b;				

@@ -105,7 +105,7 @@ void	init_scene(){
 	scene->far_plane_distance = 100;
 	scene->near_plane_distance = .1;
 	scene->wireframe_view = 0;
-	scene->zoom = .1;
+	scene->zoom = .5;
 	scene->x_angle = 0;
 	scene->y_angle = 0;
 	scene->z_angle = 0;
@@ -226,8 +226,8 @@ void	render(GLFWwindow *window){
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 	printf("draw %llu\n", iteration++);
 	printf("size : %zu\n", scene->display_vertices_count);
-	printf("Segment to display : %u\n", number_of_segment_to_display);
-	for (size_t i=0; i<number_of_segment_to_display; i+= 3){
+	//printf("Segment to display : %u\n", number_of_segment_to_display);
+	for (size_t i=0; i<scene->display_vertices_count; i+= 3){
 		for (int j = 0; j < 3;j++){
 			printf("vertex %u : ", g_element_buffer_data[i + j]);
 			for (int l=0;l < 6;l++){
@@ -237,8 +237,8 @@ void	render(GLFWwindow *window){
 		}
 		printf("\n");
 	}
-	glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
-//	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
+	//glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
+	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
