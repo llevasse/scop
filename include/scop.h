@@ -152,4 +152,6 @@
 	void	resizeViewport(GLFWwindow *window, int width, int height);
 	void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset);
 	void	openglObjInit();
+	
+	void	init_scene();
 #endif

@@ -4,6 +4,7 @@ struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
 struct s_scene		*scene;
 int					window_fd = -1;
+short				key_press[348];
 GLuint 				programID = -1, VAO = -1;
 GLuint				VBO, EBO;
 unsigned long long	iteration = 0;
@@ -52,16 +53,10 @@ int main(int argc, char **argv){
 	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
-	scene->fov = 90;
-	scene->far_plane_distance = 100;
-	scene->near_plane_distance = .1;
-	scene->wireframe_view = 0;
-	scene->zoom = .1;
-	scene->x_angle = 0;
-	scene->y_angle = 0;
-	scene->z_angle = 0;
-	number_of_segment_to_display = scene->display_vertices_count;
-
+	for (int i =0;i<348;i++){
+		key_press[i] = 0;
+	}
+	init_scene();
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -105,6 +100,18 @@ int main(int argc, char **argv){
 
 }
 
+void	init_scene(){
+	scene->fov = 90;
+	scene->far_plane_distance = 100;
+	scene->near_plane_distance = .1;
+	scene->wireframe_view = 0;
+	scene->zoom = .1;
+	scene->x_angle = 0;
+	scene->y_angle = 0;
+	scene->z_angle = 0;
+	number_of_segment_to_display = 3;
+}
+
 void	print_error(const char *fmt, va_list ap){
 	vdprintf(2, fmt, ap);
 }
@@ -113,16 +120,21 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE)){
 		glfwSetWindowShouldClose(window, 1);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_W)){
+	else if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W]){
 		scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_ADD)){
+	else if (glfwGetKey(window, GLFW_KEY_R)){
+		scene->x_angle = 0;
+		scene->y_angle = 0;
+		scene->z_angle = 0;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
 		if (scene->zoom + .1 > 2)
 			scene->zoom = 2;
 		else 
 			scene->zoom += .1;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)){
+	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
 		if (scene->zoom - .1 < .1)
 			scene->zoom = .1;
 		else 
@@ -139,14 +151,38 @@ void	input_handler(GLFWwindow *window){
 			scene->y_angle = 0;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_DOWN)){
-		scene->z_angle--;
+		scene->x_angle--;
 		if (scene->x_angle < 0)
 			scene->x_angle = 360;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_UP)){
-		scene->z_angle++;
+		scene->x_angle++;
 		if (scene->x_angle > 360)
 			scene->x_angle = 0;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_Z)){
+		scene->z_angle--;
+		if (scene->z_angle < 0)
+			scene->z_angle = 360;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_C)){
+		scene->z_angle++;
+		if (scene->z_angle > 360)
+			scene->z_angle = 0;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
+			number_of_segment_to_display += 3;
+		}
+		else{
+			if (number_of_segment_to_display > 3)
+				number_of_segment_to_display -= 3;
+			else
+				number_of_segment_to_display = 0;
+		}
+	}
+	for (int i =0; i<348;i++){
+		key_press[i] = glfwGetKey(window, i);
 	}
 }
 
@@ -184,14 +220,14 @@ void	render(GLFWwindow *window){
 	
 
 
-	// Draw the triangle !
-	/*if (number_of_segment_to_display > scene->display_vertices_count * 2)
-		number_of_segment_to_display = scene->display_vertices_count * 2;*/
+	if (number_of_segment_to_display > scene->display_vertices_count)
+		number_of_segment_to_display = scene->display_vertices_count;
 	glBindVertexArray(VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 	printf("draw %llu\n", iteration++);
 	printf("size : %zu\n", scene->display_vertices_count);
-	for (size_t i=0; i<scene->display_vertices_count; i+= 3){
+	printf("Segment to display : %u\n", number_of_segment_to_display);
+	for (size_t i=0; i<number_of_segment_to_display; i+= 3){
 		for (int j = 0; j < 3;j++){
 			printf("vertex %u : ", g_element_buffer_data[i + j]);
 			for (int l=0;l < 6;l++){
@@ -201,7 +237,7 @@ void	render(GLFWwindow *window){
 		}
 		printf("\n");
 	}
-	glDrawElements(GL_TRIANGLES, scene->display_vertices_count, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
 //	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 
 	glDisableVertexAttribArray(0);

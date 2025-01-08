@@ -53,20 +53,10 @@ void	render_obj(t_scene *scene, t_obj *obj){
 			g_element_buffer_data[segment_idx++] = face->vertices[2]->id;
 			face = face->next;
 			count++;
-			printf("\n");
 		}
 		obj = obj->next;
 	}
 
 	for (size_t i = 0; i<scene->vertices_count;i++)
 		g_matrixed_vertices_check[i] = 0;
-	/*printf("%zu faces\n", count);
-	for (size_t i=0; i< scene->display_vertices_count * 6; i+=6){
-		for (size_t j=i; j < i + 6;j++)
-			printf("%.2f ", g_vertex_buffer_data[j]);
-		printf("\n");
-	}
-	for (size_t i=0; i< scene->display_vertices_count; i+=3){
-		printf("%d %d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1], g_element_buffer_data[i + 2]);
-	}*/
 }

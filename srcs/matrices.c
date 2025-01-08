@@ -68,21 +68,21 @@ void	setMatrix(t_scene *scene){
 void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
 	(void)scene;
 	t_vertices	tmp;
-
-	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + p->w * matrix[3][0];
-    tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + p->w * matrix[3][1];
-    tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + p->w * matrix[3][2];
-    float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + p->w * matrix[3][3]; 
+	(void)tmp;
+	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
+    tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];
+    tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + matrix[3][2];
+    //float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
 	p->matrixed_x = tmp.matrixed_x;
 	p->matrixed_y = tmp.matrixed_y;
 	p->matrixed_z = tmp.matrixed_z;
 
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
-    if (w != 1 && w != 0) { 
+    /*if (w != 0) { 
         p->matrixed_x /= w; 
         p->matrixed_y /= w; 
         p->matrixed_z /= w; 
-    }
+    }*/
  
 	p->matrixed_x *= scene->zoom;
 	p->matrixed_y *= scene->zoom;
@@ -95,12 +95,19 @@ void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
 }
 
 void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p){
-    p->matrixed_y   = p->matrixed_y * scene->matrix_x_rotation[1][1] + p->matrixed_z * scene->matrix_x_rotation[1][2];
-    p->matrixed_z   = p->matrixed_y * scene->matrix_x_rotation[2][1] + p->matrixed_z * scene->matrix_x_rotation[2][2];
+	t_vertices tmp;
+    tmp.matrixed_y   = p->matrixed_y * scene->matrix_x_rotation[1][1] + p->matrixed_z * scene->matrix_x_rotation[1][2];
+    tmp.matrixed_z   = p->matrixed_y * scene->matrix_x_rotation[2][1] + p->matrixed_z * scene->matrix_x_rotation[2][2];
+	p->matrixed_y = tmp.matrixed_y;
+	p->matrixed_z = tmp.matrixed_z;
     
-	p->matrixed_x   = p->matrixed_x * scene->matrix_y_rotation[0][0] + p->matrixed_z * scene->matrix_y_rotation[0][2];
-    p->matrixed_z   = p->matrixed_x * scene->matrix_y_rotation[2][0] + p->matrixed_z * scene->matrix_y_rotation[2][2];
+	tmp.matrixed_x   = p->matrixed_x * scene->matrix_y_rotation[0][0] + p->matrixed_z * scene->matrix_y_rotation[0][2];
+    tmp.matrixed_z   = p->matrixed_x * scene->matrix_y_rotation[2][0] + p->matrixed_z * scene->matrix_y_rotation[2][2];
+    p->matrixed_x = tmp.matrixed_x;
+	p->matrixed_z = tmp.matrixed_z;
     
-	p->matrixed_x   = p->matrixed_x * scene->matrix_z_rotation[0][0] + p->matrixed_y * scene->matrix_z_rotation[0][1];
-    p->matrixed_y   = p->matrixed_x * scene->matrix_z_rotation[1][0] + p->matrixed_y * scene->matrix_z_rotation[1][1];
+	tmp.matrixed_x   = p->matrixed_x * scene->matrix_z_rotation[0][0] + p->matrixed_y * scene->matrix_z_rotation[0][1];
+    tmp.matrixed_y   = p->matrixed_x * scene->matrix_z_rotation[1][0] + p->matrixed_y * scene->matrix_z_rotation[1][1];
+    p->matrixed_x = tmp.matrixed_x;
+	p->matrixed_y = tmp.matrixed_y;
 }
