@@ -49,9 +49,9 @@
 	}	t_litle_rgb;
 
 	typedef struct s_faces{
-		t_vertices				**vertices;
-		t_vertices				**vertex_normals;
-		t_texture_coordinates	**texture_coordinates;
+		t_vertices				*vertices[4];
+		t_vertices				*vertex_normals[4];
+		t_texture_coordinates	*texture_coordinates[4];
 		struct s_faces			*next;
 		struct s_material		*material;
 	}	t_faces;
