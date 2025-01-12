@@ -30,6 +30,8 @@ SRC						=	srcs/main.c \
 							srcs/matrices.c \
 							srcs/renderers.c \
 							srcs/loadShaders.c \
+							srcs/vectors.c \
+							srcs/lines.c \
 							glad/src/glad.c
 							
 

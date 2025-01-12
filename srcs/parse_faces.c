@@ -5,6 +5,7 @@ extern struct s_garbage	*g_garbage_collector;
 
 void	add_triangle(char **tab, t_scene *scene);
 void	add_quad(char **tab, t_scene *scene);
+void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene);
 
 t_faces	*face_contructor(){
 	t_faces *face = malloc(sizeof(struct s_faces));
@@ -27,6 +28,9 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	}
 	else if (tab_size == 5){
 		add_quad(tab, scene);
+	}
+	else{
+		triangulate_polygone(tab, tab_size, scene);
 	}
 }
 
@@ -77,11 +81,6 @@ void	add_triangle(char **tab, t_scene *scene){
 	}
 }
 
-float	get_signed_triangle(t_vertices *v1, t_vertices *v2, t_vertices *v3){
-	return ((v1->x * (v2->y - v3->y)) + (v2->x * (v3->y - v1->y)) + (v3->x * (v1->y - v2->y)));
-}
-
-// x1 ⋅ (y2−y3) + x2 ⋅ (y3−y1) + x3 ⋅ (y1−y2)
 void	add_quad(char **tab, t_scene *scene){
 	t_faces *f1 = face_contructor();
 	t_faces *f2 = face_contructor();
@@ -154,4 +153,9 @@ void	add_quad(char **tab, t_scene *scene){
 		tmp->next = f1;
 	}
 	printf("\n");
+}
+
+
+void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
+
 }
