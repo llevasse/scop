@@ -155,7 +155,7 @@ void	add_quad(char **tab, t_scene *scene){
 }
 
 
-short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_vertices *v4){
+short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_vertices *v4, int print){
 	t_vertices d1 = get_vector_displacement(v1, v2);
 	t_vertices d2 = get_vector_displacement(v3, v4);
 	t_vertices b = get_vector_displacement(v1, v3);
@@ -164,7 +164,8 @@ short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_ve
 	if (p.x != 0 || p.y != 0 || p.z != 0){
 		t_vertices scale_product = get_vector_cross_product(&b, &d2);
 		double scale = get_vector_dot_product(&scale_product, &p) / (get_vector_dot_product(&p, &p));
-		//printf("scale %f\n", scale);
+		if (print)
+			printf("scale %f\n", scale);
 		return (scale >= 0 && scale <= 1);
 	}
 	return (0);
@@ -172,16 +173,18 @@ short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_ve
 
 void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 	//search possible diagonal
-	unsigned int indeces[tab_size], max_idx = 0;
-	t_vertices *diag_start, *diag_end, *seg_start, *seg_end;
+	unsigned int	indeces[tab_size], max_idx = 0;
+	float			max_y = 0;
+	t_vertices		*diag_start, *diag_end, *seg_start, *seg_end;
 	for (size_t i = 1; i < tab_size; i++){
 		indeces[i-1] = atoi(tab[i]) - 1;
 		max_idx = indeces[i - 1] > max_idx ? indeces[i - 1] : max_idx;
+		max_y = fabsf(scene->vertices_tab[indeces[i - 1]]->y) > max_y ? fabsf(scene->vertices_tab[indeces[i - 1]]->y) : max_y;
 	}
 
 	unsigned int adjacent_point_left_idx, adjacent_point_right_idx;
-	short			cross = 0;
-	for (size_t i = 0; i < tab_size - 1; i++){
+	short			cross = 0, found = 0;
+	for (size_t i = 0; i < tab_size - 1 && !found; i++){
 		if (i == 0){
 			adjacent_point_left_idx = indeces[tab_size - 2];
 			adjacent_point_right_idx = indeces[i + 1];
@@ -195,7 +198,7 @@ void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 			adjacent_point_right_idx = indeces[i + 1];
 		}
 		//printf("point %u, left : %u, right : %u\n", indeces[i], adjacent_point_left_idx, adjacent_point_right_idx);
-		for (size_t j = 0; j < tab_size - 1; j++){
+		for (size_t j = 0; j < tab_size - 1 && !found; j++){
 			if (i == j || indeces[j] == adjacent_point_left_idx || indeces[j] == adjacent_point_right_idx)
 				continue;
 			// test diagonal IJ against every segement
@@ -204,20 +207,39 @@ void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 			cross = 0;
 			for (size_t vertex_idx = 0; vertex_idx < tab_size - 1; vertex_idx++){
 				seg_start = scene->vertices_tab[indeces[vertex_idx]];
-				seg_end = scene->vertices_tab[indeces[vertex_idx == tab_size - 1 ? 0 : vertex_idx + 1]];
+				seg_end = scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
 
 				if (seg_start->id == diag_start->id || seg_start->id == diag_end->id || seg_end->id == diag_start->id || seg_end->id == diag_end->id)
 					continue;
 
 				printf("check if diagonal (v%zu v%zu) cross (v%zu v%zu)\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
-				if (do_segments_intersect(diag_start, diag_end, seg_start, seg_end)){
+				if (do_segments_intersect(diag_start, diag_end, seg_start, seg_end, 0)){
 					printf("\033[0;31m\tdiagonal (v%zu v%zu) cross (v%zu v%zu)\033[0m\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
 					cross = 1;
 					break ;
 				}
 			}
 			if (!cross){
-				printf("\033[0;32m\tdiagonal (v%zu v%zu) possible\033[0m\n", diag_start->id, diag_end->id);
+				printf("check if diagonal (v%zu v%zu) is in polygon\n", diag_start->id, diag_end->id);
+				unsigned int cross_count = 0;
+				t_vertices mid_point = get_vector_at_distance(diag_start, diag_end, .5);
+				t_vertices mid_point_end;
+				mid_point_end.x = mid_point.x;
+				mid_point_end.y = mid_point.y+1;
+				mid_point_end.z = mid_point.z;
+				for (size_t vertex_idx = 0; vertex_idx < tab_size - 1; vertex_idx++){
+					t_vertices s1 = *scene->vertices_tab[indeces[vertex_idx]];
+					t_vertices s2 = *scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
+					printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
+					if (do_segments_intersect(&mid_point, &mid_point_end, &s1, &s2, 1)){
+						cross_count++;
+						printf("\t diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
+					}
+				}
+				printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (horizontal cross = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count);
+				if (cross_count % 2){
+					found = 1;
+				}
 			}
 		}
 	}

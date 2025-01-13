@@ -155,6 +155,7 @@
 	
 	void	init_scene();
 	
+	t_vertices	get_vector_at_distance(t_vertices *start, t_vertices *end, float dist);
 	t_vertices	get_vector_displacement(t_vertices *p1, t_vertices *p2);
 	t_vertices	get_vector_cross_product(t_vertices *p1, t_vertices *p2);
 	float	get_vector_dot_product(t_vertices *p1, t_vertices *p2);
