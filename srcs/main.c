@@ -210,8 +210,8 @@ void	render(GLFWwindow *window){
 	//printf("zoom : %f\n", scene->zoom);
 	/*for (size_t i=0; i<number_of_segment_to_display; i += 2){
 		printf("%d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1]);
-	}*/
-	printf("\n\n");
+	}
+	printf("\n\n");*/
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );

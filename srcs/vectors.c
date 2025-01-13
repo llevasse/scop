@@ -17,5 +17,6 @@ t_vertices	get_vector_cross_product(t_vertices *p1, t_vertices *p2){
 }
 
 float	get_vector_dot_product(t_vertices *p1, t_vertices *p2){
-	return ((p1->x * p2->x) + (p1->y * p2->y));
+	printf("p1 %f %f %f | p2 %f %f %f\n", p1->x, p1->y, p1->z, p2->x, p2->y, p2->z);
+	return ((p1->x * p2->x) + (p1->y * p2->y) + (p1->z * p2->z));
 }
