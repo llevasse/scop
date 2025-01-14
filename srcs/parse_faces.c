@@ -171,15 +171,61 @@ short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_ve
 	return (0);
 }
 
+short	is_segment_in_polygon(char **tab, size_t tab_size, t_scene *scene, t_vertices *diag_start, t_vertices *diag_end){
+	unsigned int	indeces[tab_size], max_idx = 0;
+	float			max_x = 0, max_y = 0, max_z = 0;
+	for (size_t i = 1; i < tab_size; i++){
+		indeces[i-1] = atoi(tab[i]) - 1;
+		max_idx = indeces[i - 1] > max_idx ? indeces[i - 1] : max_idx;
+		max_x = fabsf(scene->vertices_tab[indeces[i - 1]]->x) > max_x ? fabsf(scene->vertices_tab[indeces[i - 1]]->x) : max_y;
+		max_y = fabsf(scene->vertices_tab[indeces[i - 1]]->y) > max_y ? fabsf(scene->vertices_tab[indeces[i - 1]]->y) : max_y;
+		max_z = fabsf(scene->vertices_tab[indeces[i - 1]]->z) > max_z ? fabsf(scene->vertices_tab[indeces[i - 1]]->z) : max_y;
+	}
+	printf("check if diagonal (v%zu v%zu) is in polygon\n", diag_start->id, diag_end->id);
+	unsigned int cross_count_x = 0, cross_count_y = 0, cross_count_z = 0;
+	t_vertices mid_point = get_vector_at_distance(diag_start, diag_end, .5);
+	t_vertices mid_point_x = mid_point;
+	t_vertices mid_point_y = mid_point;
+	t_vertices mid_point_z = mid_point;
+	mid_point_x.x += max_x;
+	mid_point_y.y += max_y;
+	mid_point_z.z += max_z;
+	for (size_t vertex_idx = 0; vertex_idx < tab_size - 1; vertex_idx++){
+		t_vertices s1 = *scene->vertices_tab[indeces[vertex_idx]];
+		t_vertices s2 = *scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
+		if (diag_start->id == s1.id || diag_end->id == s2.id){
+			t_vertices tmp = s1;
+			s1 = s2;
+			s1 = tmp;
+		}
+		printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
+		if (do_segments_intersect(&mid_point, &mid_point_x, &s1, &s2, 0)){
+			cross_count_x++;
+			printf("\t diagonal cross X (v%zu v%zu)\n", s1.id, s2.id);
+		}
+		if (do_segments_intersect(&mid_point, &mid_point_y, &s1, &s2, 0)){
+			cross_count_y++;
+			printf("\t diagonal cross Y (v%zu v%zu)\n", s1.id, s2.id);
+		}
+		if (do_segments_intersect(&mid_point, &mid_point_z, &s1, &s2, 0)){
+			cross_count_z++;
+			printf("\t diagonal cross Z (v%zu v%zu)\n", s1.id, s2.id);
+		}
+	}
+	printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (crossX = %u, crossY = %u, crossZ = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count_x, cross_count_y, cross_count_z);
+	if (/*cross_count_x % 2 || cross_count_y % 2 || */cross_count_z % 2){
+		return (1);
+	}
+	return (0);
+}
+
 void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 	//search possible diagonal
 	unsigned int	indeces[tab_size], max_idx = 0;
-	float			max_y = 0;
 	t_vertices		*diag_start, *diag_end, *seg_start, *seg_end;
 	for (size_t i = 1; i < tab_size; i++){
 		indeces[i-1] = atoi(tab[i]) - 1;
 		max_idx = indeces[i - 1] > max_idx ? indeces[i - 1] : max_idx;
-		max_y = fabsf(scene->vertices_tab[indeces[i - 1]]->y) > max_y ? fabsf(scene->vertices_tab[indeces[i - 1]]->y) : max_y;
 	}
 
 	unsigned int adjacent_point_left_idx, adjacent_point_right_idx;
@@ -220,26 +266,7 @@ void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 				}
 			}
 			if (!cross){
-				printf("check if diagonal (v%zu v%zu) is in polygon\n", diag_start->id, diag_end->id);
-				unsigned int cross_count = 0;
-				t_vertices mid_point = get_vector_at_distance(diag_start, diag_end, .5);
-				t_vertices mid_point_end;
-				mid_point_end.x = mid_point.x;
-				mid_point_end.y = mid_point.y+1;
-				mid_point_end.z = mid_point.z;
-				for (size_t vertex_idx = 0; vertex_idx < tab_size - 1; vertex_idx++){
-					t_vertices s1 = *scene->vertices_tab[indeces[vertex_idx]];
-					t_vertices s2 = *scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
-					printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
-					if (do_segments_intersect(&mid_point, &mid_point_end, &s1, &s2, 1)){
-						cross_count++;
-						printf("\t diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
-					}
-				}
-				printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (horizontal cross = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count);
-				if (cross_count % 2){
-					found = 1;
-				}
+				found = is_segment_in_polygon(tab, tab_size, scene, diag_start, diag_end);
 			}
 		}
 	}
