@@ -19,6 +19,11 @@ t_faces	*face_contructor(){
 }
 
 void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
+	printf("add face with vertices : ");
+	for (size_t i=1;i<tab_size;i++){
+		printf("%s ", tab[i]);
+	}
+	printf("\n");
 	if (tab_size < 3){
 		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
 		free_garbage();
@@ -79,6 +84,7 @@ void	add_triangle(char **tab, t_scene *scene){
 		}
 		tmp->next = face;
 	}
+	printf("added face with vertex %zu %zu %zu\n", face->vertices[0]->id, face->vertices[1]->id, face->vertices[2]->id);
 }
 
 void	add_quad(char **tab, t_scene *scene){
@@ -181,7 +187,7 @@ short	is_segment_in_polygon(char **tab, size_t tab_size, t_scene *scene, t_verti
 		max_y = fabsf(scene->vertices_tab[indeces[i - 1]]->y) > max_y ? fabsf(scene->vertices_tab[indeces[i - 1]]->y) : max_y;
 		max_z = fabsf(scene->vertices_tab[indeces[i - 1]]->z) > max_z ? fabsf(scene->vertices_tab[indeces[i - 1]]->z) : max_y;
 	}
-	printf("check if diagonal (v%zu v%zu) is in polygon\n", diag_start->id, diag_end->id);
+//	printf("check if diagonal (v%zu v%zu) is in polygon\n", diag_start->id, diag_end->id);
 	unsigned int cross_count_x = 0, cross_count_y = 0, cross_count_z = 0;
 	t_vertices mid_point = get_vector_at_distance(diag_start, diag_end, .5);
 	t_vertices mid_point_x = mid_point;
@@ -193,30 +199,72 @@ short	is_segment_in_polygon(char **tab, size_t tab_size, t_scene *scene, t_verti
 	for (size_t vertex_idx = 0; vertex_idx < tab_size - 1; vertex_idx++){
 		t_vertices s1 = *scene->vertices_tab[indeces[vertex_idx]];
 		t_vertices s2 = *scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
-		if (diag_start->id == s1.id || diag_end->id == s2.id){
-			t_vertices tmp = s1;
-			s1 = s2;
-			s1 = tmp;
-		}
-		printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
+//		printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
 		if (do_segments_intersect(&mid_point, &mid_point_x, &s1, &s2, 0)){
 			cross_count_x++;
-			printf("\t diagonal cross X (v%zu v%zu)\n", s1.id, s2.id);
+//			printf("\t diagonal cross X (v%zu v%zu)\n", s1.id, s2.id);
 		}
 		if (do_segments_intersect(&mid_point, &mid_point_y, &s1, &s2, 0)){
 			cross_count_y++;
-			printf("\t diagonal cross Y (v%zu v%zu)\n", s1.id, s2.id);
+//			printf("\t diagonal cross Y (v%zu v%zu)\n", s1.id, s2.id);
 		}
 		if (do_segments_intersect(&mid_point, &mid_point_z, &s1, &s2, 0)){
 			cross_count_z++;
-			printf("\t diagonal cross Z (v%zu v%zu)\n", s1.id, s2.id);
+//			printf("\t diagonal cross Z (v%zu v%zu)\n", s1.id, s2.id);
 		}
 	}
-	printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (crossX = %u, crossY = %u, crossZ = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count_x, cross_count_y, cross_count_z);
+	//printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (crossX = %u, crossY = %u, crossZ = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count_x, cross_count_y, cross_count_z);
 	if (/*cross_count_x % 2 || cross_count_y % 2 || */cross_count_z % 2){
 		return (1);
 	}
 	return (0);
+}
+
+void	split_polygon(char **tab, size_t tab_size, t_scene *scene, t_vertices *diag_start, t_vertices *diag_end){
+	size_t	new_face_vertex_count = 0;
+	short	is_new_face = 0;
+	size_t current_idx;
+	for (size_t i=1; i<tab_size; i++){
+		current_idx = atoi(tab[i]) - 1;
+		if (current_idx == diag_start->id || current_idx == diag_end->id){
+			//printf("%zu\n", current_idx);
+			new_face_vertex_count++;
+			is_new_face = is_new_face ? 0 : 1;
+		}
+		else if (is_new_face){
+			//printf("%zu\n", current_idx);
+			new_face_vertex_count++;
+		}
+		else{
+			//printf("\t%zu\n", current_idx);
+		}
+	}
+	
+	char	*face1[new_face_vertex_count + 1], *face2[((tab_size - 1) - new_face_vertex_count + 2) + 1];
+	face1[0] = "f";
+	face2[0] = "f";
+	size_t face1_idx = 1, face2_idx = 1;
+	for (size_t i=1; i<tab_size; i++){
+		current_idx = atoi(tab[i]) - 1;
+		if (current_idx == diag_start->id || current_idx == diag_end->id){
+			//printf("%zu\n", current_idx);
+			face1[face1_idx++] = tab[i];
+			is_new_face = is_new_face ? 0 : 1;
+			face2[face2_idx++] = tab[i];
+		}
+		else if (is_new_face){
+			face1[face1_idx++] = tab[i];
+			//printf("%zu\n", current_idx);
+		}
+		else{
+			face2[face2_idx++] = tab[i];
+			//printf("\t%zu\n", current_idx);
+		}
+	}
+	parse_face(face1, face1_idx, scene, 0);
+	parse_face(face2, face2_idx, scene, 0);
+	//printf("face 1 : %zu | face 2 : %zu\n", new_face_vertex_count, (tab_size - 1) - new_face_vertex_count + 2);
+	(void)scene;
 }
 
 void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
@@ -258,15 +306,19 @@ void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene){
 				if (seg_start->id == diag_start->id || seg_start->id == diag_end->id || seg_end->id == diag_start->id || seg_end->id == diag_end->id)
 					continue;
 
-				printf("check if diagonal (v%zu v%zu) cross (v%zu v%zu)\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
+//				printf("check if diagonal (v%zu v%zu) cross (v%zu v%zu)\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
 				if (do_segments_intersect(diag_start, diag_end, seg_start, seg_end, 0)){
-					printf("\033[0;31m\tdiagonal (v%zu v%zu) cross (v%zu v%zu)\033[0m\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
+//					printf("\033[0;31m\tdiagonal (v%zu v%zu) cross (v%zu v%zu)\033[0m\n", diag_start->id, diag_end->id, seg_start->id, seg_end->id);
 					cross = 1;
 					break ;
 				}
 			}
 			if (!cross){
 				found = is_segment_in_polygon(tab, tab_size, scene, diag_start, diag_end);
+				if (found){
+					printf("\033[0;32m\tdiagonal (v%zu v%zu) possible\033[0m\n", diag_start->id, diag_end->id);
+					split_polygon(tab, tab_size, scene, diag_start, diag_end);
+				}
 			}
 		}
 	}
