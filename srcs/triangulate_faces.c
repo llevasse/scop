@@ -5,19 +5,16 @@ extern struct s_garbage	*g_garbage_collector;
 
 
 short do_segments_intersect(t_vertices *v1, t_vertices *v2, t_vertices *v3, t_vertices *v4, int print){
-	t_vertices d1 = get_vector_displacement(v1, v2);
-	t_vertices d2 = get_vector_displacement(v3, v4);
-	t_vertices b = get_vector_displacement(v1, v3);
-	//printf("starting point difference %f %f %f\n", b.x, b.y, b.z);
-	t_vertices p = get_vector_cross_product(&d1, &d2);
-	if (p.x != 0 || p.y != 0 || p.z != 0){
-		t_vertices scale_product = get_vector_cross_product(&b, &d2);
-		double scale = get_vector_dot_product(&scale_product, &p) / (get_vector_dot_product(&p, &p));
-		if (print)
-			printf("scale %f\n", scale);
-		return (scale >= 0 && scale <= 1);
-	}
-	return (0);
+	t_vertices E, F, P, S;
+	E = get_vector_displacement(v1, v2);
+	F = get_vector_displacement(v3, v4);
+	S = get_vector_displacement(v1, v3);
+	P = E;
+	P.y = -E.y;
+	double scale = get_vector_dot_product(&S, &P) / get_vector_dot_product(&F, &P);
+	if (print)
+		printf("scale %f\n", scale);
+	return (scale > 0 && scale < 1);
 }
 
 short	is_segment_in_polygon(char **tab, size_t tab_size, t_scene *scene, t_vertices *diag_start, t_vertices *diag_end){
@@ -43,20 +40,20 @@ short	is_segment_in_polygon(char **tab, size_t tab_size, t_scene *scene, t_verti
 		t_vertices s1 = *scene->vertices_tab[indeces[vertex_idx]];
 		t_vertices s2 = *scene->vertices_tab[indeces[vertex_idx == tab_size - 2 ? 0 : vertex_idx + 1]];
 //		printf("\tcheck if diagonal cross (v%zu v%zu)\n", s1.id, s2.id);
-		if (do_segments_intersect(&mid_point, &mid_point_x, &s1, &s2, 0)){
+		if (do_segments_intersect(&mid_point, &mid_point_x, &s1, &s2, 1)){
 			cross_count_x++;
-//			printf("\t diagonal cross X (v%zu v%zu)\n", s1.id, s2.id);
+			printf("\t diagonal cross X (v%zu v%zu)\n", s1.id, s2.id);
 		}
-		if (do_segments_intersect(&mid_point, &mid_point_y, &s1, &s2, 0)){
+		if (do_segments_intersect(&mid_point, &mid_point_y, &s1, &s2, 1)){
 			cross_count_y++;
-//			printf("\t diagonal cross Y (v%zu v%zu)\n", s1.id, s2.id);
+			printf("\t diagonal cross Y (v%zu v%zu)\n", s1.id, s2.id);
 		}
-		if (do_segments_intersect(&mid_point, &mid_point_z, &s1, &s2, 0)){
+		if (do_segments_intersect(&mid_point, &mid_point_z, &s1, &s2, 1)){
 			cross_count_z++;
-//			printf("\t diagonal cross Z (v%zu v%zu)\n", s1.id, s2.id);
+			printf("\t diagonal cross Z (v%zu v%zu)\n", s1.id, s2.id);
 		}
 	}
-	//printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (crossX = %u, crossY = %u, crossZ = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count_x, cross_count_y, cross_count_z);
+	printf("\033[0;32m\tdiagonal (v%zu v%zu) possible (crossX = %u, crossY = %u, crossZ = %u)\033[0m\n", diag_start->id, diag_end->id, cross_count_x, cross_count_y, cross_count_z);
 	if (/*cross_count_x % 2 || cross_count_y % 2 || */cross_count_z % 2){
 		return (1);
 	}
