@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/scop",
-            "args": ["model/concav_face_not_flat_plane.obj"],
+            "args": ["model/concav_face.obj"],	
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

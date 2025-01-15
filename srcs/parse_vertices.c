@@ -65,6 +65,7 @@ t_vertices *create_vertices(float x, float y, float z){
 	p->z = z;
 	p->w = 1.0;
 	p->next = 0x0;
+	p->magnetude = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 	return (p);
 }
 

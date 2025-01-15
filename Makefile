@@ -26,6 +26,7 @@ SRC						=	srcs/main.c \
 							srcs/parse.c \
 							srcs/parse_vertices.c \
 							srcs/parse_faces.c \
+							srcs/triangulate_faces.c \
 							srcs/garbage_collector.c \
 							srcs/matrices.c \
 							srcs/renderers.c \

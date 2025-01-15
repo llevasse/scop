@@ -31,6 +31,8 @@
 		float					matrixed_x;
 		float					matrixed_y;
 		float					matrixed_z;
+
+		double					magnetude;
 		size_t					id;
 		struct s_vertices		*next;
 	}	t_vertices;
@@ -127,7 +129,7 @@
 	void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb);
-	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb);
+	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb, short **possible_diag);
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
 	t_material	*parse_mtl(char *path);
@@ -162,4 +164,6 @@
 	
 	short	are_line_coplanar(t_vertices *p1, t_vertices *p2, t_vertices *p3, t_vertices *p4);
 	
+	void	triangulate_polygone(char **tab, size_t tab_size, t_scene *scene, short **possible_diag_tab, int line_nb);
+
 #endif
