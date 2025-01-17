@@ -81,9 +81,9 @@ void	render_obj(t_scene *scene, t_obj *obj){
 			while (face->vertices[i]){
 				//printf("g_vertex_buffer_data position : %zu, v id : %zu\n", j, face->vertices[i]->id);
 				//printf ("\t%f %f %f\n", face->vertices[i]->x, face->vertices[i]->y, face->vertices[i]->z);
-				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
-				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
-				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
+				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x + scene->x_offset;
+				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y + scene->y_offset;
+				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z + scene->z_offset;
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 				rotate_point(face->vertices[i], qx, qy, qz);

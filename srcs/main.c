@@ -179,6 +179,18 @@ void	input_handler(GLFWwindow *window){
 			if (scene->z_angle > 360)
 				scene->z_angle = 0;
 		}
+		else if (glfwGetKey(window, GLFW_KEY_W)){
+			scene->y_offset -= 1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_S)){
+			scene->y_offset += 1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_A)){
+			scene->z_offset -= 1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_D)){
+			scene->z_offset += 1;
+		}
 	}
 	for (int i =0; i<348;i++){
 		key_press[i] = glfwGetKey(window, i);
