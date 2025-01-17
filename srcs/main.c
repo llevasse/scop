@@ -42,6 +42,11 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd);
+	scene->origin.x = (scene->max_x + scene->min_x) / 2;
+	scene->origin.y = (scene->max_y + scene->min_y) / 2;
+	scene->origin.z = (scene->max_z + scene->min_z) / 2;
+
+	printf("scene origin : %f %f %f\n", scene->origin.x, scene->origin.y, scene->origin.z);
 	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
 	add_to_garbage(g_vertex_buffer_data);
 	g_element_buffer_data = malloc(sizeof(unsigned int) * (scene->display_vertices_count + 1));
@@ -56,7 +61,6 @@ int main(int argc, char **argv){
 	for (int i =0;i<348;i++){
 		key_press[i] = 0;
 	}
-	init_scene();
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -98,18 +102,6 @@ int main(int argc, char **argv){
 	}
 	return (0);
 
-}
-
-void	init_scene(){
-	scene->fov = 90;
-	scene->far_plane_distance = 100;
-	scene->near_plane_distance = .1;
-	scene->wireframe_view = 0;
-	scene->zoom = .1;
-	scene->x_angle = 0;
-	scene->y_angle = 0;
-	scene->z_angle = 0;
-	number_of_segment_to_display = 3;
 }
 
 void	print_error(const char *fmt, va_list ap){

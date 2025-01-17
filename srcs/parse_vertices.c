@@ -13,12 +13,12 @@ void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
 		weight = atof(tab[4]);
 	}
 	if (!scene->vertices_current){
-		scene->vertices_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->vertices_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]), scene);
 		scene->vertices_current->w = weight;
 		scene->vertices_root = scene->vertices_current;
 	}
 	else{
-		scene->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->vertices_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]), scene);
 		scene->vertices_current = scene->vertices_current->next;
 		scene->vertices_current->w = weight;
 	}
@@ -31,11 +31,11 @@ void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb)
 		free_garbage();
 	}
 	if (!scene->vertex_normals_current){
-		scene->vertex_normals_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->vertex_normals_current = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]), 0x0);
 		scene->vertex_normals_root = scene->vertex_normals_current;
 	}
 	else{
-		scene->vertex_normals_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]));
+		scene->vertex_normals_current->next = create_vertices(atof(tab[1]), atof(tab[2]), atof(tab[3]), 0x0);
 		scene->vertex_normals_current = scene->vertex_normals_current->next;
 	}
 	scene->vertex_normals_count++;
@@ -57,7 +57,7 @@ void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int lin
 	scene->texture_coordinates_count++;
 }
 
-t_vertices *create_vertices(float x, float y, float z){
+t_vertices *create_vertices(float x, float y, float z, t_scene *scene){
 	t_vertices *p = malloc(sizeof(struct s_vertices));
 	add_to_garbage(p);
 	p->x = x;
@@ -66,6 +66,17 @@ t_vertices *create_vertices(float x, float y, float z){
 	p->w = 1.0;
 	p->next = 0x0;
 	p->magnetude = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+	if (scene){
+		scene->max_x = x > scene->max_x ? x : scene->max_x;
+		scene->min_x = x < scene->min_x ? x : scene->min_x;
+
+		scene->max_y = y > scene->max_y ? y : scene->max_y;
+		scene->min_y = y < scene->min_y ? y : scene->min_y;
+
+		scene->max_z = z > scene->max_z ? z : scene->max_z;
+		scene->min_z = z < scene->min_z ? z : scene->min_z;
+	}
 	return (p);
 }
 

@@ -37,6 +37,13 @@
 		struct s_vertices		*next;
 	}	t_vertices;
 
+	typedef struct s_quaternions{
+		float					w;
+		float					x;
+		float					y;
+		float					z;
+	}	t_quaternions;
+
 	typedef struct s_texture_coordinates{	// values between 0 and 1
 		float							u;
 		float							v;	//optional, default is 1
@@ -117,13 +124,19 @@
 		double					matrix_y_rotation[3][3];
 		double					matrix_z_rotation[3][3];
 
+		float					max_x, min_x;
+		float					max_y, min_y;
+		float					max_z, min_z;
+
+		t_vertices				origin;
+
 		short					wireframe_view;
 		float					zoom;
 
 	}	t_scene;
 
 	t_scene *parse_scene(int fd);
-	t_vertices *create_vertices(float x, float y, float z);
+	t_vertices *create_vertices(float x, float y, float z, t_scene *scene);
 	t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size);
 	void	link_faces_to_materials(t_scene *scene);
 	void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb);
@@ -155,6 +168,4 @@
 	void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset);
 	void	openglObjInit();
 	
-	void	init_scene();
-
 #endif

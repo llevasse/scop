@@ -3,10 +3,28 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-t_scene *parse_scene(int fd){
+t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
- 	t_obj *root_obj_list = 0x0;
+
+	scene->fov = 90;
+	scene->far_plane_distance = 10000000000;
+	scene->near_plane_distance = .000000001;
+	scene->wireframe_view = 0;
+	scene->zoom = 1;
+	scene->x_angle = 0;
+	scene->y_angle = 90;
+	scene->z_angle = 0;
+
+	scene->max_x = 0;
+	scene->min_x = 0;
+	scene->max_y = 0;
+	scene->min_y = 0;
+	scene->max_z = 0;
+	scene->min_z = 0;
+
+
+
 	scene->objs_list = 0x0;
 	scene->vertices_root = 0x0;
 	scene->vertices_current = 0x0;
@@ -21,6 +39,12 @@ t_scene *parse_scene(int fd){
 	scene->texture_coordinates_current = 0x0;
 	scene->texture_coordinates_tab = 0x0;
 	scene->texture_coordinates_count = 0;
+	return (scene);
+}
+
+t_scene *parse_scene(int fd){
+	t_scene *scene = init_scene();
+ 	t_obj *root_obj_list = 0x0;
 	char	*s = get_next_line(fd);
 	char	**line_content = 0x0;
 	size_t	line_content_size = 0;
