@@ -15,6 +15,9 @@ t_scene	*init_scene(){
 	scene->x_angle = 0;
 	scene->y_angle = 90;
 	scene->z_angle = 0;
+	scene->x_offset = 0;
+	scene->y_offset = 0;
+	scene->z_offset = 0;
 
 	scene->max_x = 0;
 	scene->min_x = 0;
@@ -39,6 +42,8 @@ t_scene	*init_scene(){
 	scene->texture_coordinates_current = 0x0;
 	scene->texture_coordinates_tab = 0x0;
 	scene->texture_coordinates_count = 0;
+
+	scene->movement_mode = 0;
 	return (scene);
 }
 

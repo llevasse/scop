@@ -112,65 +112,72 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE)){
 		glfwSetWindowShouldClose(window, 1);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W]){
-		scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
+	else if (glfwGetKey(window, GLFW_KEY_M) && !key_press[GLFW_KEY_M]){
+		scene->movement_mode = !scene->movement_mode;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_R)){
-		scene->x_angle = 0;
-		scene->y_angle = 0;
-		scene->z_angle = 0;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
-		if (scene->zoom + .1 > 2)
-			scene->zoom = 2;
-		else 
-			scene->zoom += .1;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
-		if (scene->zoom - .1 < .1)
-			scene->zoom = .1;
-		else 
-			scene->zoom -= .1;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_LEFT)){
-		scene->y_angle--;
-		if (scene->y_angle < 0)
-			scene->y_angle = 360;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
-		scene->y_angle++;
-		if (scene->y_angle > 360)
-			scene->y_angle = 0;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_DOWN)){
-		scene->x_angle--;
-		if (scene->x_angle < 0)
-			scene->x_angle = 360;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_UP)){
-		scene->x_angle++;
-		if (scene->x_angle > 360)
-			scene->x_angle = 0;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_Z)){
-		scene->z_angle--;
-		if (scene->z_angle < 0)
-			scene->z_angle = 360;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_C)){
-		scene->z_angle++;
-		if (scene->z_angle > 360)
-			scene->z_angle = 0;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
-		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
-			number_of_segment_to_display += 3;
+	if (!scene->movement_mode){
+		if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W]){
+			scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
 		}
-		else{
-			if (number_of_segment_to_display > 3)
-				number_of_segment_to_display -= 3;
-			else
-				number_of_segment_to_display = 0;
+		else if (glfwGetKey(window, GLFW_KEY_R)){
+			scene->x_angle = 0;
+			scene->y_angle = 0;
+			scene->z_angle = 0;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
+			if (scene->zoom + .1 > 2)
+				scene->zoom = 2;
+			else 
+				scene->zoom += .1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
+			if (scene->zoom - .1 < .1)
+				scene->zoom = .1;
+			else 
+				scene->zoom -= .1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
+				number_of_segment_to_display += 3;
+			}
+			else{
+				if (number_of_segment_to_display > 3)
+					number_of_segment_to_display -= 3;
+				else
+					number_of_segment_to_display = 0;
+			}
+		}
+	}
+	else {
+		if (glfwGetKey(window, GLFW_KEY_LEFT)){
+			scene->y_angle--;
+			if (scene->y_angle < 0)
+				scene->y_angle = 360;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
+			scene->y_angle++;
+			if (scene->y_angle > 360)
+				scene->y_angle = 0;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_DOWN)){
+			scene->x_angle--;
+			if (scene->x_angle < 0)
+				scene->x_angle = 360;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_UP)){
+			scene->x_angle++;
+			if (scene->x_angle > 360)
+				scene->x_angle = 0;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_Z)){
+			scene->z_angle--;
+			if (scene->z_angle < 0)
+				scene->z_angle = 360;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_C)){
+			scene->z_angle++;
+			if (scene->z_angle > 360)
+				scene->z_angle = 0;
 		}
 	}
 	for (int i =0; i<348;i++){

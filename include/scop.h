@@ -117,12 +117,9 @@
 		float					matrix[4][4];
 		float					matrix_camera[4][4];
 		
-		double					x_angle;
-		double					y_angle;
-		double					z_angle;
-		double					matrix_x_rotation[3][3];
-		double					matrix_y_rotation[3][3];
-		double					matrix_z_rotation[3][3];
+		double					x_angle, y_angle, z_angle;
+		double					x_offset, y_offset, z_offset;
+		double					matrix_x_rotation[3][3], matrix_y_rotation[3][3], matrix_z_rotation[3][3];
 
 		float					max_x, min_x;
 		float					max_y, min_y;
@@ -130,6 +127,8 @@
 
 		t_vertices				origin;
 
+
+		short					movement_mode;
 		short					wireframe_view;
 		float					zoom;
 
