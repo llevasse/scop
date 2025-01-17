@@ -245,6 +245,7 @@ void	render(GLFWwindow *window){
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
+	
 }
 
 void	reshape(int w, int h){

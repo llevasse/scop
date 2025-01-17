@@ -229,7 +229,7 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	}
 	else if (!ft_strcmp(tab[0], "f")){	// f v/vt/vn
 		pass_obj_list_to_tab(scene);
-		parse_face(tab, tab_size, scene, line_nb, 0x0);
+		parse_face(tab, tab_size, scene, line_nb);
 	}
 }
 

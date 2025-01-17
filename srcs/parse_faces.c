@@ -17,12 +17,12 @@ t_faces	*face_contructor(){
 	return (face);
 }
 
-void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb, short **possible_diag){
-	printf("Parse face with vertices : ");
+void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
+/*	printf("Parse face with vertices : ");
 	for (size_t i=1;i<tab_size;i++){
 		printf("%s ", tab[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 	if (tab_size < 3){
 		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
 		free_garbage();
@@ -34,7 +34,8 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb, short 
 		add_quad(tab, scene);
 	}
 	else{
-		triangulate_polygone(tab, tab_size, scene, possible_diag, line_nb);
+		dprintf(2,"Face on line %d has too many vertex :(\n", line_nb);
+		free_garbage();
 	}
 }
 
@@ -83,7 +84,7 @@ void	add_triangle(char **tab, t_scene *scene){
 		}
 		tmp->next = face;
 	}
-	printf("Added face with vertex %zu %zu %zu\n", face->vertices[0]->id, face->vertices[1]->id, face->vertices[2]->id);
+//	printf("Added face with vertex %zu %zu %zu\n", face->vertices[0]->id, face->vertices[1]->id, face->vertices[2]->id);
 }
 
 void	add_quad(char **tab, t_scene *scene){
