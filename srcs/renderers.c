@@ -74,28 +74,31 @@ void	render_obj(t_scene *scene, t_obj *obj){
 	t_quaternions qx, qy, qz;
 	set_quaternions(scene, &qx, &qy, &qz);
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0, segment_idx = 0;
+	double colour_offset;
 	while (obj){
 		t_faces	*face = obj->faces;
 		while (face){
 			i = 0;
+//			colour_offset = (count % 3 ? .003 : count % 5 ? .1 : count % 7 ? .025 : count % 9 ? .25 : count % 4 ? .05 : count % 6 ? .07 : count % 8 ? .04 : count % 2 ? .06 : 0);
+			colour_offset = (count % 3 ? .03 : count % 5 ? .05 : count % 7 ? .07 : count % 9 ? .09 : count % 4 ? .04 : count % 6 ? .06 : count % 8 ? .08 : count % 2 ? .02 : 0);
 			while (face->vertices[i]){
 				//printf("g_vertex_buffer_data position : %zu, v id : %zu\n", j, face->vertices[i]->id);
 				//printf ("\t%f %f %f\n", face->vertices[i]->x, face->vertices[i]->y, face->vertices[i]->z);
-				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x + scene->x_offset;
-				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y + scene->y_offset;
-				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z + scene->z_offset;
+				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
+				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
+				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 				rotate_point(face->vertices[i], qx, qy, qz);
 
 				//multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x + scene->x_offset;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y + scene->y_offset;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z + scene->z_offset;
 				
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->r;
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->g;
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->b;				
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset;
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset;
+				g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset;
 				g_matrixed_vertices_check[face->vertices[i]->id] = 1;
 				pnt_nb++;
 				i++;

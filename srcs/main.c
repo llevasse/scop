@@ -124,18 +124,6 @@ void	input_handler(GLFWwindow *window){
 			scene->y_angle = 0;
 			scene->z_angle = 0;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
-			if (scene->zoom + .1 > 2)
-				scene->zoom = 2;
-			else 
-				scene->zoom += .1;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
-			if (scene->zoom - .1 < .1)
-				scene->zoom = .1;
-			else 
-				scene->zoom -= .1;
-		}
 		else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
 				number_of_segment_to_display += 3;
@@ -180,17 +168,29 @@ void	input_handler(GLFWwindow *window){
 				scene->z_angle = 0;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_W)){
-			scene->y_offset -= 1;
+			scene->y_offset += .1;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_S)){
-			scene->y_offset += 1;
+			scene->y_offset -= .1;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_A)){
-			scene->z_offset -= 1;
+			scene->x_offset -= .1;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D)){
-			scene->z_offset += 1;
+			scene->x_offset += .1;
 		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
+		if (scene->zoom + .1 > 2)
+			scene->zoom = 2;
+		else 
+			scene->zoom += .1;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
+		if (scene->zoom - .1 < .1)
+			scene->zoom = .1;
+		else 
+			scene->zoom -= .1;
 	}
 	for (int i =0; i<348;i++){
 		key_press[i] = glfwGetKey(window, i);
@@ -252,7 +252,6 @@ void	render(GLFWwindow *window){
 
 	//glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
 	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
-
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
