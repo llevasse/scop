@@ -65,7 +65,7 @@ int main(int argc, char **argv){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Scop", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 800, "Scop", NULL, NULL);
 	if (window == NULL)
 	{
 		dprintf(2, "Failed to create GLFW window\n");
@@ -181,12 +181,16 @@ void	input_handler(GLFWwindow *window){
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
+		// scene->fov++;
+		
 		if (scene->zoom + .1 > 2)
 			scene->zoom = 2;
 		else 
 			scene->zoom += .1;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
+		// scene->fov--;
+		
 		if (scene->zoom - .1 < .1)
 			scene->zoom = .1;
 		else 
@@ -239,16 +243,16 @@ void	render(GLFWwindow *window){
 	printf("size : %zu\n", scene->display_vertices_count);*/
 	//printf("Segment to display : %u\n", number_of_segment_to_display);
 	
-	/*for (size_t i=0; i<scene->display_vertices_count; i+= 3){
-		for (int j = 0; j < 3;j++){
-			printf("vertex %u : ", g_element_buffer_data[i + j]);
-			for (int l=0;l < 6;l++){
-				printf("%f ", g_vertex_buffer_data[(g_element_buffer_data[i + j] * 6) + l]);
-			}
-			printf("\n");
-		}
-		printf("\n");
-	}*/
+	// for (size_t i=0; i<scene->display_vertices_count; i+= 3){
+	// 	for (int j = 0; j < 3;j++){
+	// 		printf("vertex %u : ", g_element_buffer_data[i + j]);
+	// 		for (int l=0;l < 6;l++){
+	// 			printf("%f ", g_vertex_buffer_data[(g_element_buffer_data[i + j] * 6) + l]);
+	// 		}
+	// 		printf("\n");
+	// 	}
+	// 	printf("\n");
+	// }
 
 	//glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
 	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);

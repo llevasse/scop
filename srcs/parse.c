@@ -8,8 +8,8 @@ t_scene	*init_scene(){
 	add_to_garbage(scene);
 
 	scene->fov = 90;
-	scene->far_plane_distance = 10000000000;
-	scene->near_plane_distance = .000000001;
+	scene->far_plane_distance = 1000;
+	scene->near_plane_distance = 1;
 	scene->wireframe_view = 0;
 	scene->zoom = 1;
 	scene->x_angle = 0;

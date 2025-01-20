@@ -87,14 +87,13 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
-				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix_camera);
-				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 				rotate_point(face->vertices[i], qx, qy, qz);
+				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 
-				//multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x + scene->x_offset;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y + scene->y_offset;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z + scene->z_offset;
+//				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
+				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
 				
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset;
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset;

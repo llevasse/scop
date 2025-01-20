@@ -9,6 +9,7 @@
 # include <math.h>
 # include "../glad/include/glad/glad.h"
 # include <GLFW/glfw3.h>
+
 # include "../libft/libft.h"
 # include "../freeglut-3.6.0/include/GL/freeglut.h"
 # define PI 3.1415926535
@@ -115,6 +116,7 @@
 		float					near_plane_distance;
 		float					far_plane_distance;
 		float					matrix[4][4];
+		float					persepective_matrix[4][4];
 		float					matrix_camera[4][4];
 		
 		double					x_angle, y_angle, z_angle;

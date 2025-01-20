@@ -1,5 +1,6 @@
 {
 	"files.associations": {
-		"scop.h": "c"
+		"scop.h": "c",
+		"glfw3.h": "c"
 	}
 }

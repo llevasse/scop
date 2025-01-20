@@ -17,28 +17,78 @@ extern struct s_garbage	*g_garbage_collector;
 //	{0, 0, C1, 0},
 //}
 
+void	set_view_matrix(t_scene *scene){
+	float	eyes[3] = {scene->x_offset, scene->y_offset, scene->z_offset};
+	float	center[3] = {0,0,0};
+	float	up[3] = {0, 1, 0};
+
+
+	float	f[3] = {(center[0]-eyes[0]) * (1.0 / 3.0), (center[1]-eyes[1]) * (1.0 / 3.0), (center[2]-eyes[2]) * (1.0 / 3.0)};
+	float	s[3] = {(f[1] * up[2] - f[2] * up[1]) * (1.0 / 3.0), (f[2] * up[0] - f[0] * up[2]) * (1.0 / 3.0), (f[0] * up[1] - f[1] * up[0]) * (1.0 / 3.0)}; //normalized cross product of f and up
+	float	u[3] = {(s[1] * f[2] - s[2] * f[1]), (s[2] * f[0] - s[0] * f[2]), (s[0] * f[1] - s[1] * f[0])};
+
+	scene->matrix_camera[0][0] = s[0];
+	scene->matrix_camera[1][0] = s[1];
+	scene->matrix_camera[2][0] = s[2];
+
+	scene->matrix_camera[0][1] = u[0];
+	scene->matrix_camera[1][1] = u[1];
+	scene->matrix_camera[2][1] = u[2];
+
+	scene->matrix_camera[0][2] = -f[0];
+	scene->matrix_camera[1][2] = -f[1];
+	scene->matrix_camera[2][2] = -f[2];
+
+	scene->matrix_camera[3][0] = -(s[0] * eyes[0]) + (s[1] * eyes[1]) + (s[2] * eyes[2]);
+	scene->matrix_camera[3][1] = -(u[0] * eyes[0]) + (u[1] * eyes[1]) + (u[2] * eyes[2]);
+	scene->matrix_camera[3][2] = (f[0] * eyes[0]) + (f[1] * eyes[1]) + (f[2] * eyes[2]);
+}
+
 void	setMatrix(t_scene *scene){
-	float scale = 1 / tan((scene->fov * 0.5) * RADIAN); 
+	float scale = 1 / tanf((scene->fov * 0.5)); 
 	for (int i =0;i < 4;i++){
 		for (int j=0; j<4;j++){
 			scene->matrix[i][j] = 0.0;
+			scene->persepective_matrix[i][j] = 0.0;
 			scene->matrix_camera[i][j] = 0.0;
 		}
 	}
 
-	scene->matrix[0][0] = scale;
+	scene->persepective_matrix[0][0] = scale;
 
-	scene->matrix[1][1] = scale;
+	scene->persepective_matrix[1][1] = scale;
 
-	scene->matrix[2][2] = (-scene->far_plane_distance) / (scene->far_plane_distance - scene->near_plane_distance);
-	scene->matrix[2][3] = -1;
+	scene->persepective_matrix[2][2] = (scene->far_plane_distance) / (scene->near_plane_distance - scene->far_plane_distance);
+	scene->persepective_matrix[2][3] = -1;
 
-	scene->matrix[3][2] = ((-scene->far_plane_distance) * scene->near_plane_distance) / (scene->far_plane_distance - scene->near_plane_distance);
+	scene->persepective_matrix[3][2] = -((scene->far_plane_distance) * scene->near_plane_distance) / (scene->far_plane_distance - scene->near_plane_distance);
+
+
 	scene->matrix_camera[0][0] = 1;
 	scene->matrix_camera[1][1] = 1;
 	scene->matrix_camera[2][2] = 1;
 	scene->matrix_camera[3][3] = 1;
-	
+	set_view_matrix(scene);
+	scene->matrix[0][0] = scene->persepective_matrix[0][0] * scene->matrix_camera[0][0] + scene->persepective_matrix[1][0] * scene->matrix_camera[0][1] + scene->persepective_matrix[2][0] * scene->matrix_camera[0][2] + scene->persepective_matrix[3][0] * scene->matrix_camera[0][3];
+	scene->matrix[0][1] = scene->persepective_matrix[0][1] * scene->matrix_camera[0][0] + scene->persepective_matrix[1][1] * scene->matrix_camera[0][1] + scene->persepective_matrix[2][1] * scene->matrix_camera[0][2] + scene->persepective_matrix[3][1] * scene->matrix_camera[0][3];
+	scene->matrix[0][2] = scene->persepective_matrix[0][2] * scene->matrix_camera[0][0] + scene->persepective_matrix[1][2] * scene->matrix_camera[0][1] + scene->persepective_matrix[2][2] * scene->matrix_camera[0][2] + scene->persepective_matrix[3][2] * scene->matrix_camera[0][3];
+	scene->matrix[0][3] = scene->persepective_matrix[0][3] * scene->matrix_camera[0][0] + scene->persepective_matrix[1][3] * scene->matrix_camera[0][1] + scene->persepective_matrix[2][3] * scene->matrix_camera[0][2] + scene->persepective_matrix[3][3] * scene->matrix_camera[0][3];
+
+	scene->matrix[1][0] = scene->persepective_matrix[0][0] * scene->matrix_camera[1][0] + scene->persepective_matrix[1][0] * scene->matrix_camera[1][1] + scene->persepective_matrix[2][0] * scene->matrix_camera[1][2] + scene->persepective_matrix[3][0] * scene->matrix_camera[1][3];
+	scene->matrix[1][1] = scene->persepective_matrix[0][1] * scene->matrix_camera[1][0] + scene->persepective_matrix[1][1] * scene->matrix_camera[1][1] + scene->persepective_matrix[2][1] * scene->matrix_camera[1][2] + scene->persepective_matrix[3][1] * scene->matrix_camera[1][3];
+	scene->matrix[1][2] = scene->persepective_matrix[0][2] * scene->matrix_camera[1][0] + scene->persepective_matrix[1][2] * scene->matrix_camera[1][1] + scene->persepective_matrix[2][2] * scene->matrix_camera[1][2] + scene->persepective_matrix[3][2] * scene->matrix_camera[1][3];
+	scene->matrix[1][3] = scene->persepective_matrix[0][3] * scene->matrix_camera[1][0] + scene->persepective_matrix[1][3] * scene->matrix_camera[1][1] + scene->persepective_matrix[2][3] * scene->matrix_camera[1][2] + scene->persepective_matrix[3][3] * scene->matrix_camera[1][3];
+
+	scene->matrix[2][0] = scene->persepective_matrix[0][0] * scene->matrix_camera[2][0] + scene->persepective_matrix[1][0] * scene->matrix_camera[2][1] + scene->persepective_matrix[2][0] * scene->matrix_camera[2][2] + scene->persepective_matrix[3][0] * scene->matrix_camera[2][3];
+	scene->matrix[2][1] = scene->persepective_matrix[0][1] * scene->matrix_camera[2][0] + scene->persepective_matrix[1][1] * scene->matrix_camera[2][1] + scene->persepective_matrix[2][1] * scene->matrix_camera[2][2] + scene->persepective_matrix[3][1] * scene->matrix_camera[2][3];
+	scene->matrix[2][2] = scene->persepective_matrix[0][2] * scene->matrix_camera[2][0] + scene->persepective_matrix[1][2] * scene->matrix_camera[2][1] + scene->persepective_matrix[2][2] * scene->matrix_camera[2][2] + scene->persepective_matrix[3][2] * scene->matrix_camera[2][3];
+	scene->matrix[2][3] = scene->persepective_matrix[0][3] * scene->matrix_camera[2][0] + scene->persepective_matrix[1][3] * scene->matrix_camera[2][1] + scene->persepective_matrix[2][3] * scene->matrix_camera[2][2] + scene->persepective_matrix[3][3] * scene->matrix_camera[2][3];
+
+	scene->matrix[3][0] = scene->persepective_matrix[0][0] * scene->matrix_camera[3][0] + scene->persepective_matrix[1][0] * scene->matrix_camera[3][1] + scene->persepective_matrix[2][0] * scene->matrix_camera[3][2] + scene->persepective_matrix[3][0] * scene->matrix_camera[3][3];
+	scene->matrix[3][1] = scene->persepective_matrix[0][1] * scene->matrix_camera[3][0] + scene->persepective_matrix[1][1] * scene->matrix_camera[3][1] + scene->persepective_matrix[2][1] * scene->matrix_camera[3][2] + scene->persepective_matrix[3][1] * scene->matrix_camera[3][3];
+	scene->matrix[3][2] = scene->persepective_matrix[0][2] * scene->matrix_camera[3][0] + scene->persepective_matrix[1][2] * scene->matrix_camera[3][1] + scene->persepective_matrix[2][2] * scene->matrix_camera[3][2] + scene->persepective_matrix[3][2] * scene->matrix_camera[3][3];
+	scene->matrix[3][3] = scene->persepective_matrix[0][3] * scene->matrix_camera[3][0] + scene->persepective_matrix[1][3] * scene->matrix_camera[3][1] + scene->persepective_matrix[2][3] * scene->matrix_camera[3][2] + scene->persepective_matrix[3][3] * scene->matrix_camera[3][3];
+
 	for (int i=0;i<3;i++){
 		for(int j=0;j<3;j++){
 			scene->matrix_x_rotation[i][j] = 0;
@@ -72,21 +122,22 @@ void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
 	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
     tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];
     tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + matrix[3][2];
-    //float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
+    float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
 	p->matrixed_x = tmp.matrixed_x;
 	p->matrixed_y = tmp.matrixed_y;
 	p->matrixed_z = tmp.matrixed_z;
 
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
-    /*if (w != 0) { 
+    if (w != 0) { 
         p->matrixed_x /= w; 
         p->matrixed_y /= w; 
         p->matrixed_z /= w; 
-    }*/
+    }
  
-	p->matrixed_x *= scene->zoom;
-	p->matrixed_y *= scene->zoom;
-	p->matrixed_z *= scene->zoom;
+	//p->matrixed_x *= scene->zoom;
+	//p->matrixed_y *= scene->zoom;
+	//p->matrixed_z = .99;
+	//p->matrixed_z *= scene->zoom;
 
 	/*printf("processed : \n");
 	printf("\t%f :\t%f\n", p->x, p->matrixed_x);
