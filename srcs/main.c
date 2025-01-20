@@ -112,89 +112,105 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE)){
 		glfwSetWindowShouldClose(window, 1);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_M) && !key_press[GLFW_KEY_M]){
-		scene->movement_mode = !scene->movement_mode;
+	if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W]){
+		scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
 	}
-	if (!scene->movement_mode){
-		if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W]){
-			scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
+	else if (glfwGetKey(window, GLFW_KEY_R)){
+		scene->x_angle = 0;
+		scene->y_angle = 0;
+		scene->z_angle = 0;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
+			number_of_segment_to_display += 3;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_R)){
-			scene->x_angle = 0;
-			scene->y_angle = 0;
-			scene->z_angle = 0;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
-			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
-				number_of_segment_to_display += 3;
-			}
-			else{
-				if (number_of_segment_to_display > 3)
-					number_of_segment_to_display -= 3;
-				else
-					number_of_segment_to_display = 0;
-			}
+		else{
+			if (number_of_segment_to_display > 3)
+				number_of_segment_to_display -= 3;
+			else
+				number_of_segment_to_display = 0;
 		}
 	}
-	else {
-		if (glfwGetKey(window, GLFW_KEY_LEFT)){
-			scene->y_angle--;
-			if (scene->y_angle < 0)
-				scene->y_angle = 360;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_RIGHT)){
-			scene->y_angle++;
-			if (scene->y_angle > 360)
-				scene->y_angle = 0;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_DOWN)){
+	else if (glfwGetKey(window, GLFW_KEY_DOWN)){
+		if (glfwGetKey(window, GLFW_KEY_X)){
 			scene->x_angle--;
 			if (scene->x_angle < 0)
 				scene->x_angle = 360;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_UP)){
-			scene->x_angle++;
-			if (scene->x_angle > 360)
-				scene->x_angle = 0;
+		if (glfwGetKey(window, GLFW_KEY_Y)){
+			scene->y_angle--;
+			if (scene->y_angle < 0)
+				scene->y_angle = 360;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_Z)){
+		if (glfwGetKey(window, GLFW_KEY_Z)){
 			scene->z_angle--;
 			if (scene->z_angle < 0)
 				scene->z_angle = 360;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_C)){
+	}
+	else if (glfwGetKey(window, GLFW_KEY_UP)){
+		if (glfwGetKey(window, GLFW_KEY_X)){
+			scene->x_angle++;
+			if (scene->x_angle > 360)
+				scene->x_angle = 0;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Y)){
+			scene->y_angle++;
+			if (scene->y_angle > 360)
+				scene->y_angle = 0;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Z)){
 			scene->z_angle++;
 			if (scene->z_angle > 360)
 				scene->z_angle = 0;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_W)){
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_KP_ADD)){
+		if (glfwGetKey(window, GLFW_KEY_Y)){
 			scene->y_offset += .1;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_S)){
-			scene->y_offset -= .1;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_A)){
-			scene->x_offset -= .1;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_D)){
+		else if (glfwGetKey(window, GLFW_KEY_X)){
 			scene->x_offset += .1;
 		}
+		else if (glfwGetKey(window, GLFW_KEY_Z)){
+			scene->z_offset += .1;
+		}
+		else if (!key_press[GLFW_KEY_KP_ADD]){
+			// scene->fov++;
+			
+			if (scene->zoom + .1 > 2)
+				scene->zoom = 2;
+			else 
+				scene->zoom += .1;
+		}
+		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
+		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
 	}
-	if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
-		// scene->fov++;
-		
-		if (scene->zoom + .1 > 2)
-			scene->zoom = 2;
-		else 
-			scene->zoom += .1;
+	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)){
+		if (glfwGetKey(window, GLFW_KEY_Y)){
+			scene->y_offset -= .1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_X)){
+			scene->x_offset -= .1;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_Z)){
+			scene->z_offset -= .1;
+		}
+		else if (!key_press[GLFW_KEY_KP_SUBTRACT]){
+			// scene->fov--;
+			
+			if (scene->zoom - .1 < .1)
+				scene->zoom = .1;
+			else 
+				scene->zoom -= .1;
+		}
+		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
+		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
-		// scene->fov--;
-		
-		if (scene->zoom - .1 < .1)
-			scene->zoom = .1;
-		else 
-			scene->zoom -= .1;
+	else if (glfwGetKey(window, GLFW_KEY_P)){
+		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
+		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
 	}
 	for (int i =0; i<348;i++){
 		key_press[i] = glfwGetKey(window, i);
