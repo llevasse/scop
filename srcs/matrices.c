@@ -71,7 +71,7 @@ void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
 }
 
 void	setMatrix(t_scene *scene){
-	float scale = 1 / tanf((scene->fov * 0.5) * RADIAN); 
+	float scale = 1 / tanf((scene->fov * 0.5)); 
 	float	identity[4][4] = {	{1,0,0,0},
 								{0,1,0,0},
 								{0,0,1,0},
@@ -106,6 +106,7 @@ void	setMatrix(t_scene *scene){
 			scene->matrix_x_rotation[i][j] = 0;
 			scene->matrix_y_rotation[i][j] = 0;
 			scene->matrix_z_rotation[i][j] = 0;
+			scene->scale_matrix[i][j] = 0;
 		}
 	}
 	scene->matrix_x_rotation[0][0] = 1;
@@ -125,6 +126,11 @@ void	setMatrix(t_scene *scene){
 	scene->matrix_z_rotation[1][0] = sin(scene->z_angle * RADIAN);
 	scene->matrix_z_rotation[1][1] = cos(scene->z_angle * RADIAN);
 	scene->matrix_z_rotation[2][2] = 1;
+
+	scene->scale_matrix[0][0] = scene->x_scale;
+	scene->scale_matrix[1][1] = scene->y_scale;
+	scene->scale_matrix[2][2] = scene->z_scale;
+	scene->scale_matrix[3][3] = 1;
 }
 
 void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
@@ -134,10 +140,10 @@ void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
 	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
     tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];
     tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + matrix[3][2];
-    float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
 	p->matrixed_x = tmp.matrixed_x;
 	p->matrixed_y = tmp.matrixed_y;
 	p->matrixed_z = tmp.matrixed_z;
+    float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
 
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
     if (w != 0) { 
@@ -145,11 +151,6 @@ void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
         p->matrixed_y /= w; 
         p->matrixed_z /= w; 
     }
- 
-	//p->matrixed_x *= scene->zoom;
-	//p->matrixed_y *= scene->zoom;
-	//p->matrixed_z = .99;
-	//p->matrixed_z *= scene->zoom;
 
 	/*printf("processed : \n");
 	printf("\t%f :\t%f\n", p->x, p->matrixed_x);
