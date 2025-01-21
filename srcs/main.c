@@ -11,17 +11,8 @@ short				key_press[348];
 GLuint 				programID = -1, programTextureID, VAO = -1;
 GLuint				VBO, EBO;
 unsigned long long	iteration = 0;
-/*
-GLfloat				g_vertex_buffer_data[] = {	 0.5f,  0.5f, 0.0f,  .5f, .5f,  .5f,
-    											 0.5f, -0.5f, 0.0f, 1.0f, .0f,  .0f,
-    											-0.5f, -0.5f, 0.0f,  .5f, .5f,  .5f,
-    											-0.5f,  0.5f, 0.0f,  .0f, .0f, 1.0f};
-GLuint				g_element_buffer_data[] = { 0, 1, 3,
-    											1, 2, 3}, number_of_segment_to_display = 6;
-												*/
 
 GLfloat				*g_vertex_buffer_data;
-GLuint				*g_element_buffer_data, number_of_segment_to_display = 0;
 short				*g_matrixed_vertices_check;
 
 int main(int argc, char **argv){
@@ -55,8 +46,6 @@ int main(int argc, char **argv){
 	printf("scene origin : %f %f %f\n", scene->origin.x, scene->origin.y, scene->origin.z);
 	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 8) + 1));
 	add_to_garbage(g_vertex_buffer_data);
-	g_element_buffer_data = malloc(sizeof(unsigned int) * (scene->display_vertices_count + 1));
-	add_to_garbage(g_element_buffer_data);
 	g_matrixed_vertices_check = malloc(sizeof(short) * (scene->vertices_count + 1));
 	add_to_garbage(g_matrixed_vertices_check);
 	for (size_t i = 0; i<scene->vertices_count;i++)
@@ -80,7 +69,6 @@ int main(int argc, char **argv){
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, resizeViewport);
-	glfwSetScrollCallback(window, scroll_handler);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -154,17 +142,6 @@ void	input_handler(GLFWwindow *window){
 		scene->x_angle = 0;
 		scene->y_angle = 0;
 		scene->z_angle = 0;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_EQUAL) && !key_press[GLFW_KEY_EQUAL]){
-		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)){
-			number_of_segment_to_display += 3;
-		}
-		else{
-			if (number_of_segment_to_display > 3)
-				number_of_segment_to_display -= 3;
-			else
-				number_of_segment_to_display = 0;
-		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_DOWN)){
 		if (glfwGetKey(window, GLFW_KEY_X)){
@@ -284,21 +261,6 @@ void	input_handler(GLFWwindow *window){
 	}
 }
 
-void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset){
-	//printf("%f %f\n", xOffset, yOffset);
-	if (yOffset > 0){
-		number_of_segment_to_display += 2;
-	}
-	else if (yOffset < 0 && number_of_segment_to_display > 1){
-		number_of_segment_to_display -= 2;
-	}
-	printf("Number of segment to display : %u\n", number_of_segment_to_display);
-//	if (number_of_segment_to_display > 1)
-//		printf("\tpoints : %d-%d\n", g_element_buffer_data[number_of_segment_to_display - 1], g_element_buffer_data[number_of_segment_to_display - 2]);
-	(void)window;
-	(void)xOffset;
-}
-
 void	render(GLFWwindow *window){
 	setMatrix(scene);
 	
@@ -321,8 +283,6 @@ void	render(GLFWwindow *window){
 	
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	if (number_of_segment_to_display > scene->display_vertices_count)
-		number_of_segment_to_display = scene->display_vertices_count;
 	glBindVertexArray(VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 	/*printf("draw %llu\n", iteration++);
@@ -361,7 +321,6 @@ void	resizeViewport(GLFWwindow *window, int width, int height){
 void	openglObjInit(){
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -375,9 +334,6 @@ void	openglObjInit(){
 
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (scene->display_vertices_count) * sizeof(GLuint), g_element_buffer_data, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

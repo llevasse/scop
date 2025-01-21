@@ -73,7 +73,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 	(void)obj;
 	t_quaternions qx, qy, qz;
 	set_quaternions(scene, &qx, &qy, &qz);
-	size_t	i = 0, j = 0, count = 0, pnt_nb = 0, segment_idx = 0;
+	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	double colour_offset;
 	while (obj){
 		t_faces	*face = obj->faces;
@@ -117,9 +117,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				pnt_nb++;
 				i++;
 			}
-			g_element_buffer_data[segment_idx++] = face->vertices[0]->id;
-			g_element_buffer_data[segment_idx++] = face->vertices[1]->id;
-			g_element_buffer_data[segment_idx++] = face->vertices[2]->id;
 			face = face->next;
 			count++;
 		}
