@@ -1,7 +1,7 @@
 # Blender v3.0.1 OBJ File: ''
 # www.blender.org
-#mtllib triangulated.mtl
-mtllib ./model/Low_Cube/triangulated.mtl
+mtllib triangulated.mtl
+#mtllib ./model/Low_Cube/triangulated.mtl
 o Cube.001
 v 1.000000 -1.000000 -1.000000
 v 1.000000 1.000000 -1.000000

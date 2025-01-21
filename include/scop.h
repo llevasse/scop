@@ -133,6 +133,8 @@
 
 		int						height, width;
 
+		short					texture_mode;
+
 		short					movement_mode;
 		short					wireframe_view;
 		float					zoom;

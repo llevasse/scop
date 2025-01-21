@@ -1,7 +1,7 @@
 # Blender v3.0.1 OBJ File: ''
 # www.blender.org
-#mtllib scene.mtl
-mtllib ./model/Low_Cube/scene.mtl
+mtllib scene.mtl
+#mtllib ./model/Low_Cube/scene.mtl
 
 
 o Cube_Cube.001

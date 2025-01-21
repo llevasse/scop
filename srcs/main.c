@@ -8,7 +8,7 @@ struct s_scene		*scene;
 int					window_fd = -1;
 unsigned int		texture;
 short				key_press[348];
-GLuint 				programID = -1, VAO = -1;
+GLuint 				programID = -1, programTextureID, VAO = -1;
 GLuint				VBO, EBO;
 unsigned long long	iteration = 0;
 /*
@@ -53,7 +53,7 @@ int main(int argc, char **argv){
 	scene->origin.z = (scene->max_z + scene->min_z) / 2;
 
 	printf("scene origin : %f %f %f\n", scene->origin.x, scene->origin.y, scene->origin.z);
-	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 6) + 1));
+	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 8) + 1));
 	add_to_garbage(g_vertex_buffer_data);
 	g_element_buffer_data = malloc(sizeof(unsigned int) * (scene->display_vertices_count + 1));
 	add_to_garbage(g_element_buffer_data);
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
 	add_to_garbage(g_matrixed_vertices_check);
 	for (size_t i = 0; i<scene->vertices_count;i++)
 		g_matrixed_vertices_check[i] = 0;
-	for (size_t i = 0; i<=(scene->display_vertices_count * 6);i++){
+	for (size_t i = 0; i<=(scene->display_vertices_count * 8);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
 	for (int i =0;i<348;i++){
@@ -88,6 +88,7 @@ int main(int argc, char **argv){
         return -1;
     }
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
+	programTextureID = loadShaders("./shaders/vertexShader.glsl", "./shaders/textureShader.glsl");
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	use_texture();
@@ -273,6 +274,11 @@ void	input_handler(GLFWwindow *window){
 		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
 		printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
 	}
+	
+	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){
+		scene->texture_mode = !scene->texture_mode;
+	}
+	
 	for (int i =0; i<348;i++){
 		key_press[i] = glfwGetKey(window, i);
 	}
@@ -308,7 +314,10 @@ void	render(GLFWwindow *window){
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glDepthFunc(GL_LESS);
-	glUseProgram(programID);
+	if (scene->texture_mode)
+		glUseProgram(programTextureID);
+	else
+		glUseProgram(programID);
 	
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -323,8 +332,8 @@ void	render(GLFWwindow *window){
 	// for (size_t i=0; i<scene->display_vertices_count; i+= 3){
 	// 	for (int j = 0; j < 3;j++){
 	// 		printf("vertex %u : ", g_element_buffer_data[i + j]);
-	// 		for (int l=0;l < 6;l++){
-	// 			printf("%f ", g_vertex_buffer_data[(g_element_buffer_data[i + j] * 6) + l]);
+	// 		for (int l=0;l < 8;l++){
+	// 			printf("%f ", g_vertex_buffer_data[(g_element_buffer_data[i + j] * 8) + l]);
 	// 		}
 	// 		printf("\n");
 	// 	}

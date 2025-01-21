@@ -104,8 +104,14 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset;
 
 				// textures
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
+				if (face->texture_coordinates[i]){
+					g_vertex_buffer_data[j++] = face->texture_coordinates[i]->u;
+					g_vertex_buffer_data[j++] = face->texture_coordinates[i]->v;
+				}
+				else{
+					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
+					g_vertex_buffer_data[j++] = -face->vertices[i]->matrixed_y;
+				}
 
 				g_matrixed_vertices_check[face->vertices[i]->id] = 1;
 				pnt_nb++;
