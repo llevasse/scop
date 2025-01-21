@@ -146,6 +146,7 @@
 	void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb);
+	void use_default_mtl(t_scene *scene);
 	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);

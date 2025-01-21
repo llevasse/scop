@@ -262,9 +262,43 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		scene->objs_list->material = tmp;
 	}
 	else if (!ft_strcmp(tab[0], "f")){	// f v/vt/vn
+		if (!scene->objs_list->material){
+			use_default_mtl(scene);
+		}
 		pass_obj_list_to_tab(scene);
 		parse_face(tab, tab_size, scene, line_nb);
 	}
+}
+
+void use_default_mtl(t_scene *scene){
+	t_material *tmp = scene->material_list;
+	while (tmp && tmp->name){
+		if (!ft_strcmp(tmp->name, "")){
+			scene->objs_list->material = tmp;
+			return ;
+		}
+	}
+	tmp = malloc(sizeof(struct s_material));
+	add_to_garbage(tmp);
+	t_litle_rgb *ac = malloc(sizeof(struct s_litle_rgb));
+	add_to_garbage(ac);
+	ac->r = .5;
+	ac->g = .5;
+	ac->b = .5;
+	tmp->name = "";
+	tmp->ambient_color = ac;
+	tmp->diffuse_color = ac;
+	tmp->specular_color = ac;
+	tmp->shininess = 1.0;
+	tmp->optical_density =1.0;
+	tmp->dissolve = 1.0;
+	tmp->illum = 0;
+	tmp->nb_faces = 0;
+	tmp->faces = 0x0;
+	tmp->face_index = 0;
+	tmp->next = scene->material_list;
+	scene->material_list = tmp;
+	scene->objs_list->material = tmp;
 }
 
 void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
