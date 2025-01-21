@@ -129,6 +129,7 @@
 
 		t_vertices				origin;
 
+		int						height, width;
 
 		short					movement_mode;
 		short					wireframe_view;

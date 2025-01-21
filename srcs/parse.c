@@ -26,7 +26,8 @@ t_scene	*init_scene(){
 	scene->max_z = 0;
 	scene->min_z = 0;
 
-
+	scene->height = 600;
+	scene->width = 800;
 
 	scene->objs_list = 0x0;
 	scene->vertices_root = 0x0;

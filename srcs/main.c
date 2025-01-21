@@ -65,7 +65,7 @@ int main(int argc, char **argv){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(800, 800, "Scop", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(scene->width, scene->height, "Scop", NULL, NULL);
 	if (window == NULL)
 	{
 		dprintf(2, "Failed to create GLFW window\n");
@@ -177,12 +177,7 @@ void	input_handler(GLFWwindow *window){
 			scene->z_offset += .1;
 		}
 		else if (!key_press[GLFW_KEY_KP_ADD]){
-			// scene->fov++;
-			
-			if (scene->zoom + .1 > 2)
-				scene->zoom = 2;
-			else 
-				scene->zoom += .1;
+			scene->fov--;
 		}
 		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
 		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
@@ -198,12 +193,7 @@ void	input_handler(GLFWwindow *window){
 			scene->z_offset -= .1;
 		}
 		else if (!key_press[GLFW_KEY_KP_SUBTRACT]){
-			// scene->fov--;
-			
-			if (scene->zoom - .1 < .1)
-				scene->zoom = .1;
-			else 
-				scene->zoom -= .1;
+			scene->fov++;
 		}
 		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
 		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
