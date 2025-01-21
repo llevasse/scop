@@ -139,6 +139,7 @@
 
 	}	t_scene;
 
+	void	use_texture();
 	t_scene *parse_scene(int fd, char *obj_path);
 	t_vertices *create_vertices(float x, float y, float z, t_scene *scene);
 	t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size);

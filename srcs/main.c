@@ -1,9 +1,12 @@
 #include "../include/scop.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../include/stb_image.h"
 
 struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
 struct s_scene		*scene;
 int					window_fd = -1;
+unsigned int		texture;
 short				key_press[348];
 GLuint 				programID = -1, VAO = -1;
 GLuint				VBO, EBO;
@@ -87,6 +90,9 @@ int main(int argc, char **argv){
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	use_texture();
+
+
 	while (!glfwWindowShouldClose(window)){
 		input_handler(window);
 		openglObjInit();
@@ -105,6 +111,31 @@ int main(int argc, char **argv){
 	}
 	return (0);
 
+}
+
+void	use_texture(){
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("texture/minecraft_bee.jpg", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+		dprintf(2, "Failed to load default texture\n");
+		add_to_garbage(0x0);
+    }
+    stbi_image_free(data);
 }
 
 void	print_error(const char *fmt, va_list ap){
@@ -279,7 +310,7 @@ void	render(GLFWwindow *window){
 	glDepthFunc(GL_LESS);
 	glUseProgram(programID);
 	
-
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	if (number_of_segment_to_display > scene->display_vertices_count)
 		number_of_segment_to_display = scene->display_vertices_count;
@@ -325,13 +356,16 @@ void	openglObjInit(){
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 6) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 8) * sizeof(float), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (scene->display_vertices_count) * sizeof(GLuint), g_element_buffer_data, GL_STATIC_DRAW);

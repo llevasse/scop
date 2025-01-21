@@ -1,7 +1,7 @@
 # Blender v3.0.1 OBJ File: ''
 # www.blender.org
-#mtllib scene.mtl
-mtllib ./model/Low_Poly_Mill_Small/scene.mtl
+mtllib scene.mtl
+#mtllib ./model/Low_Poly_Mill_Small/scene.mtl
 
 o propeller
 v 1.058568 5.557261 -0.132348
