@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 	int fd = open_file(argv[1], ".obj");
 	if (fd < 0)
 		free_garbage();
-	scene = parse_scene(fd);
+	scene = parse_scene(fd, argv[1]);
 	printf("max/min x : %f %f\n", scene->max_x, scene->min_x);
 	printf("max/min y : %f %f\n", scene->max_y, scene->min_y);
 	printf("max/min z : %f %f\n", scene->max_z, scene->min_z);
@@ -195,9 +195,9 @@ void	input_handler(GLFWwindow *window){
 		else if (!key_press[GLFW_KEY_KP_ADD]){
 			scene->fov--;
 		}
-		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
-		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
-		printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
+		// printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
+		// printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
+		// printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)){
 		if (glfwGetKey(window, GLFW_KEY_Y)){
@@ -224,9 +224,9 @@ void	input_handler(GLFWwindow *window){
 		else if (!key_press[GLFW_KEY_KP_SUBTRACT]){
 			scene->fov++;
 		}
-		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
-		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
-		printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
+		// printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
+		// printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
+		// printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_P)){
 		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);

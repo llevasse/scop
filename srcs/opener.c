@@ -4,7 +4,7 @@ extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
 int open_file(char *path, char *extension){
-	char *trim_path = ft_strtrim(path, " \n\t\r");	//TODO handle relative path
+	char *trim_path = ft_strtrim(path, " \n\t\r");
 	if (!trim_path)
 		return (-1);
 	if (ft_strcmp(trim_path + (ft_strlen(trim_path) - ft_strlen(extension)), extension)){

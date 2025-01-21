@@ -52,7 +52,7 @@ t_scene	*init_scene(){
 	return (scene);
 }
 
-t_scene *parse_scene(int fd){
+t_scene *parse_scene(int fd, char *obj_path){
 	t_scene *scene = init_scene();
  	t_obj *root_obj_list = 0x0;
 	char	*s = get_next_line(fd);
@@ -73,7 +73,7 @@ t_scene *parse_scene(int fd){
 			}
 			if (!ft_strcmp(line_content[0], "mtllib")){
 				if (line_content[1]){
-					scene->material_list = parse_mtl(line_content[1]);
+					scene->material_list = parse_mtl(line_content[1], obj_path);
 					if (!scene->material_list){
 						free(s);
 						free_garbage();
@@ -340,10 +340,23 @@ void print_material(t_material *material){
 	printf("\t\t%d illum\n", material->illum);
 }
 
-t_material	*parse_mtl(char *path){
+size_t ft_strrchr_pos(char *s, char c){
+	return (ft_strrchr(s, c) - s);
+}
+
+t_material	*parse_mtl(char *path, char *obj_path){
+	if (path[0] != '/'){
+		char *s_path = ft_substr(obj_path, 0, ft_strrchr_pos(obj_path, '/') + 1);
+		add_to_garbage(s_path);
+		path = ft_strjoin(s_path, path);
+		add_to_garbage(path);
+	}
 	int fd = open_file(path, ".mtl");
-	if (fd < 0)
+
+	if (fd < 0){
+		dprintf(2, "Can't open %s\n", path);
 		return (0x0);
+	}
 	t_material *material = malloc(sizeof(struct s_material));
 	add_to_garbage(material);
 	t_material *root = material;

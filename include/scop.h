@@ -139,7 +139,7 @@
 
 	}	t_scene;
 
-	t_scene *parse_scene(int fd);
+	t_scene *parse_scene(int fd, char *obj_path);
 	t_vertices *create_vertices(float x, float y, float z, t_scene *scene);
 	t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size);
 	void	link_faces_to_materials(t_scene *scene);
@@ -149,7 +149,7 @@
 	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
 	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
-	t_material	*parse_mtl(char *path);
+	t_material	*parse_mtl(char *path, char *obj_path);
 	void	pass_obj_list_to_tab(t_scene *scene);
 
 	void	add_to_garbage(void *addr);
