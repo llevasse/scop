@@ -81,6 +81,7 @@ void	setMatrix(t_scene *scene){
 			scene->matrix[i][j] = 0.0;
 			scene->persepective_matrix[i][j] = 0.0;
 			scene->matrix_camera[i][j] = 0.0;
+			scene->scale_matrix[i][j] = 0;
 		}
 	}
 
@@ -106,7 +107,6 @@ void	setMatrix(t_scene *scene){
 			scene->matrix_x_rotation[i][j] = 0;
 			scene->matrix_y_rotation[i][j] = 0;
 			scene->matrix_z_rotation[i][j] = 0;
-			scene->scale_matrix[i][j] = 0;
 		}
 	}
 	scene->matrix_x_rotation[0][0] = 1;
@@ -133,20 +133,17 @@ void	setMatrix(t_scene *scene){
 	scene->scale_matrix[3][3] = 1;
 }
 
-void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]){
-	(void)scene;
+void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){
 	t_vertices	tmp;
-	(void)tmp;
 	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
     tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];
     tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + matrix[3][2];
-	p->matrixed_x = tmp.matrixed_x;
-	p->matrixed_y = tmp.matrixed_y;
-	p->matrixed_z = tmp.matrixed_z;
+	p->matrixed_x	= tmp.matrixed_x;
+	p->matrixed_y	= tmp.matrixed_y;
+	p->matrixed_z	= tmp.matrixed_z;
     float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
 
-    // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
-    if (w != 0) { 
+    if (w != 0) {
         p->matrixed_x /= w; 
         p->matrixed_y /= w; 
         p->matrixed_z /= w; 

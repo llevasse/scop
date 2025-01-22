@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/scop",
-            "args": ["model/Low_Cube/untitled.obj"],	
+            "args": ["model/42.obj"],	
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

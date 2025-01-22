@@ -84,8 +84,8 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
 				rotate_point(face->vertices[i], qx, qy, qz);
-				multiplyPointWithMatrix(scene, face->vertices[i], scene->scale_matrix);
-				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
+				multiplyPointWithMatrix(face->vertices[i], scene->scale_matrix);
+				multiplyPointWithMatrix(face->vertices[i], scene->matrix);
 
 //				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
 

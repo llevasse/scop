@@ -163,7 +163,7 @@
 	void	print_material(t_material *material);
 
 	void	setMatrix(t_scene *scene);
-	void	multiplyPointWithMatrix(t_scene *scene, t_vertices *p, float matrix[4][4]);
+	void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]);
 	void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p);
 	
 	void	render_obj(t_scene *scene, t_obj *obj);
