@@ -4,8 +4,6 @@ extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 unsigned int			positionBufferObject;
 extern GLfloat			*g_vertex_buffer_data;
-extern GLuint			*g_element_buffer_data;
-extern short			*g_matrixed_vertices_check;
 
 
 void	initVertexBuffer(const float *vertexPositions){
@@ -79,17 +77,15 @@ void	render_obj(t_scene *scene, t_obj *obj){
 		t_faces	*face = obj->faces;
 		while (face){
 			i = 0;
-//			colour_offset = (count % 3 ? .003 : count % 5 ? .1 : count % 7 ? .025 : count % 9 ? .25 : count % 4 ? .05 : count % 6 ? .07 : count % 8 ? .04 : count % 2 ? .06 : 0);
-			colour_offset = (count % 3 ? .03 : count % 5 ? .05 : count % 7 ? .07 : count % 9 ? .09 : count % 4 ? .04 : count % 6 ? .06 : count % 8 ? .08 : count % 2 ? .02 : 0);
+			//colour_offset = (count % 3 ? .03 : count % 5 ? .05 : count % 7 ? .07 : count % 9 ? .09 : count % 4 ? .04 : count % 6 ? .06 : count % 8 ? .08 : count % 2 ? .02 : 0);
+			colour_offset = (count % 3 ? .04 : count % 5 ? .08 : count % 7 ? .15 : count % 9 ? .19 : count % 4 ? .23 : count % 6 ? .42 : count % 8 ? .0118 : count % 2 ? .0815 : 0);
 			while (face->vertices[i]){
-				//printf("g_vertex_buffer_data position : %zu, v id : %zu\n", j, face->vertices[i]->id);
-				//printf ("\t%f %f %f\n", face->vertices[i]->x, face->vertices[i]->y, face->vertices[i]->z);
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
 				rotate_point(face->vertices[i], qx, qy, qz);
-				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 				multiplyPointWithMatrix(scene, face->vertices[i], scene->scale_matrix);
+				multiplyPointWithMatrix(scene, face->vertices[i], scene->matrix);
 
 //				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
 
@@ -113,7 +109,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					g_vertex_buffer_data[j++] = -face->vertices[i]->matrixed_y;
 				}
 
-				g_matrixed_vertices_check[face->vertices[i]->id] = 1;
 				pnt_nb++;
 				i++;
 			}
@@ -122,7 +117,4 @@ void	render_obj(t_scene *scene, t_obj *obj){
 		}
 		obj = obj->next;
 	}
-
-	for (size_t i = 0; i<scene->vertices_count;i++)
-		g_matrixed_vertices_check[i] = 0;
 }

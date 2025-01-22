@@ -13,7 +13,6 @@ GLuint				VBO, EBO;
 unsigned long long	iteration = 0;
 
 GLfloat				*g_vertex_buffer_data;
-short				*g_matrixed_vertices_check;
 
 float				texture_change;
 
@@ -48,10 +47,7 @@ int main(int argc, char **argv){
 	printf("scene origin : %f %f %f\n", scene->origin.x, scene->origin.y, scene->origin.z);
 	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 8) + 1));
 	add_to_garbage(g_vertex_buffer_data);
-	g_matrixed_vertices_check = malloc(sizeof(short) * (scene->vertices_count + 1));
-	add_to_garbage(g_matrixed_vertices_check);
-	for (size_t i = 0; i<scene->vertices_count;i++)
-		g_matrixed_vertices_check[i] = 0;
+
 	for (size_t i = 0; i<=(scene->display_vertices_count * 8);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
@@ -267,12 +263,6 @@ void	render(GLFWwindow *window){
 	
 	render_obj(scene, scene->objs_list);
 
-	//printf("wireframe view : %d\n", scene->wireframe_view);
-	//printf("zoom : %f\n", scene->zoom);
-	/*for (size_t i=0; i<number_of_segment_to_display; i += 2){
-		printf("%d %d\n", g_element_buffer_data[i], g_element_buffer_data[i + 1]);
-	}
-	printf("\n\n");*/
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -299,7 +289,6 @@ void	render(GLFWwindow *window){
 				scene->colour_oppacity = 0;
 			}
 		}
-		printf("%f\n", scene->colour_oppacity);
 	}
 	glUniform1f(colour_oppacity_location, scene->colour_oppacity);
 
