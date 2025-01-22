@@ -15,6 +15,8 @@ unsigned long long	iteration = 0;
 GLfloat				*g_vertex_buffer_data;
 short				*g_matrixed_vertices_check;
 
+float				texture_change;
+
 int main(int argc, char **argv){
 	if (argc != 2){
 		dprintf(2, "wrong number of arguments\n");
@@ -76,7 +78,6 @@ int main(int argc, char **argv){
         return -1;
     }
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-	programTextureID = loadShaders("./shaders/vertexShader.glsl", "./shaders/textureShader.glsl");
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	use_texture();
@@ -87,8 +88,8 @@ int main(int argc, char **argv){
 		openglObjInit();
 		render(window);
 
-		//glfwPollEvents();
-		glfwWaitEvents();
+		glfwPollEvents();
+		//glfwWaitEvents();
 	}
 	glfwTerminate();
 	t_garbage *tmp = g_garbage_collector_root;
@@ -253,7 +254,7 @@ void	input_handler(GLFWwindow *window){
 	}
 	
 	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){
-		scene->texture_mode = !scene->texture_mode;
+		texture_change = 1;
 	}
 	
 	for (int i =0; i<348;i++){
@@ -276,11 +277,33 @@ void	render(GLFWwindow *window){
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glDepthFunc(GL_LESS);
-	if (scene->texture_mode)
-		glUseProgram(programTextureID);
-	else
-		glUseProgram(programID);
+	float	colour_oppacity_location = glGetUniformLocation(programID, "textureOppacity");
+	glUseProgram(programID);
 	
+	if (texture_change){
+		if (scene->colour_mode){
+			scene->colour_oppacity += .05;
+			if (scene->colour_oppacity >= 1){
+				texture_change = 0;
+				scene->colour_mode = 0;
+				scene->texture_mode = 1;
+				scene->colour_oppacity = 1;
+			}
+		}
+		else{
+			scene->colour_oppacity -= .05;
+			if (scene->colour_oppacity <= 0){
+				texture_change = 0;
+				scene->colour_mode = 1;
+				scene->texture_mode = 0;
+				scene->colour_oppacity = 0;
+			}
+		}
+		printf("%f\n", scene->colour_oppacity);
+	}
+	glUniform1f(colour_oppacity_location, scene->colour_oppacity);
+
+
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glBindVertexArray(VAO);

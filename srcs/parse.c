@@ -49,7 +49,9 @@ t_scene	*init_scene(){
 	scene->z_scale = 1;
 
 	scene->movement_mode = 0;
+	scene->colour_mode = 0;
 	scene->texture_mode = 0;
+	scene->colour_oppacity = 1;
 	return (scene);
 }
 
