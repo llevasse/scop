@@ -44,8 +44,8 @@ t_scene	*init_scene(){
 	scene->texture_coordinates_tab = 0x0;
 	scene->texture_coordinates_count = 0;
 
-	scene->x_scale = 10;
-	scene->y_scale = 10;
+	scene->x_scale = 1;
+	scene->y_scale = 1;
 	scene->z_scale = 1;
 
 	scene->movement_mode = 0;

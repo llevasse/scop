@@ -2,11 +2,18 @@
 
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
+extern short			key_press[348];
 
 void	set_view_matrix(t_scene *scene){
-	float	eyes[3] = {scene->x_offset, scene->y_offset, scene->z_offset + -(scene->max_z - scene->min_z)};
+	float	eyes[3] = {scene->x_offset, scene->y_offset, scene->z_offset + -(scene->max_z + scene->min_z)};
 	float	center[3] = {scene->x_offset,scene->y_offset,scene->z_offset};
+	//float	center[3] = {0,0,0};
 	float	up[3] = {0, 1, 0};
+
+	if (key_press[GLFW_KEY_P]){
+		printf("camera : x : %f y : %f z : %f\n", eyes[0], eyes[1], eyes[2]);
+		printf("center : x : %f y : %f z : %f\n", center[0], center[1], center[2]);
+	}
 
 
 	float	f[3] = {(center[0]-eyes[0]) * (1.0 / 3.0), (center[1]-eyes[1]) * (1.0 / 3.0), (center[2]-eyes[2]) * (1.0 / 3.0)};

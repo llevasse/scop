@@ -30,6 +30,7 @@ SRC						=	srcs/main.c \
 							srcs/matrices.c \
 							srcs/renderers.c \
 							srcs/loadShaders.c \
+							srcs/input_handler.c \
 							glad/src/glad.c
 							
 
