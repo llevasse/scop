@@ -164,18 +164,18 @@ void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){
 
 void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p){
 	t_vertices tmp;
-    tmp.matrixed_y   = p->matrixed_y * scene->matrix_x_rotation[1][1] + p->matrixed_z * scene->matrix_x_rotation[1][2];
-    tmp.matrixed_z   = p->matrixed_y * scene->matrix_x_rotation[2][1] + p->matrixed_z * scene->matrix_x_rotation[2][2];
+	tmp.matrixed_x   = p->matrixed_x * scene->matrix_z_rotation[0][0] + p->matrixed_y * scene->matrix_z_rotation[0][1];
+    tmp.matrixed_y   = p->matrixed_x * scene->matrix_z_rotation[1][0] + p->matrixed_y * scene->matrix_z_rotation[1][1];
+    p->matrixed_x = tmp.matrixed_x;
 	p->matrixed_y = tmp.matrixed_y;
-	p->matrixed_z = tmp.matrixed_z;
-    
+
 	tmp.matrixed_x   = p->matrixed_x * scene->matrix_y_rotation[0][0] + p->matrixed_z * scene->matrix_y_rotation[0][2];
     tmp.matrixed_z   = p->matrixed_x * scene->matrix_y_rotation[2][0] + p->matrixed_z * scene->matrix_y_rotation[2][2];
     p->matrixed_x = tmp.matrixed_x;
 	p->matrixed_z = tmp.matrixed_z;
     
-	tmp.matrixed_x   = p->matrixed_x * scene->matrix_z_rotation[0][0] + p->matrixed_y * scene->matrix_z_rotation[0][1];
-    tmp.matrixed_y   = p->matrixed_x * scene->matrix_z_rotation[1][0] + p->matrixed_y * scene->matrix_z_rotation[1][1];
-    p->matrixed_x = tmp.matrixed_x;
+    tmp.matrixed_y   = p->matrixed_y * scene->matrix_x_rotation[1][1] + p->matrixed_z * scene->matrix_x_rotation[1][2];
+    tmp.matrixed_z   = p->matrixed_y * scene->matrix_x_rotation[2][1] + p->matrixed_z * scene->matrix_x_rotation[2][2];
 	p->matrixed_y = tmp.matrixed_y;
+	p->matrixed_z = tmp.matrixed_z;
 }

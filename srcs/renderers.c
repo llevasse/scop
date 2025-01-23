@@ -14,58 +14,6 @@ void	initVertexBuffer(const float *vertexPositions){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void	set_quaternions(t_scene *scene, t_quaternions *qx, t_quaternions *qy, t_quaternions *qz){
-	qx->w = cos((scene->x_angle * RADIAN) / 2);
-	qx->x = sin((scene->x_angle * RADIAN) / 2) * 1;
-	qx->y = 0;
-	qx->z = 0;
-
-
-	qy->w = cos((scene->y_angle * RADIAN) / 2);
-	qy->x = 0;
-	qy->y = sin((scene->y_angle * RADIAN) / 2) * 1;
-	qy->z = 0;
-
-
-	qz->w = cos((scene->z_angle * RADIAN) / 2);
-	qz->x = 0;
-	qz->y = 0;
-	qz->z = sin((scene->z_angle * RADIAN) / 2) * 1;
-}
-
-t_quaternions	get_quaternions_product(t_quaternions r, t_quaternions s){
-	t_quaternions q;
-	q.w = (r.w * s.w) - (r.x * s.x) - (r.y * s.y) - (r.z * s.z);
-	q.x = (r.w * s.x) + (r.x * s.w) - (r.y * s.z) + (r.z * s.y);
-	q.y = (r.w * s.y) + (r.x * s.z) + (r.y * s.w) - (r.z * s.x);
-	q.z = (r.w * s.z) - (r.x * s.y) + (r.y * s.x) + (r.z * s.w);
-	return (q);
-}
-
-t_quaternions	get_quaternions_inversion(t_quaternions r){
-	t_quaternions q = r;
-	q.x = -q.x;
-	q.y = -q.y;
-	q.z = -q.z;
-	return (q);
-}
-
-void	rotate_point(t_vertices *v, t_quaternions qx, t_quaternions qy, t_quaternions qz){
-	t_quaternions p;
-	p.w = 0;
-	p.x = v->matrixed_x;
-	p.y = v->matrixed_y;
-	p.z = v->matrixed_z;
-
-	p = get_quaternions_product(get_quaternions_product(get_quaternions_inversion(qx), p), qx);
-	p = get_quaternions_product(get_quaternions_product(get_quaternions_inversion(qy), p), qy);
-	p = get_quaternions_product(get_quaternions_product(get_quaternions_inversion(qz), p), qz);
-
-	v->matrixed_x = p.x;
-	v->matrixed_y = p.y;
-	v->matrixed_z = p.z;
-}
-
 void	render_obj(t_scene *scene, t_obj *obj){
 	(void)scene;
 	(void)obj;
@@ -83,11 +31,12 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
-				rotate_point(face->vertices[i], qx, qy, qz);
+				multiplyPointWithMatrix(face->vertices[i], scene->matrix_y_rotation);
+				multiplyPointWithMatrix(face->vertices[i], scene->matrix_z_rotation);
+				multiplyPointWithMatrix(face->vertices[i], scene->matrix_x_rotation);
 				multiplyPointWithMatrix(face->vertices[i], scene->scale_matrix);
 				multiplyPointWithMatrix(face->vertices[i], scene->matrix);
 
-//				multiplyPointWithRotationsMatrixes(scene, face->vertices[i]);
 
 				// coordinates
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;

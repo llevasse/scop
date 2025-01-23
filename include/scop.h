@@ -123,7 +123,7 @@
 		double					x_offset, y_offset, z_offset;
 		double					x_scale, y_scale, z_scale;
 		float					scale_matrix[4][4];
-		double					matrix_x_rotation[3][3], matrix_y_rotation[3][3], matrix_z_rotation[3][3];
+		float					matrix_x_rotation[4][4], matrix_y_rotation[4][4], matrix_z_rotation[4][4];
 
 		float					max_x, min_x;
 		float					max_y, min_y;

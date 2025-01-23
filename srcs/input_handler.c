@@ -80,7 +80,7 @@ void	input_handler(GLFWwindow *window){
 		else if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->x_scale += .1;
 			scene->y_scale += .1;
-			//scene->z_scale += .1;
+			scene->z_scale += .1;
 		}
 		else if (!key_press[GLFW_KEY_KP_ADD]){
 			scene->fov--;
@@ -114,7 +114,7 @@ void	input_handler(GLFWwindow *window){
 		else if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->x_scale -= .1;
 			scene->y_scale -= .1;
-			//scene->z_scale -= .1;
+			scene->z_scale -= .1;
 		}
 		else if (!key_press[GLFW_KEY_KP_SUBTRACT]){
 			scene->fov++;
