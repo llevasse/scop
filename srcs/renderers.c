@@ -23,7 +23,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 		t_faces	*face = obj->faces;
 		while (face){
 			i = 0;
-			//colour_offset = (count % 3 ? .03 : count % 5 ? .05 : count % 7 ? .07 : count % 9 ? .09 : count % 4 ? .04 : count % 6 ? .06 : count % 8 ? .08 : count % 2 ? .02 : 0);
 			colour_offset = (count % 3 ? .04 : count % 5 ? .08 : count % 7 ? .15 : count % 9 ? .19 : count % 4 ? .23 : count % 6 ? .42 : count % 8 ? .0118 : count % 2 ? .0815 : 0);
 			while (face->vertices[i]){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
@@ -32,8 +31,9 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				multiplyPointWithMatrix(face->vertices[i], scene->matrix_y_rotation);
 				multiplyPointWithMatrix(face->vertices[i], scene->matrix_z_rotation);
 				multiplyPointWithMatrix(face->vertices[i], scene->matrix_x_rotation);
+				multiplyPointWithMatrix(face->vertices[i], scene->translation_matrix);
 				multiplyPointWithMatrix(face->vertices[i], scene->scale_matrix);
-				multiplyPointWithMatrix(face->vertices[i], scene->matrix);
+				multiplyPointWithMatrix(face->vertices[i], scene->persepective_matrix);
 
 
 				// coordinates

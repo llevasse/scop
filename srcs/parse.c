@@ -7,7 +7,7 @@ t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
 
-	scene->fov = 90;
+	scene->fov = 45;
 	scene->far_plane_distance = 1000;
 	scene->near_plane_distance = 1;
 	scene->wireframe_view = 0;

@@ -78,7 +78,11 @@ void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
 }
 
 void	setMatrix(t_scene *scene){
-	float scale = 1 / tanf((scene->fov * 0.5)); 
+	float	scale = 1 / tanf((scene->fov * 0.5) * RADIAN); 
+	float	aspect_ratio = scene->width / scene->height;
+	float	near_z = 1, far_z = 10, z_range = near_z - far_z;
+	float	A = (-far_z - near_z) / z_range;
+	float	B = 2.0f * far_z * near_z / z_range;
 	for (int i =0;i < 4;i++){
 		for (int j=0; j<4;j++){	// set every matrix as identiy matrices
 			scene->matrix[i][j] = i == j;
@@ -92,18 +96,18 @@ void	setMatrix(t_scene *scene){
 		}
 	}
 
-	scene->persepective_matrix[0][0] = ((float)scene->height / (float)scene->width) * scale;
+	scene->persepective_matrix[0][0] = scale / aspect_ratio;
 
 	scene->persepective_matrix[1][1] = scale;
 
-	scene->persepective_matrix[2][2] = (scene->far_plane_distance) / (scene->near_plane_distance - scene->far_plane_distance);
-	scene->persepective_matrix[2][3] = -1;
+	scene->persepective_matrix[2][2] = A;
+	scene->persepective_matrix[3][2] = -1;
+	scene->persepective_matrix[2][3] = B;
 
-	scene->persepective_matrix[3][2] = -((scene->far_plane_distance) * scene->near_plane_distance) / (scene->far_plane_distance - scene->near_plane_distance);
 	scene->persepective_matrix[3][3] = 0;
 
-	set_view_matrix(scene);
-	f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
+	//set_view_matrix(scene);
+	//f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
 	scene->matrix_x_rotation[1][1] = cos(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[1][2] = -sin(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[2][1] = sin(scene->x_angle * RADIAN);
@@ -123,9 +127,9 @@ void	setMatrix(t_scene *scene){
 	scene->scale_matrix[1][1] = scene->y_scale;
 	scene->scale_matrix[2][2] = scene->z_scale;
 
-	scene->translation_matrix[0][3] = scene->x_offset;
-	scene->translation_matrix[1][3] = scene->y_offset;
-	scene->translation_matrix[2][3] = scene->z_offset;
+	scene->translation_matrix[3][0] = scene->x_offset;
+	scene->translation_matrix[3][1] = scene->y_offset;
+	scene->translation_matrix[3][2] = scene->z_offset;
 
 }
 
