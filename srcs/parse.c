@@ -13,7 +13,7 @@ t_scene	*init_scene(){
 	scene->wireframe_view = 0;
 	scene->zoom = 1;
 	scene->x_angle = 0;
-	scene->y_angle = 90;
+	scene->y_angle = 0;
 	scene->z_angle = 0;
 	scene->x_offset = 0;
 	scene->y_offset = 0;

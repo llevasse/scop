@@ -34,7 +34,7 @@ void	set_view_matrix(t_scene *scene){
 
 	scene->matrix_camera[3][0] = -(s[0] * eyes[0]) + (s[1] * eyes[1]) + (s[2] * eyes[2]);
 	scene->matrix_camera[3][1] = -(u[0] * eyes[0]) + (u[1] * eyes[1]) + (u[2] * eyes[2]);
-	scene->matrix_camera[3][2] = (f[0] * eyes[0]) + (f[1] * eyes[1]) + (f[2] * eyes[2]);
+	scene->matrix_camera[3][2] = -(f[0] * eyes[0]) + (f[1] * eyes[1]) + (f[2] * eyes[2]);
 }
 
 void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
@@ -79,16 +79,16 @@ void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
 
 void	setMatrix(t_scene *scene){
 	float scale = 1 / tanf((scene->fov * 0.5)); 
-	float	identity[4][4] = {	{1,0,0,0},
-								{0,1,0,0},
-								{0,0,1,0},
-								{0,0,0,1}};
 	for (int i =0;i < 4;i++){
-		for (int j=0; j<4;j++){
-			scene->matrix[i][j] = 0.0;
-			scene->persepective_matrix[i][j] = 0.0;
-			scene->matrix_camera[i][j] = 0.0;
-			scene->scale_matrix[i][j] = 0;
+		for (int j=0; j<4;j++){	// set every matrix as identiy matrices
+			scene->matrix[i][j] = i == j;
+			scene->persepective_matrix[i][j] = i == j;
+			scene->matrix_camera[i][j] = i == j;
+			scene->scale_matrix[i][j] = i == j;
+			scene->translation_matrix[i][j] = i == j;
+			scene->matrix_x_rotation[i][j] = i == j;
+			scene->matrix_y_rotation[i][j] = i == j;
+			scene->matrix_z_rotation[i][j] = i == j;
 		}
 	}
 
@@ -100,23 +100,10 @@ void	setMatrix(t_scene *scene){
 	scene->persepective_matrix[2][3] = -1;
 
 	scene->persepective_matrix[3][2] = -((scene->far_plane_distance) * scene->near_plane_distance) / (scene->far_plane_distance - scene->near_plane_distance);
+	scene->persepective_matrix[3][3] = 0;
 
-
-	scene->matrix_camera[0][0] = 1;
-	scene->matrix_camera[1][1] = 1;
-	scene->matrix_camera[2][2] = 1;
-	scene->matrix_camera[3][3] = 1;
 	set_view_matrix(scene);
-	f4x4MatrixMult(&scene->matrix, identity, scene->matrix_camera);
-	f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix);
-	for (int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			scene->matrix_x_rotation[i][j] = 0;
-			scene->matrix_y_rotation[i][j] = 0;
-			scene->matrix_z_rotation[i][j] = 0;
-		}
-	}
-	scene->matrix_x_rotation[0][0] = 1;
+	f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
 	scene->matrix_x_rotation[1][1] = cos(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[1][2] = -sin(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[2][1] = sin(scene->x_angle * RADIAN);
@@ -124,7 +111,6 @@ void	setMatrix(t_scene *scene){
 		
 	scene->matrix_y_rotation[0][0] = cos(scene->y_angle * RADIAN);
 	scene->matrix_y_rotation[0][2] = sin(scene->y_angle * RADIAN);
-	scene->matrix_y_rotation[1][1] = 1;
 	scene->matrix_y_rotation[2][0] = -sin(scene->y_angle * RADIAN);
 	scene->matrix_y_rotation[2][2] = cos(scene->y_angle * RADIAN);
 	
@@ -132,12 +118,15 @@ void	setMatrix(t_scene *scene){
 	scene->matrix_z_rotation[0][1] = -sin(scene->z_angle * RADIAN);
 	scene->matrix_z_rotation[1][0] = sin(scene->z_angle * RADIAN);
 	scene->matrix_z_rotation[1][1] = cos(scene->z_angle * RADIAN);
-	scene->matrix_z_rotation[2][2] = 1;
 
 	scene->scale_matrix[0][0] = scene->x_scale;
 	scene->scale_matrix[1][1] = scene->y_scale;
 	scene->scale_matrix[2][2] = scene->z_scale;
-	scene->scale_matrix[3][3] = 1;
+
+	scene->translation_matrix[0][3] = scene->x_offset;
+	scene->translation_matrix[1][3] = scene->y_offset;
+	scene->translation_matrix[2][3] = scene->z_offset;
+
 }
 
 void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){

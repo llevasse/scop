@@ -17,8 +17,6 @@ void	initVertexBuffer(const float *vertexPositions){
 void	render_obj(t_scene *scene, t_obj *obj){
 	(void)scene;
 	(void)obj;
-	t_quaternions qx, qy, qz;
-	set_quaternions(scene, &qx, &qy, &qz);
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	double colour_offset;
 	while (obj){
