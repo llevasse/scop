@@ -61,21 +61,21 @@ void	input_handler(GLFWwindow *window){
 				scene->y_scale += .1;
 			}	
 			else
-				scene->y_offset += .1;
+				scene->y_offset += scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_X)){
 			if (glfwGetKey(window, GLFW_KEY_S)){
 				scene->x_scale += .1;
 			}	
 			else
-				scene->x_offset += .1;
+				scene->x_offset += scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_Z)){
 			if (glfwGetKey(window, GLFW_KEY_S)){
 				scene->z_scale += .1;
 			}	
 			else
-				scene->z_offset += .01;
+				scene->z_offset += scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->x_scale += .05;
@@ -95,21 +95,21 @@ void	input_handler(GLFWwindow *window){
 				scene->y_scale -= .1;
 			}	
 			else
-				scene->y_offset -= .1;
+				scene->y_offset -= scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_X)){
 			if (glfwGetKey(window, GLFW_KEY_S)){
 				scene->x_scale -= .1;
 			}	
 			else
-				scene->x_offset -= .1;
+				scene->x_offset -= scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_Z)){
 			if (glfwGetKey(window, GLFW_KEY_S)){
 				scene->z_scale -= .1;
 			}	
 			else
-				scene->z_offset -= .01;
+				scene->z_offset -= scene->translation_step;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->x_scale -= .05;
@@ -124,6 +124,7 @@ void	input_handler(GLFWwindow *window){
 	else if (glfwGetKey(window, GLFW_KEY_P)){
 		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
 		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
+		printf("translation step %f\n", scene->translation_step);
 		printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
 
 		t_faces *tmp = scene->objs_list->faces;

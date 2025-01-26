@@ -120,7 +120,7 @@
 		float					matrix_camera[4][4];
 		
 		double					x_angle, y_angle, z_angle;
-		double					x_offset, y_offset, z_offset;
+		double					x_offset, y_offset, z_offset, translation_step;
 		double					x_scale, y_scale, z_scale;
 		float					scale_matrix[4][4], translation_matrix[4][4];
 		float					matrix_x_rotation[4][4], matrix_y_rotation[4][4], matrix_z_rotation[4][4];

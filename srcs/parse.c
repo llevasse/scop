@@ -111,6 +111,14 @@ t_scene *parse_scene(int fd, char *obj_path){
 	for (size_t i=0; i<scene->vertices_count;i++){
 		printf("\tvertices[%zu] : id : %zu; xyz : %f %f %f\n", i, scene->vertices_tab[i]->id, scene->vertices_tab[i]->x, scene->vertices_tab[i]->y, scene->vertices_tab[i]->z);
 	}*/
+	
+	
+	scene->translation_step = (scene->max_x - scene->min_x) / 100;
+	float tmp = (scene->max_y - scene->min_y) / 100;
+	scene->translation_step = scene->translation_step > tmp ? scene->translation_step : tmp;
+	tmp = (scene->max_z - scene->min_z) / 100;
+	scene->translation_step = scene->translation_step > tmp ? scene->translation_step : tmp;
+
 	return (scene);
 }
 
