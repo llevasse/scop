@@ -118,6 +118,7 @@
 		float					matrix[4][4];
 		float					persepective_matrix[4][4];
 		float					matrix_camera[4][4];
+		float					model_matrix[4][4];
 		
 		double					x_angle, y_angle, z_angle;
 		double					x_offset, y_offset, z_offset, translation_step;

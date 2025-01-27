@@ -28,12 +28,16 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
-				multiplyPointWithMatrix(face->vertices[i], scene->matrix_y_rotation);
-				multiplyPointWithMatrix(face->vertices[i], scene->matrix_z_rotation);
-				multiplyPointWithMatrix(face->vertices[i], scene->matrix_x_rotation);
-				multiplyPointWithMatrix(face->vertices[i], scene->translation_matrix);
-				multiplyPointWithMatrix(face->vertices[i], scene->scale_matrix);
+				// multiplyPointWithMatrix(face->vertices[i], scene->scale_matrix);
+				// multiplyPointWithMatrix(face->vertices[i], scene->matrix_y_rotation);
+				// multiplyPointWithMatrix(face->vertices[i], scene->matrix_z_rotation);
+				// multiplyPointWithMatrix(face->vertices[i], scene->matrix_x_rotation);
+				// multiplyPointWithMatrix(face->vertices[i], scene->translation_matrix);
+
+				multiplyPointWithMatrix(face->vertices[i], scene->model_matrix);
 				multiplyPointWithMatrix(face->vertices[i], scene->persepective_matrix);
+				//multiplyPointWithMatrix(face->vertices[i], scene->matrix_camera);
+
 
 
 				// coordinates

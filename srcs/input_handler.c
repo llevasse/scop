@@ -121,20 +121,28 @@ void	input_handler(GLFWwindow *window){
 		}
 
 	}
-	else if (glfwGetKey(window, GLFW_KEY_P)){
+	else if (glfwGetKey(window, GLFW_KEY_P) && !key_press[GLFW_KEY_P]){
 		printf("rotation x:%f y:%f z:%f\n", scene->x_angle, scene->y_angle, scene->z_angle);
 		printf("offset x:%f y:%f z:%f\n", scene->x_offset, scene->y_offset, scene->z_offset);
 		printf("translation step %f\n", scene->translation_step);
 		printf("scale : %f %f %f\n", scene->x_scale, scene->y_scale, scene->z_scale);
+		printf("\tsize x : %f\n", scene->max_x - scene->min_x);
+		printf("\tsize y : %f\n", scene->max_y - scene->min_y);
+		printf("\tsize z : %f\n", scene->max_z - scene->min_z);
 
-		t_faces *tmp = scene->objs_list->faces;
+		for (size_t i = 0; i < scene->display_vertices_count * 8; i += 24){
+			for (size_t j = i; j < i + 24; j += 8)
+				printf("%f %f %f\t\t%f %f %f\n", g_vertex_buffer_data[i], g_vertex_buffer_data[i + 1], g_vertex_buffer_data[i + 2], g_vertex_buffer_data[i + 3], g_vertex_buffer_data[i + 4], g_vertex_buffer_data[i + 5]);
+			printf("\n");
+		}
+		/*t_faces *tmp = scene->objs_list->faces;
 		while (tmp){
 			for (int i =0 ;i<3;i++){
-				printf("%f %f %f\n", tmp->vertices[i]->x, tmp->vertices[i]->y, tmp->vertices[i]->z + scene->z_offset);
+				printf("%f %f %f\n", tmp->vertices[i]->x, tmp->vertices[i]->y, tmp->vertices[i]->z);
 			}
 			printf("\n");
 			tmp = tmp->next;
-		}
+		}*/
 	}
 	
 	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){

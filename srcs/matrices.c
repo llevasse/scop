@@ -5,8 +5,8 @@ extern struct s_garbage	*g_garbage_collector;
 extern short			key_press[348];
 
 void	set_view_matrix(t_scene *scene){
-	float	eyes[3] = {scene->x_offset, scene->y_offset, scene->z_offset + -(scene->max_z + scene->min_z)};
-	float	center[3] = {scene->x_offset,scene->y_offset,scene->z_offset};
+	float	eyes[3] = {4, 3, -3};
+	float	center[3] = {0,0,0};
 	//float	center[3] = {0,0,0};
 	float	up[3] = {0, 1, 0};
 
@@ -77,10 +77,20 @@ void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
 	(*m)[3][3] = result[3][3];
 }
 
+void	inverseF4x4Matrix(float (*m)[4][4]){
+	for (int i = 0; i < 4; i++){
+		for (int j = 0; j < 4; j++){
+			(*m)[i][j] = -((*m)[i][j]);
+		}
+	}
+}
+
 void	setMatrix(t_scene *scene){
+	float	rotation[4][4];
+
 	float	scale = 1 / tanf((scene->fov * 0.5) * RADIAN); 
 	float	aspect_ratio = scene->width / scene->height;
-	float	near_z = 1, far_z = 10, z_range = near_z - far_z;
+	float	near_z = 1, far_z = 100, z_range = near_z - far_z;
 	float	A = (-far_z - near_z) / z_range;
 	float	B = 2.0f * far_z * near_z / z_range;
 	for (int i =0;i < 4;i++){
@@ -93,6 +103,8 @@ void	setMatrix(t_scene *scene){
 			scene->matrix_x_rotation[i][j] = i == j;
 			scene->matrix_y_rotation[i][j] = i == j;
 			scene->matrix_z_rotation[i][j] = i == j;
+			scene->model_matrix[i][j] = i == j;
+			rotation[i][j] = i == j;
 		}
 	}
 
@@ -105,9 +117,11 @@ void	setMatrix(t_scene *scene){
 	scene->persepective_matrix[2][3] = B;
 
 	scene->persepective_matrix[3][3] = 0;
+	
 
-	//set_view_matrix(scene);
-	//f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
+	set_view_matrix(scene);
+	inverseF4x4Matrix(&scene->matrix_camera);
+	f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
 	scene->matrix_x_rotation[1][1] = cos(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[1][2] = -sin(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[2][1] = sin(scene->x_angle * RADIAN);
@@ -131,6 +145,13 @@ void	setMatrix(t_scene *scene){
 	scene->translation_matrix[3][1] = scene->y_offset;
 	scene->translation_matrix[3][2] = scene->z_offset;
 
+	f4x4MatrixMult(&rotation, scene->matrix_x_rotation, scene->matrix_z_rotation);
+	f4x4MatrixMult(&rotation, rotation, scene->matrix_y_rotation);
+
+
+	f4x4MatrixMult(&scene->model_matrix, scene->translation_matrix, rotation);
+	f4x4MatrixMult(&scene->model_matrix, scene->model_matrix, scene->scale_matrix);
+	f4x4MatrixMult(&scene->matrix, scene->model_matrix, scene->matrix_camera);
 }
 
 void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){
