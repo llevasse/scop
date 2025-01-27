@@ -138,7 +138,17 @@ void	render(GLFWwindow *window){
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glDepthFunc(GL_LESS);
 	float	colour_oppacity_location = glGetUniformLocation(programID, "textureOppacity");
+
+	GLuint modelMatrix = glGetUniformLocation(programID, "model");
+	GLuint viewMatrix = glGetUniformLocation(programID, "view");
+	GLuint projectionMatrix = glGetUniformLocation(programID, "projection");
+
 	glUseProgram(programID);
+
+	glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, &scene->model_matrix[0][0]);
+	glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, &scene->matrix_camera[0][0]);
+	glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, &scene->persepective_matrix[0][0]);
+
 	
 	if (texture_change){
 		if (scene->colour_mode){
