@@ -174,5 +174,11 @@
 	void	resizeViewport(GLFWwindow *window, int width, int height);
 	void	scroll_handler(GLFWwindow *window, double xOffset, double yOffset);
 	void	openglObjInit();
+
+	float	vector_dot_product(t_vertices *a, t_vertices *b);
+	float	matrixed_vector_dot_product(t_vertices *a, t_vertices *b);
+	float	vector_magnitude(t_vertices *v);
+	float	matrixed_vector_magnitude(t_vertices *v);
+	float	vector_angle(t_vertices *a, t_vertices *b);
 	
 #endif

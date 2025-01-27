@@ -31,6 +31,7 @@ SRC						=	srcs/main.c \
 							srcs/renderers.c \
 							srcs/loadShaders.c \
 							srcs/input_handler.c \
+							srcs/vectors.c \
 							glad/src/glad.c
 							
 
