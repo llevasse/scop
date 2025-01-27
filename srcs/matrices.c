@@ -37,7 +37,7 @@ void	set_view_matrix(t_scene *scene){
 	scene->matrix_camera[3][2] = -(f[0] * eyes[0]) + (f[1] * eyes[1]) + (f[2] * eyes[2]);
 }
 
-void	f4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
+void	d4x4MatrixMult(double (*m)[4][4], double m1[4][4], double m2[4][4]){
 	float	result[4][4];
 	result[0][0] = m1[0][0] * m2[0][0] + m1[1][0] * m2[0][1] + m1[2][0] * m2[0][2] + m1[3][0] * m2[0][3];
 	result[0][1] = m1[0][1] * m2[0][0] + m1[1][1] * m2[0][1] + m1[2][1] * m2[0][2] + m1[3][1] * m2[0][3];
@@ -86,13 +86,13 @@ void	inverseF4x4Matrix(float (*m)[4][4]){
 }
 
 void	setMatrix(t_scene *scene){
-	float	rotation[4][4];
+	double	rotation[4][4];
 
-	float	scale = 1 / tanf((scene->fov * 0.5) * RADIAN); 
-	float	aspect_ratio = scene->width / scene->height;
-	float	near_z = 1, far_z = 100, z_range = near_z - far_z;
-	float	A = (-far_z - near_z) / z_range;
-	float	B = 2.0f * far_z * near_z / z_range;
+	double	scale = 1 / tanf((scene->fov * 0.5) * RADIAN); 
+	double	aspect_ratio = scene->width / scene->height;
+	double	near_z = .01, far_z = 1000, z_range = near_z - far_z;
+	double	A = (far_z + near_z) / z_range;
+	double	B = (2.0f * far_z * near_z) / z_range;
 	for (int i =0;i < 4;i++){
 		for (int j=0; j<4;j++){	// set every matrix as identiy matrices
 			scene->matrix[i][j] = i == j;
@@ -108,20 +108,20 @@ void	setMatrix(t_scene *scene){
 		}
 	}
 
-	scene->persepective_matrix[0][0] = scale / aspect_ratio;
+	scene->persepective_matrix[0][0] = scale;
 
-	scene->persepective_matrix[1][1] = scale;
+	scene->persepective_matrix[1][1] = scale / aspect_ratio;
 
 	scene->persepective_matrix[2][2] = A;
-	scene->persepective_matrix[3][2] = -1;
-	scene->persepective_matrix[2][3] = B;
+	scene->persepective_matrix[2][3] = -1;
+	scene->persepective_matrix[3][2] = B;
 
 	scene->persepective_matrix[3][3] = 0;
 	
 
 	set_view_matrix(scene);
-	inverseF4x4Matrix(&scene->matrix_camera);
-	f4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
+	//inverseF4x4Matrix(&scene->matrix_camera);
+	d4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
 	scene->matrix_x_rotation[1][1] = cos(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[1][2] = -sin(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[2][1] = sin(scene->x_angle * RADIAN);
@@ -145,16 +145,16 @@ void	setMatrix(t_scene *scene){
 	scene->translation_matrix[3][1] = scene->y_offset;
 	scene->translation_matrix[3][2] = scene->z_offset;
 
-	f4x4MatrixMult(&rotation, scene->matrix_x_rotation, scene->matrix_z_rotation);
-	f4x4MatrixMult(&rotation, rotation, scene->matrix_y_rotation);
+	d4x4MatrixMult(&rotation, scene->matrix_x_rotation, scene->matrix_z_rotation);
+	d4x4MatrixMult(&rotation, rotation, scene->matrix_y_rotation);
 
 
-	f4x4MatrixMult(&scene->model_matrix, scene->translation_matrix, rotation);
-	f4x4MatrixMult(&scene->model_matrix, scene->model_matrix, scene->scale_matrix);
-	f4x4MatrixMult(&scene->matrix, scene->model_matrix, scene->matrix_camera);
+	d4x4MatrixMult(&scene->model_matrix, scene->translation_matrix, rotation);
+	d4x4MatrixMult(&scene->model_matrix, scene->model_matrix, scene->scale_matrix);
+	d4x4MatrixMult(&scene->matrix, scene->model_matrix, scene->matrix_camera);
 }
 
-void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){
+void	multiplyPointWithMatrix(t_vertices *p, double matrix[4][4]){
 	t_vertices	tmp;
 	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
     tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];

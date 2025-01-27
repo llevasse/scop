@@ -115,16 +115,13 @@
 		float					fov;
 		float					near_plane_distance;
 		float					far_plane_distance;
-		float					matrix[4][4];
-		float					persepective_matrix[4][4];
-		float					matrix_camera[4][4];
-		float					model_matrix[4][4];
+		double					matrix[4][4], persepective_matrix[4][4], matrix_camera[4][4], model_matrix[4][4];
 		
 		double					x_angle, y_angle, z_angle;
 		double					x_offset, y_offset, z_offset, translation_step;
 		double					x_scale, y_scale, z_scale;
-		float					scale_matrix[4][4], translation_matrix[4][4];
-		float					matrix_x_rotation[4][4], matrix_y_rotation[4][4], matrix_z_rotation[4][4];
+		double					scale_matrix[4][4], translation_matrix[4][4];
+		double					matrix_x_rotation[4][4], matrix_y_rotation[4][4], matrix_z_rotation[4][4];
 
 		float					max_x, min_x;
 		float					max_y, min_y;
@@ -164,7 +161,7 @@
 	void	print_material(t_material *material);
 
 	void	setMatrix(t_scene *scene);
-	void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]);
+	void	multiplyPointWithMatrix(t_vertices *p, double matrix[4][4]);
 	void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p);
 	
 	void	render_obj(t_scene *scene, t_obj *obj);

@@ -74,7 +74,7 @@ int main(int argc, char **argv){
         return -1;
     }
 	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-	glDisable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	use_texture();
 
