@@ -46,25 +46,10 @@ void	map_face_uv(t_faces *face){
 	t_vertices v = subtract_vectors(face->vertices[2], face->vertices[0]);
 	face->normal = vector_cross_product(&u, &v);
 
-	if (face->normal.x > face->normal.z){
+	normalize_vector(&face->normal);
+
+	if ((face->normal.x) < (face->normal.z))
 		face->direction = 'x';
-	}
-	else
-		face->direction = 'z';
-	return ;
-	float	dist_x, dist_z;
-	dist_x = fabsf(face->vertices[0]->x - face->vertices[1]->x);
-	dist_z = fabsf(face->vertices[0]->z - face->vertices[1]->z);
-
-	dist_x = dist_x > (fabsf(face->vertices[0]->x - face->vertices[2]->x)) ? dist_x : (fabsf(face->vertices[0]->x - face->vertices[2]->x));
-	dist_z = dist_z > (fabsf(face->vertices[0]->z - face->vertices[2]->z)) ? dist_z : (fabsf(face->vertices[0]->z - face->vertices[2]->z));
-
-	dist_x = dist_x > (fabsf(face->vertices[1]->x - face->vertices[2]->x)) ? dist_x : (fabsf(face->vertices[1]->x - face->vertices[2]->x));
-	dist_z = dist_z > (fabsf(face->vertices[1]->z - face->vertices[2]->z)) ? dist_z : (fabsf(face->vertices[1]->z - face->vertices[2]->z));
-
-	if (dist_x > dist_z){
-		face->direction = 'x';
-	}
 	else
 		face->direction = 'z';
 }

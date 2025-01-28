@@ -192,4 +192,5 @@
 	t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2);
 	t_vertices	vector_matrixed_cross_product(t_vertices *v1, t_vertices *v2);
 
+	void	normalize_vector(t_vertices *p);
 #endif

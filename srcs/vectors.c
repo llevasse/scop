@@ -23,17 +23,17 @@ float	matrixed_vector_magnitude(t_vertices *v){
 
 t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2){
 	t_vertices v;
-	v.x = (v1->y * v1->z) - (v1->z * v2->y);
-	v.y = (v1->z * v1->x) - (v1->x * v2->z);
-	v.z = (v1->x * v1->y) - (v1->y * v2->x);
+	v.x = (v1->y * v2->z) - (v1->z * v2->y);
+	v.y = (v1->z * v2->x) - (v1->x * v2->z);
+	v.z = (v1->x * v2->y) - (v1->y * v2->x);
 	return (v);
 }
 
 t_vertices	vector_matrixed_cross_product(t_vertices *v1, t_vertices *v2){
 	t_vertices v;
-	v.x = (v1->matrixed_y * v1->matrixed_z) - (v1->matrixed_z * v2->matrixed_y);
-	v.y = (v1->matrixed_z * v1->matrixed_x) - (v1->matrixed_x * v2->matrixed_z);
-	v.z = (v1->matrixed_x * v1->matrixed_y) - (v1->matrixed_y * v2->matrixed_x);
+	v.x = (v1->matrixed_y * v2->matrixed_z) - (v1->matrixed_z * v2->matrixed_y);
+	v.y = (v1->matrixed_z * v2->matrixed_x) - (v1->matrixed_x * v2->matrixed_z);
+	v.z = (v1->matrixed_x * v2->matrixed_y) - (v1->matrixed_y * v2->matrixed_x);
 	return (v);
 }
 
@@ -51,4 +51,12 @@ t_vertices	subtract_matrixed_vectors(t_vertices *v1, t_vertices *v2){
 	v.y = v1->matrixed_y - v2->matrixed_y;
 	v.z = v1->matrixed_z - v2->matrixed_z;
 	return (v);
+}
+
+void	normalize_vector(t_vertices *p){
+	float magnitude = vector_magnitude(p);
+
+	p->x /= magnitude;
+	p->y /= magnitude;
+	p->z /= magnitude;
 }
