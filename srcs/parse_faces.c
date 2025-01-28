@@ -52,6 +52,8 @@ void	map_face_uv(t_faces *face){
 		face->direction = 'x';
 	else
 		face->direction = 'z';
+	if (fabsf(face->normal.y) >= .9)
+		face->direction = 'y';
 }
 
 void	add_triangle(char **tab, t_scene *scene){

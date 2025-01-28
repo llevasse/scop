@@ -55,11 +55,18 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					g_vertex_buffer_data[j++] = face->texture_coordinates[i]->v;
 				}
 				else{
-					if (face->direction == 'x')
+					if (face->direction == 'x'){
 						g_vertex_buffer_data[j++] = face->vertices[i]->x;
-					else
+						g_vertex_buffer_data[j++] = -face->vertices[i]->y;
+					}
+					else if (face->direction == 'z'){
 						g_vertex_buffer_data[j++] = face->vertices[i]->z;
-					g_vertex_buffer_data[j++] = -face->vertices[i]->y;
+						g_vertex_buffer_data[j++] = -face->vertices[i]->y;
+					}
+					else{
+						g_vertex_buffer_data[j++] = face->vertices[i]->x;
+						g_vertex_buffer_data[j++] = -face->vertices[i]->z;
+					}
 				}
 
 				pnt_nb++;
