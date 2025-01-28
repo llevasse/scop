@@ -48,7 +48,10 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					g_vertex_buffer_data[j++] = face->texture_coordinates[i]->v;
 				}
 				else{
-					g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
+					if (face->direction == 'x')
+						g_vertex_buffer_data[j++] = face->vertices[i]->x;
+					else
+						g_vertex_buffer_data[j++] = face->vertices[i]->z;
 					g_vertex_buffer_data[j++] = -face->vertices[i]->matrixed_y;
 				}
 

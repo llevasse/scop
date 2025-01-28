@@ -119,7 +119,7 @@ t_scene *parse_scene(int fd, char *obj_path){
 	tmp = (scene->max_z - scene->min_z) / 100;
 	scene->translation_step = scene->translation_step > tmp ? scene->translation_step : tmp;
 
-	//scene->z_offset = -(scene->translation_step * 100);
+	scene->z_offset = -(scene->translation_step * 100);
 
 	return (scene);
 }

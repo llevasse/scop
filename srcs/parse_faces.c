@@ -39,6 +39,24 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	}
 }
 
+void	map_face_uv(t_faces *face){
+	float	dist_x, dist_z;
+	dist_x = fabsf(face->vertices[0]->x - face->vertices[1]->x);
+	dist_z = fabsf(face->vertices[0]->z - face->vertices[1]->z);
+
+	dist_x = dist_x > (fabsf(face->vertices[0]->x - face->vertices[2]->x)) ? dist_x : (fabsf(face->vertices[0]->x - face->vertices[2]->x));
+	dist_z = dist_z > (fabsf(face->vertices[0]->z - face->vertices[2]->z)) ? dist_z : (fabsf(face->vertices[0]->z - face->vertices[2]->z));
+
+	dist_x = dist_x > (fabsf(face->vertices[1]->x - face->vertices[2]->x)) ? dist_x : (fabsf(face->vertices[1]->x - face->vertices[2]->x));
+	dist_z = dist_z > (fabsf(face->vertices[1]->z - face->vertices[2]->z)) ? dist_z : (fabsf(face->vertices[1]->z - face->vertices[2]->z));
+
+	if (dist_x > dist_z){
+		face->direction = 'x';
+	}
+	else
+		face->direction = 'z';
+}
+
 void	add_triangle(char **tab, t_scene *scene){
 	t_faces *face = face_contructor();
 	face->material = scene->objs_list->material;
@@ -74,7 +92,9 @@ void	add_triangle(char **tab, t_scene *scene){
 			}
 		}
 	}
-	
+
+	map_face_uv(face);
+
 	if (!scene->objs_list->faces)
 		scene->objs_list->faces = face;
 	else{
@@ -146,6 +166,9 @@ void	add_quad(char **tab, t_scene *scene){
 	f2->vertices[2] = vs[3];
 	f2->texture_coordinates[2] = vts[3];
 	f2->vertex_normals[2] = vns[3];
+
+	map_face_uv(f1);
+	map_face_uv(f2);
 
 	f1->next = f2;
 	if (!scene->objs_list->faces){

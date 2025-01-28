@@ -64,6 +64,7 @@
 		t_texture_coordinates	*texture_coordinates[4];
 		struct s_faces			*next;
 		struct s_material		*material;
+		short					direction;
 	}	t_faces;
 
 	typedef struct s_material{
