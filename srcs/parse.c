@@ -53,6 +53,8 @@ t_scene	*init_scene(){
 	scene->texture_mode = 0;
 	scene->colour_oppacity = 1;
 
+	scene->auto_rotate = 1;
+
 	scene->focus = 0x0;
 	return (scene);
 }
@@ -121,7 +123,7 @@ t_scene *parse_scene(int fd, char *obj_path){
 	tmp = (scene->max_z - scene->min_z) / 100;
 	scene->translation_step = scene->translation_step > tmp ? scene->translation_step : tmp;
 
-	scene->z_offset = -(scene->translation_step * 100);
+	scene->z_offset = -(scene->translation_step * 200);
 
 	return (scene);
 }

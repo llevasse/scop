@@ -142,6 +142,7 @@
 		float					zoom;
 		t_faces					*focus;
 		
+		short					auto_rotate;
 
 	}	t_scene;
 
