@@ -135,16 +135,33 @@ void	input_handler(GLFWwindow *window){
 				printf("%f %f %f\t\t%f %f %f\n", g_vertex_buffer_data[i], g_vertex_buffer_data[i + 1], g_vertex_buffer_data[i + 2], g_vertex_buffer_data[i + 3], g_vertex_buffer_data[i + 4], g_vertex_buffer_data[i + 5]);
 			printf("\n");
 		}
-		/*t_faces *tmp = scene->objs_list->faces;
-		while (tmp){
+		if (scene->focus){
 			for (int i =0 ;i<3;i++){
-				printf("%f %f %f\n", tmp->vertices[i]->x, tmp->vertices[i]->y, tmp->vertices[i]->z);
+				printf("%f %f %f\n", scene->focus->vertices[i]->x, scene->focus->vertices[i]->y, scene->focus->vertices[i]->z);
 			}
+
+			printf("normal : %f %f %f\n", scene->focus->normal.x, scene->focus->normal.y, scene->focus->normal.z);
+
+			printf("direction : %c\n", scene->focus->direction);
 			printf("\n");
-			tmp = tmp->next;
-		}*/
+		}
 	}
-	
+	else if (glfwGetKey(window, GLFW_KEY_TAB) && !key_press[GLFW_KEY_TAB]){
+		if (scene->focus){
+			scene->focus->focused = 0;
+			if (scene->focus->next){
+				scene->focus = scene->focus->next;
+				scene->focus->focused = 1;
+			}
+			else{
+				scene->focus = 0x0;
+			}
+		}
+		else{
+			scene->focus = scene->objs_list->faces;
+		}
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){
 		texture_change = 1;
 	}

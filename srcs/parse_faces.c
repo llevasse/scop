@@ -14,6 +14,8 @@ t_faces	*face_contructor(){
 	face->vertex_normals[3] = 0x0;
 	face->texture_coordinates[3] = 0x0;
 	face->material = 0x0;
+	face->focused = 0;
+	face->direction = 0;
 	return (face);
 }
 
@@ -40,6 +42,16 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 }
 
 void	map_face_uv(t_faces *face){
+	t_vertices u = subtract_vectors(face->vertices[1], face->vertices[0]);
+	t_vertices v = subtract_vectors(face->vertices[2], face->vertices[0]);
+	face->normal = vector_cross_product(&u, &v);
+
+	if (face->normal.x > face->normal.z){
+		face->direction = 'x';
+	}
+	else
+		face->direction = 'z';
+	return ;
 	float	dist_x, dist_z;
 	dist_x = fabsf(face->vertices[0]->x - face->vertices[1]->x);
 	dist_z = fabsf(face->vertices[0]->z - face->vertices[1]->z);
@@ -150,20 +162,20 @@ void	add_quad(char **tab, t_scene *scene){
 	f1->vertices[0] = vs[0];
 	f1->texture_coordinates[0] = vts[0];
 	f1->vertex_normals[0] = vns[0];
-	f1->vertices[1] = vs[2];
+	f1->vertices[1] = vs[1];
 	f1->texture_coordinates[1] = vts[1];
 	f1->vertex_normals[1] = vns[2];
-	f1->vertices[2] = vs[1];
+	f1->vertices[2] = vs[2];
 	f1->texture_coordinates[2] = vts[2];
 	f1->vertex_normals[2] = vns[1];
 
-	f2->vertices[0] = vs[0];
+	f2->vertices[0] = vs[3];
 	f2->texture_coordinates[0] = vts[0];
 	f2->vertex_normals[0] = vns[0];
-	f2->vertices[1] = vs[2];
+	f2->vertices[1] = vs[0];
 	f2->texture_coordinates[1] = vts[2];
 	f2->vertex_normals[1] = vns[2];
-	f2->vertices[2] = vs[3];
+	f2->vertices[2] = vs[2];
 	f2->texture_coordinates[2] = vts[3];
 	f2->vertex_normals[2] = vns[3];
 

@@ -21,6 +21,34 @@ float	matrixed_vector_magnitude(t_vertices *v){
 	return (sqrtf((v->matrixed_x * v->matrixed_x) + (v->matrixed_y * v->matrixed_y) + (v->matrixed_z * v->matrixed_z)));
 }
 
-float	vector_angle(t_vertices *a, t_vertices *b){
-	return (vector_dot_product(a, b) / (vector_magnitude(a) * vector_magnitude(b)));
+t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2){
+	t_vertices v;
+	v.x = (v1->y * v1->z) - (v1->z * v2->y);
+	v.y = (v1->z * v1->x) - (v1->x * v2->z);
+	v.z = (v1->x * v1->y) - (v1->y * v2->x);
+	return (v);
+}
+
+t_vertices	vector_matrixed_cross_product(t_vertices *v1, t_vertices *v2){
+	t_vertices v;
+	v.x = (v1->matrixed_y * v1->matrixed_z) - (v1->matrixed_z * v2->matrixed_y);
+	v.y = (v1->matrixed_z * v1->matrixed_x) - (v1->matrixed_x * v2->matrixed_z);
+	v.z = (v1->matrixed_x * v1->matrixed_y) - (v1->matrixed_y * v2->matrixed_x);
+	return (v);
+}
+
+t_vertices	subtract_vectors(t_vertices *v1, t_vertices *v2){
+	t_vertices v;
+	v.x = v1->x - v2->x;
+	v.y = v1->y - v2->y;
+	v.z = v1->z - v2->z;
+	return (v);
+}
+
+t_vertices	subtract_matrixed_vectors(t_vertices *v1, t_vertices *v2){
+	t_vertices v;
+	v.x = v1->matrixed_x - v2->matrixed_x;
+	v.y = v1->matrixed_y - v2->matrixed_y;
+	v.z = v1->matrixed_z - v2->matrixed_z;
+	return (v);
 }

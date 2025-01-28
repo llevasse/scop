@@ -38,9 +38,16 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
 				
 				// colours
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset;
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset;
-				g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset;
+				if (!face->focused){
+					g_vertex_buffer_data[j++] = face->material->diffuse_color->r + face->normal.x;
+					g_vertex_buffer_data[j++] = face->material->diffuse_color->g + face->normal.y;
+					g_vertex_buffer_data[j++] = face->material->diffuse_color->b + face->normal.z;
+				}
+				else{
+					g_vertex_buffer_data[j++] = 1;
+					g_vertex_buffer_data[j++] = 0;
+					g_vertex_buffer_data[j++] = 0;
+				}
 
 				// textures
 				if (face->texture_coordinates[i]){
@@ -52,7 +59,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 						g_vertex_buffer_data[j++] = face->vertices[i]->x;
 					else
 						g_vertex_buffer_data[j++] = face->vertices[i]->z;
-					g_vertex_buffer_data[j++] = -face->vertices[i]->matrixed_y;
+					g_vertex_buffer_data[j++] = -face->vertices[i]->y;
 				}
 
 				pnt_nb++;

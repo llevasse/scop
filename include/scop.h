@@ -64,7 +64,9 @@
 		t_texture_coordinates	*texture_coordinates[4];
 		struct s_faces			*next;
 		struct s_material		*material;
+		short					focused;
 		short					direction;
+		t_vertices				normal;
 	}	t_faces;
 
 	typedef struct s_material{
@@ -138,6 +140,8 @@
 		short					movement_mode;
 		short					wireframe_view;
 		float					zoom;
+		t_faces					*focus;
+		
 
 	}	t_scene;
 
@@ -180,6 +184,11 @@
 	float	matrixed_vector_dot_product(t_vertices *a, t_vertices *b);
 	float	vector_magnitude(t_vertices *v);
 	float	matrixed_vector_magnitude(t_vertices *v);
-	float	vector_angle(t_vertices *a, t_vertices *b);
 	
+	t_vertices	subtract_vectors(t_vertices *v1, t_vertices *v2);
+	t_vertices	subtract_matrixed_vectors(t_vertices *v1, t_vertices *v2);
+	
+	t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2);
+	t_vertices	vector_matrixed_cross_product(t_vertices *v1, t_vertices *v2);
+
 #endif

@@ -52,6 +52,8 @@ t_scene	*init_scene(){
 	scene->colour_mode = 0;
 	scene->texture_mode = 0;
 	scene->colour_oppacity = 1;
+
+	scene->focus = 0x0;
 	return (scene);
 }
 
