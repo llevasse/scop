@@ -48,7 +48,7 @@ void	map_face_uv(t_faces *face){
 
 	normalize_vector(&face->normal);
 
-	if ((face->normal.x) < (face->normal.z))
+	if (fabsf(face->normal.x) < fabsf(face->normal.z))
 		face->direction = 'x';
 	else
 		face->direction = 'z';
