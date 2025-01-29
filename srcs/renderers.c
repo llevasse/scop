@@ -5,18 +5,7 @@ extern struct s_garbage	*g_garbage_collector;
 unsigned int			positionBufferObject;
 extern GLfloat			*g_vertex_buffer_data;
 
-
-void	initVertexBuffer(const float *vertexPositions){
-	glGenBuffers(1, &positionBufferObject);
-
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 void	render_obj(t_scene *scene, t_obj *obj){
-	(void)scene;
-	(void)obj;
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	double colour_offset;
 	while (obj){
@@ -28,9 +17,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
 				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
-
-				// multiplyPointWithMatrix(face->vertices[i], scene->model_matrix);
-				// multiplyPointWithMatrix(face->vertices[i], scene->persepective_matrix);
 
 				// coordinates
 				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;

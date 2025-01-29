@@ -125,6 +125,9 @@ t_scene *parse_scene(int fd, char *obj_path){
 
 	scene->z_offset = -(scene->translation_step * 200);
 
+	scene->origin.x = (scene->max_x + scene->min_x) / 2;
+	scene->origin.y = (scene->max_y + scene->min_y) / 2;
+	scene->origin.z = (scene->max_z + scene->min_z) / 2;
 	return (scene);
 }
 

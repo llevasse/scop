@@ -37,23 +37,16 @@ int main(int argc, char **argv){
 	if (fd < 0)
 		free_garbage();
 	scene = parse_scene(fd, argv[1]);
-	printf("max/min x : %f %f\n", scene->max_x, scene->min_x);
-	printf("max/min y : %f %f\n", scene->max_y, scene->min_y);
-	printf("max/min z : %f %f\n", scene->max_z, scene->min_z);
-	scene->origin.x = (scene->max_x + scene->min_x) / 2;
-	scene->origin.y = (scene->max_y + scene->min_y) / 2;
-	scene->origin.z = (scene->max_z + scene->min_z) / 2;
 
-	printf("scene origin : %f %f %f\n", scene->origin.x, scene->origin.y, scene->origin.z);
 	g_vertex_buffer_data = malloc(sizeof(GLfloat) * ((scene->display_vertices_count * 8) + 1));
 	add_to_garbage(g_vertex_buffer_data);
-
 	for (size_t i = 0; i<=(scene->display_vertices_count * 8);i++){
 		g_vertex_buffer_data[i] = 0.0;
 	}
 	for (int i =0;i<348;i++){
 		key_press[i] = 0;
 	}
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -185,16 +178,11 @@ void	render(GLFWwindow *window){
 	glBindVertexArray(VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 
-	//glDrawElements(GL_TRIANGLES, number_of_segment_to_display, GL_UNSIGNED_INT, (void*)0);
 	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
 	
-}
-
-void	reshape(int w, int h){
-	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 }
 
 void	resizeViewport(GLFWwindow *window, int width, int height){

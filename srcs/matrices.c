@@ -4,39 +4,6 @@ extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 extern short			key_press[348];
 
-void	set_view_matrix(t_scene *scene){
-	float	eyes[3] = {4, 3, -3};
-	float	center[3] = {0,0,0};
-	//float	center[3] = {0,0,0};
-	float	up[3] = {0, 1, 0};
-
-	if (key_press[GLFW_KEY_P]){
-		printf("camera : x : %f y : %f z : %f\n", eyes[0], eyes[1], eyes[2]);
-		printf("center : x : %f y : %f z : %f\n", center[0], center[1], center[2]);
-	}
-
-
-	float	f[3] = {(center[0]-eyes[0]) * (1.0 / 3.0), (center[1]-eyes[1]) * (1.0 / 3.0), (center[2]-eyes[2]) * (1.0 / 3.0)};
-	float	s[3] = {(f[1] * up[2] - f[2] * up[1]) * (1.0 / 3.0), (f[2] * up[0] - f[0] * up[2]) * (1.0 / 3.0), (f[0] * up[1] - f[1] * up[0]) * (1.0 / 3.0)}; //normalized cross product of f and up
-	float	u[3] = {(s[1] * f[2] - s[2] * f[1]), (s[2] * f[0] - s[0] * f[2]), (s[0] * f[1] - s[1] * f[0])};
-
-	scene->matrix_camera[0][0] = s[0];
-	scene->matrix_camera[1][0] = s[1];
-	scene->matrix_camera[2][0] = s[2];
-
-	scene->matrix_camera[0][1] = u[0];
-	scene->matrix_camera[1][1] = u[1];
-	scene->matrix_camera[2][1] = u[2];
-
-	scene->matrix_camera[0][2] = -f[0];
-	scene->matrix_camera[1][2] = -f[1];
-	scene->matrix_camera[2][2] = -f[2];
-
-	scene->matrix_camera[3][0] = -(s[0] * eyes[0]) + (s[1] * eyes[1]) + (s[2] * eyes[2]);
-	scene->matrix_camera[3][1] = -(u[0] * eyes[0]) + (u[1] * eyes[1]) + (u[2] * eyes[2]);
-	scene->matrix_camera[3][2] = -(f[0] * eyes[0]) + (f[1] * eyes[1]) + (f[2] * eyes[2]);
-}
-
 void	d4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){
 	float	result[4][4];
 	result[0][0] = m1[0][0] * m2[0][0] + m1[1][0] * m2[0][1] + m1[2][0] * m2[0][2] + m1[3][0] * m2[0][3];
@@ -118,9 +85,6 @@ void	setMatrix(t_scene *scene){
 
 	scene->persepective_matrix[3][3] = 0;
 	
-
-	// set_view_matrix(scene);
-	//inverseF4x4Matrix(&scene->matrix_camera);
 	d4x4MatrixMult(&scene->matrix, scene->persepective_matrix, scene->matrix_camera);
 	scene->matrix_x_rotation[1][1] = cos(scene->x_angle * RADIAN);
 	scene->matrix_x_rotation[1][2] = -sin(scene->x_angle * RADIAN);
@@ -152,44 +116,4 @@ void	setMatrix(t_scene *scene){
 	d4x4MatrixMult(&scene->model_matrix, scene->translation_matrix, rotation);
 	d4x4MatrixMult(&scene->model_matrix, scene->model_matrix, scene->scale_matrix);
 	d4x4MatrixMult(&scene->matrix, scene->model_matrix, scene->matrix_camera);
-}
-
-void	multiplyPointWithMatrix(t_vertices *p, float matrix[4][4]){
-	t_vertices	tmp;
-	tmp.matrixed_x	= p->matrixed_x * matrix[0][0] + p->matrixed_y * matrix[1][0] + p->matrixed_z * matrix[2][0] + matrix[3][0];
-    tmp.matrixed_y	= p->matrixed_x * matrix[0][1] + p->matrixed_y * matrix[1][1] + p->matrixed_z * matrix[2][1] + matrix[3][1];
-    tmp.matrixed_z	= p->matrixed_x * matrix[0][2] + p->matrixed_y * matrix[1][2] + p->matrixed_z * matrix[2][2] + matrix[3][2];
-    float w			= p->matrixed_x * matrix[0][3] + p->matrixed_y * matrix[1][3] + p->matrixed_z * matrix[2][3] + matrix[3][3]; 
-	p->matrixed_x	= tmp.matrixed_x;
-	p->matrixed_y	= tmp.matrixed_y;
-	p->matrixed_z	= tmp.matrixed_z;
-
-    if (w != 0) {
-        p->matrixed_x /= w; 
-        p->matrixed_y /= w; 
-        p->matrixed_z /= w; 
-    }
-
-	/*printf("processed : \n");
-	printf("\t%f :\t%f\n", p->x, p->matrixed_x);
-	printf("\t%f :\t%f\n", p->y, p->matrixed_y);
-	printf("\t%f :\t%f\n", p->z, p->matrixed_z);*/
-}
-
-void	multiplyPointWithRotationsMatrixes(t_scene *scene, t_vertices *p){
-	t_vertices tmp;
-	tmp.matrixed_x   = p->matrixed_x * scene->matrix_z_rotation[0][0] + p->matrixed_y * scene->matrix_z_rotation[0][1];
-    tmp.matrixed_y   = p->matrixed_x * scene->matrix_z_rotation[1][0] + p->matrixed_y * scene->matrix_z_rotation[1][1];
-    p->matrixed_x = tmp.matrixed_x;
-	p->matrixed_y = tmp.matrixed_y;
-
-	tmp.matrixed_x   = p->matrixed_x * scene->matrix_y_rotation[0][0] + p->matrixed_z * scene->matrix_y_rotation[0][2];
-    tmp.matrixed_z   = p->matrixed_x * scene->matrix_y_rotation[2][0] + p->matrixed_z * scene->matrix_y_rotation[2][2];
-    p->matrixed_x = tmp.matrixed_x;
-	p->matrixed_z = tmp.matrixed_z;
-    
-    tmp.matrixed_y   = p->matrixed_y * scene->matrix_x_rotation[1][1] + p->matrixed_z * scene->matrix_x_rotation[1][2];
-    tmp.matrixed_z   = p->matrixed_y * scene->matrix_x_rotation[2][1] + p->matrixed_z * scene->matrix_x_rotation[2][2];
-	p->matrixed_y = tmp.matrixed_y;
-	p->matrixed_z = tmp.matrixed_z;
 }
