@@ -3,8 +3,8 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-void	add_triangle(char **tab, t_scene *scene);
-void	add_quad(char **tab, t_scene *scene);
+void	add_triangle(char **tab, t_scene *scene, int line_nb);
+void	add_quad(char **tab, t_scene *scene, int line_nb);
 
 t_faces	*face_contructor(){
 	t_faces *face = malloc(sizeof(struct s_faces));
@@ -20,20 +20,15 @@ t_faces	*face_contructor(){
 }
 
 void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
-/*	printf("Parse face with vertices : ");
-	for (size_t i=1;i<tab_size;i++){
-		printf("%s ", tab[i]);
-	}
-	printf("\n");*/
 	if (tab_size < 3){
 		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
 		free_garbage();
 	}
 	if (tab_size == 4){
-		add_triangle(tab, scene);
+		add_triangle(tab, scene, line_nb);
 	}
 	else if (tab_size == 5){
-		add_quad(tab, scene);
+		add_quad(tab, scene, line_nb);
 	}
 	else{
 		dprintf(2,"Face on line %d has too many vertex :(\n", line_nb);
@@ -56,7 +51,7 @@ void	map_face_uv(t_faces *face){
 		face->direction = 'y';
 }
 
-void	add_triangle(char **tab, t_scene *scene){
+void	add_triangle(char **tab, t_scene *scene, int line_nb){
 	t_faces *face = face_contructor();
 	face->material = scene->objs_list->material;
 
@@ -69,9 +64,13 @@ void	add_triangle(char **tab, t_scene *scene){
 		face->vertices[i] = 0x0;
 		face->vertex_normals[i] = 0x0;
 		face->texture_coordinates[i] = 0x0;
-		int index = atoi(tab[i+1]);
-		int texture_index = 0;
-		int vertex_normal_index = 0;
+		size_t index = atoi(tab[i+1]);
+		size_t texture_index = 0;
+		size_t vertex_normal_index = 0;
+		if (index > scene->vertices_count){
+			dprintf(2,"Face on line %d call un declared vertex :(\n", line_nb);
+			free_garbage();
+		}
 		face->vertices[i] = scene->vertices_tab[index - 1];
 		if (tab[i+1][get_int_len(index)] == '/'){
 			texture_index = atoi(tab[i+1] + get_int_len(index) + 1);
@@ -79,13 +78,25 @@ void	add_triangle(char **tab, t_scene *scene){
 				face->texture_coordinates[i] = 0x0;
 				if (tab[i+1][get_int_len(index)+1] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + 2);
+					if (vertex_normal_index > scene->vertex_normals_count){
+						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
+						free_garbage();
+					}
 					face->vertex_normals[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
 			}
 			else {
+				if (texture_index > scene->texture_coordinates_count){
+					dprintf(2,"Face on line %d call un declared texture coordinate :(\n", line_nb);
+					free_garbage();
+				}
 				face->texture_coordinates[i] = scene->texture_coordinates_tab[texture_index - 1];
 				if (tab[i + 1][get_int_len(index) + 1 + get_int_len(texture_index)] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + get_int_len(texture_index) + 2);
+					if (vertex_normal_index > scene->vertex_normals_count){
+						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
+						free_garbage();
+					}
 					face->vertex_normals[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
 			}
@@ -106,7 +117,7 @@ void	add_triangle(char **tab, t_scene *scene){
 //	printf("Added face with vertex %zu %zu %zu\n", face->vertices[0]->id, face->vertices[1]->id, face->vertices[2]->id);
 }
 
-void	add_quad(char **tab, t_scene *scene){
+void	add_quad(char **tab, t_scene *scene, int line_nb){
 	t_faces *f1 = face_contructor();
 	t_faces *f2 = face_contructor();
 	f1->material = scene->objs_list->material;
@@ -123,9 +134,13 @@ void	add_quad(char **tab, t_scene *scene){
 		vts[i] = 0x0;
 		vns[i] = 0x0;
 	}
-	int index = 0, texture_index = 0, vertex_normal_index = 0;
+	size_t index = 0, texture_index = 0, vertex_normal_index = 0;
 	for (int i =0; i < 4; i++){
 		index = atoi(tab[i + 1]);
+		if (index > scene->vertices_count){
+			dprintf(2,"Face on line %d call un declared vertex :(\n", line_nb);
+			free_garbage();
+		}
 		vs[i] = scene->vertices_tab[index - 1];
 
 		if (tab[i+1][get_int_len(index)] == '/'){
@@ -134,13 +149,25 @@ void	add_quad(char **tab, t_scene *scene){
 				vts[i] = 0x0;
 				if (tab[i+1][get_int_len(index)+1] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + 2);
+					if (vertex_normal_index > scene->vertex_normals_count){
+						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
+						free_garbage();
+					}
 					vns[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
 			}
 			else {
+				if (texture_index > scene->texture_coordinates_count){
+					dprintf(2,"Face on line %d call un declared texture coordinate :(\n", line_nb);
+					free_garbage();
+				}
 				vts[i] = scene->texture_coordinates_tab[texture_index - 1];
 				if (tab[i + 1][get_int_len(index) + 1 + get_int_len(texture_index)] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + get_int_len(texture_index) + 2);
+					if (vertex_normal_index > scene->vertex_normals_count){
+						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
+						free_garbage();
+					}
 					vns[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
 			}

@@ -11,7 +11,6 @@
 # include <GLFW/glfw3.h>
 
 # include "../libft/libft.h"
-# include "../freeglut-3.6.0/include/GL/freeglut.h"
 # define PI 3.1415926535
 # define RADIAN 0.017453292519444445
 

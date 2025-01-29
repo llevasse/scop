@@ -14,12 +14,6 @@ LIBFT_A					=	$(LIBFT_PATH)libft.a
 LIBFT_INCLUDE			=	-I $(LIBFT_PATH)
 LIBFT_LIB				=	-L $(LIBFT_PATH) -l ft
 
-#---FREEGLUT_VAR----------------------------------
-FREEGLUT_PATH			=	freeglut-3.6.0/
-FREEGLUT_A				=	$(FREEGLUT_PATH)build/lib/libglut.a
-FREEGLUT_INCLUDE		=	-I $(FREEGLUT_PATH)
-FREEGLUT_LIB			=	-L $(FREEGLUT_PATH)build/lib -lglut
-
 #---SCOP_VAR---------------------------------------
 SRC						=	srcs/main.c \
 							srcs/opener.c \
@@ -45,13 +39,13 @@ BASE_INCLUDE			=	-I $(INC_DIR)
 
 FLAGS					=	-Wall -Werror -Wextra -g
 INCLUDES				=	$(BASE_INCLUDE) ${LIBFT_INCLUDE}
-LIBS					=	${LIBFT_LIB} ${FREEGLUT_LIB} -lglfw -lGL -lGLEW -lm
+LIBS					=	${LIBFT_LIB} -lglfw -lGL -lGLEW -lm
 
 #---RULES----------------------------------------
 
 all:			$(NAME)
 
-$(NAME):		$(OBJS_DIR) ${LIBFT_A} ${FREEGLUT_A} Makefile $(INC_FILE) $(OBJS)
+$(NAME):		$(OBJS_DIR) ${LIBFT_A} Makefile $(INC_FILE) $(OBJS)
 				$(CC) $(FLAGS) $(INCLUDES) $(OBJS) ${LIBS} -o $@
 				@echo "\33[2K\r$(GREEN)Scop compiled :D$(NC)"
 
@@ -67,22 +61,15 @@ $(OBJS_DIR):
 $(LIBFT_A):
 				make -C ${LIBFT_PATH}
 
-$(FREEGLUT_A):
-				mkdir -p ./$(FREEGLUT_PATH)build
-				cmake -S ./$(FREEGLUT_PATH) -B ./$(FREEGLUT_PATH)build
-				make -C ./$(FREEGLUT_PATH)build
-
 clean:
 				@echo "$(RED)Deleting scop object...\n"
 				make clean -C ${LIBFT_PATH}
-				make clean -C ${FREEGLUT_PATH}build
 				$(RM) $(OBJS_DIR)
 				@echo "$(GREEN)Done\n"
 
 fclean:			clean
 				@echo "$(RED)Deleting scop executable..."
 				make fclean -C ${LIBFT_PATH}
-				rm -rf ${FREEGLUT_PATH}build
 				rm -f $(NAME)
 				@echo "$(GREEN)Done\n"
 
