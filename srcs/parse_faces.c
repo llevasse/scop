@@ -24,13 +24,12 @@ void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
 		free_garbage();
 	}
-	if (tab_size == 4){
+	if (tab_size == 4)
 		add_triangle(tab, scene, line_nb);
-	}
-	else if (tab_size == 5){
+	else if (tab_size == 5)
 		add_quad(tab, scene, line_nb);
-	}
 	else{
+		triangulate(tab, tab_size, scene, line_nb);
 		dprintf(2,"Face on line %d has too many vertex :(\n", line_nb);
 		free_garbage();
 	}

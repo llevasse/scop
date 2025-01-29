@@ -26,6 +26,7 @@ SRC						=	srcs/main.c \
 							srcs/loadShaders.c \
 							srcs/input_handler.c \
 							srcs/vectors.c \
+							srcs/triangulate.c \
 							glad/src/glad.c
 							
 
