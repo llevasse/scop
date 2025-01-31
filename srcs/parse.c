@@ -7,6 +7,9 @@ t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
 
+	scene->objs_list = 0x0;
+	scene->material_list = 0x0;
+
 	scene->fov = 45;
 	scene->far_plane_distance = 1000;
 	scene->near_plane_distance = 1;
@@ -67,6 +70,9 @@ t_scene *parse_scene(int fd, char *obj_path){
 	size_t	line_content_size = 0;
 	size_t	line_count = 1;
 	while (s){
+		add_to_garbage(s);
+		s = ft_strtrim(s, " \n\t\r");
+		add_to_garbage(s);
 		line_content = ft_split(s, ' ');	//TODO add tab to garbage collector
 		add_to_garbage(line_content);
 		line_content_size = 0;
@@ -103,7 +109,6 @@ t_scene *parse_scene(int fd, char *obj_path){
 			line_content = 0x0;
 			line_content_size = 0;
 		}
-		free(s);
 		s = get_next_line(fd);
 		line_count++;
 	}
@@ -227,13 +232,13 @@ void	pass_obj_list_to_tab(t_scene *scene){
 }
 
 void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
-	// TODO handle line continuation char '\'
 	if (!scene->objs_list){
 		scene->objs_list = malloc(sizeof(struct s_obj));
 		add_to_garbage((scene->objs_list));
 		scene->objs_list->name	= 0x0;
 		scene->objs_list->next = 0x0;
 		scene->objs_list->faces = 0x0;
+		scene->objs_list->material = 0x0;
 		scene->vertices_root = 0x0;
 		scene->vertex_normals_root = 0x0;
 		scene->texture_coordinates_root = 0x0;
@@ -248,13 +253,13 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	else if (!ft_strcmp(tab[0], "vt")){
 		parse_texture_coordinates(tab, tab_size, scene, line_nb);
 	}
-	else if (!ft_strcmp(tab[0], "o")){
+	else if (!ft_strcmp(tab[0], "o") || !ft_strcmp(tab[0], "g")){
 		if (tab_size < 2){
 			dprintf(2,"%s on line %d is missing a name value\n", tab[0], line_nb);
 			free_garbage();
 		}
 		else {
-			if (scene->objs_list->name){
+			if (scene->objs_list->name){ // if not first object
 				scene->objs_list->next = malloc(sizeof(struct s_obj));
 				add_to_garbage(scene->objs_list->next);
 				scene->objs_list = scene->objs_list->next;

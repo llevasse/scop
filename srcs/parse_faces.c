@@ -21,6 +21,7 @@ t_faces	*face_contructor(){
 }
 
 void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
+	printf("%zu\n", tab_size);
 	if (tab_size < 3){
 		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
 		free_garbage();
