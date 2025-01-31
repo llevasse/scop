@@ -1,6 +1,6 @@
 # Blender v3.0.1 OBJ File: ''
 # www.blender.org
-mtllib ./model/concav_face_not_flat_plane.mtl
+mtllib concav_face_not_flat_plane.mtl
 
 o Plane
 v 0.000000 0.848608 0.898240
