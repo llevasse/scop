@@ -128,7 +128,7 @@ void	input_handler(GLFWwindow *window){
 		print_scop(scene);
 	}
 
-	else if (glfwGetKey(window, GLFW_KEY_TAB) && !key_press[GLFW_KEY_TAB]){
+	else if ((glfwGetKey(window, GLFW_KEY_TAB) && (key_press[GLFW_KEY_TAB] == 1 || key_press[GLFW_KEY_TAB] == 42))){
 		if (scene->focus){
 			scene->focus->focused = 0;
 			if (scene->focus->next){
@@ -153,6 +153,11 @@ void	input_handler(GLFWwindow *window){
 	}
 	
 	for (int i =0; i<348;i++){
-		key_press[i] = glfwGetKey(window, i);
+		if (glfwGetKey(window, i)){
+			if (key_press[i] != 42)
+				key_press[i]++;
+		}
+		else
+			key_press[i] = 0;
 	}
 }

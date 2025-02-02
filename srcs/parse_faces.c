@@ -42,25 +42,30 @@ void	map_face_uv(t_faces *face){
 }
 
 void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
-	t_faces	*faces[tab_size - 1];
-	for (size_t i = 0 ; i < tab_size - 1; i++){
+	for (size_t i = 0; i < tab_size; i++){
+		printf("%s ", tab[i]);
+	}
+	size_t	nb_faces = tab_size - 3, nb_vertices = tab_size - 1;
+	printf("\n%zu faces\n", nb_faces);
+	t_faces	*faces[nb_faces];
+	for (size_t i = 0 ; i < nb_faces; i++){
 		faces[i] = face_contructor();
 		faces[i]->material = scene->objs_list->material;
 	}
 
-	scene->objs_list->material->nb_faces += tab_size - 1;
-	scene->display_vertices_count += (tab_size - 1) * 3;
+	scene->objs_list->material->nb_faces += nb_faces;
+	scene->display_vertices_count += (nb_faces) * 3;
 
 
-	t_vertices *vs[tab_size - 1];
-	t_texture_coordinates *vts[tab_size - 1];
-	t_vertices *vns[tab_size - 1];
-	for (size_t i = 0; i < tab_size - 1; i++){
+	t_vertices *vs[nb_vertices];
+	t_texture_coordinates *vts[nb_vertices];
+	t_vertices *vns[nb_vertices];
+	for (size_t i = 0; i < nb_vertices; i++){
 		vts[i] = 0x0;
 		vns[i] = 0x0;
 	}
 	size_t index = 0, texture_index = 0, vertex_normal_index = 0;
-	for (size_t i =0; i < tab_size - 1; i++){
+	for (size_t i =0; i < nb_vertices; i++){
 		index = atoi(tab[i + 1]);
 		if (index > scene->vertices_count){
 			dprintf(2,"Face on line %d call un declared vertex :(\n", line_nb);
@@ -100,13 +105,15 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	}
 
 	size_t v_idx0 = 0, v_idx1 = 0, v_idx2 = 0;
-	for (size_t i = 0; i < tab_size - 1; i++, v_idx1 += 1){
+	for (size_t i = 0; i < nb_faces; i++, v_idx1 += 2){
+		if (v_idx1 > nb_vertices - 1)
+			v_idx1 = 0;
 		v_idx0 = v_idx1 - 1;
 		v_idx2 = v_idx1 + 1;
 		if (v_idx0 > v_idx1){
 			v_idx0 = tab_size - 2;
 		}
-		if (v_idx1 + 1 > tab_size - 2){
+		if (v_idx1 + 1 > nb_vertices){
 			v_idx2 = 0;
 		}
 		faces[i]->vertices[0] = vs[v_idx0];
@@ -118,8 +125,6 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 		faces[i]->vertex_normals[0] = vns[v_idx0];
 		faces[i]->vertex_normals[1] = vns[v_idx1];
 		faces[i]->vertex_normals[2] = vns[v_idx2];
-		if (faces[i]->vertices[0]->id == 213 && faces[i]->vertices[1]->id == 391 && faces[i]->vertices[2]->id == 392)
-			faces[i]->focused = 1;
 		printf("new face : %zu %zu %zu\n", vs[v_idx0]->id, vs[v_idx1]->id, vs[v_idx2]->id);
 	}
 	t_faces *tmp = 0x0;
@@ -132,7 +137,7 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 			tmp = tmp->next;
 		}
 	}
-	for (size_t i = 0; i< tab_size - 1; i++){
+	for (size_t i = 0; i< nb_faces; i++){
 		printf("map face %zu\n", i);
 		map_face_uv(faces[i]);
 		printf("face %zu %zu %zu normal : %f %f %f\n", faces[i]->vertices[0]->id, faces[i]->vertices[1]->id, faces[i]->vertices[2]->id, faces[i]->normal.x, faces[i]->normal.y, faces[i]->normal.z);
@@ -144,4 +149,5 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 			tmp = tmp->next;
 		}
 	}
+	//free_garbage();
 }

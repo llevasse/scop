@@ -14,14 +14,10 @@ void	render_obj(t_scene *scene, t_obj *obj){
 			i = 0;
 			colour_offset = (count % 3 ? .04 : count % 5 ? .08 : count % 7 ? .15 : count % 9 ? .19 : count % 4 ? .23 : count % 6 ? .42 : count % 8 ? .0118 : count % 2 ? .0815 : 0);
 			while (face->vertices[i]){
-				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
-				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
-				face->vertices[i]->matrixed_z = face->vertices[i]->z - scene->origin.z;
-
 				// coordinates
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_x;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_y;
-				g_vertex_buffer_data[j++] = face->vertices[i]->matrixed_z;
+				g_vertex_buffer_data[j++] = face->vertices[i]->x - scene->origin.x;
+				g_vertex_buffer_data[j++] = face->vertices[i]->y - scene->origin.y;
+				g_vertex_buffer_data[j++] = face->vertices[i]->z - scene->origin.z;
 				
 				// colours
 				if (!face->focused){
@@ -31,12 +27,24 @@ void	render_obj(t_scene *scene, t_obj *obj){
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + face->normal.z;
 					}
 					else{
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r + colour_offset : face->material->diffuse_color->r - colour_offset;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g + colour_offset : face->material->diffuse_color->g - colour_offset;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b + colour_offset : face->material->diffuse_color->b - colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
 					}
 				}
 				else{
+					float r, g, b;
+					if (scene->normal_mode){
+						r = face->material->diffuse_color->r + face->normal.x;
+						g = face->material->diffuse_color->g + face->normal.y;
+						b = face->material->diffuse_color->b + face->normal.z;
+					}
+					else{
+						r = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
+						g = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
+						b = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
+					}
+				printf("%zu %f %f %f %f %f %f\n", count, face->vertices[i]->x - scene->origin.x, face->vertices[i]->y - scene->origin.y, face->vertices[i]->z - scene->origin.z, r, g, b);
 					g_vertex_buffer_data[j++] = 1;
 					g_vertex_buffer_data[j++] = 0;
 					g_vertex_buffer_data[j++] = 0;

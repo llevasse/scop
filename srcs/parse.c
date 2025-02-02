@@ -264,8 +264,10 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 				scene->objs_list->next = malloc(sizeof(struct s_obj));
 				add_to_garbage(scene->objs_list->next);
 				scene->objs_list = scene->objs_list->next;
+				scene->objs_list->name	= 0x0;
 				scene->objs_list->next = 0x0;
 				scene->objs_list->faces = 0x0;
+				scene->objs_list->material = 0x0;
 			}
 			scene->objs_list->name = ft_strdup(tab[1]);
 			add_to_garbage(scene->objs_list->name);
