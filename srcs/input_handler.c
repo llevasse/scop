@@ -148,6 +148,10 @@ void	input_handler(GLFWwindow *window){
 		texture_change = 1;
 	}
 	
+	if (glfwGetKey(window, GLFW_KEY_N) && !key_press[GLFW_KEY_N]){
+		scene->normal_mode = !scene->normal_mode;
+	}
+	
 	for (int i =0; i<348;i++){
 		key_press[i] = glfwGetKey(window, i);
 	}
