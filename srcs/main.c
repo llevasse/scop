@@ -106,7 +106,20 @@ void	use_texture(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("texture/minecraft_bee.jpg", &width, &height, &nrChannels, 0);
+	// will really store (width * 3) element per per row, so a 2x2 image will be an malloc(sizeof(unsigned char) * ((width * 3) * height)) = malloc(sizeof(unsigned char) * ((2 * 3) * 2)) = malloc(sizeof(unsigned char) * 12)
+    //unsigned char *data = stbi_load("texture/not_found.png", &width, &height, &nrChannels, 0);			
+	unsigned char	*date = parse_xpm("texture/not_found.png")
+	printf("%d %d\n", height, width);
+	for (int i = 0; i < height; i++){
+		for (int j = 0; j < width; j++){
+			for (int k = 0; k< 3; k++)
+				printf("%d ", data[((width * i) * 3) + (j * 3) + k]);
+			printf("| ");
+		}
+		printf("\n");
+	}
+
+
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);

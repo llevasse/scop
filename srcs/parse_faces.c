@@ -42,11 +42,7 @@ void	map_face_uv(t_faces *face){
 }
 
 void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
-	for (size_t i = 0; i < tab_size; i++){
-		printf("%s ", tab[i]);
-	}
 	size_t	nb_faces = tab_size - 3, nb_vertices = tab_size - 1;
-	printf("\n%zu faces\n", nb_faces);
 	t_faces	*faces[nb_faces];
 	for (size_t i = 0 ; i < nb_faces; i++){
 		faces[i] = face_contructor();
@@ -125,7 +121,6 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 		faces[i]->vertex_normals[0] = vns[v_idx0];
 		faces[i]->vertex_normals[1] = vns[v_idx1];
 		faces[i]->vertex_normals[2] = vns[v_idx2];
-		printf("new face : %zu %zu %zu\n", vs[v_idx0]->id, vs[v_idx1]->id, vs[v_idx2]->id);
 	}
 	t_faces *tmp = 0x0;
 	if (!scene->objs_list->faces){
@@ -138,9 +133,7 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 		}
 	}
 	for (size_t i = 0; i< nb_faces; i++){
-		printf("map face %zu\n", i);
 		map_face_uv(faces[i]);
-		printf("face %zu %zu %zu normal : %f %f %f\n", faces[i]->vertices[0]->id, faces[i]->vertices[1]->id, faces[i]->vertices[2]->id, faces[i]->normal.x, faces[i]->normal.y, faces[i]->normal.z);
 		if (!tmp){
 			tmp = faces[0];
 		}

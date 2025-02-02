@@ -196,4 +196,6 @@
 	void	triangulate(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 
 	void	normalize_vector(t_vertices *p);
+
+	unsigned char	*parse_xpm(char *path);
 #endif
