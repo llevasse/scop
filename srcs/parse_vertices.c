@@ -65,6 +65,7 @@ t_vertices *create_vertices(float x, float y, float z, t_scene *scene){
 	p->z = z;
 	p->w = 1.0;
 	p->next = 0x0;
+	p->focused = 0;
 	p->magnetude = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
 	if (scene){

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/scop",
-            "args": ["model/42.obj"],	
+            "args": ["model/bee/bee.obj"],	
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

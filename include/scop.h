@@ -34,6 +34,7 @@
 
 		double					magnetude;
 		size_t					id;
+		short					focused;
 		struct s_vertices		*next;
 	}	t_vertices;
 

@@ -7,12 +7,12 @@ extern GLfloat			*g_vertex_buffer_data;
 
 void	render_obj(t_scene *scene, t_obj *obj){
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
-	double colour_offset;
+	//double colour_offset;
 	while (obj){
 		t_faces	*face = obj->faces;
 		while (face){
 			i = 0;
-			colour_offset = (count % 3 ? .04 : count % 5 ? .08 : count % 7 ? .15 : count % 9 ? .19 : count % 4 ? .23 : count % 6 ? .42 : count % 8 ? .0118 : count % 2 ? .0815 : 0);
+			//colour_offset = (count % 3 ? .04 : count % 5 ? .08 : count % 7 ? .15 : count % 9 ? .19 : count % 4 ? .23 : count % 6 ? .42 : count % 8 ? .0118 : count % 2 ? .0815 : 0);
 			while (face->vertices[i]){
 				face->vertices[i]->matrixed_x = face->vertices[i]->x - scene->origin.x;
 				face->vertices[i]->matrixed_y = face->vertices[i]->y - scene->origin.y;
