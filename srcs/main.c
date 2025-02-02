@@ -47,9 +47,11 @@ int main(int argc, char **argv){
 		key_press[i] = 0;
 	}
 
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	if (glfwInit() == GLFW_FALSE){
+		free_garbage();
+	}
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(scene->width, scene->height, "Scop", NULL, NULL);
 	if (window == NULL)
@@ -80,7 +82,6 @@ int main(int argc, char **argv){
 		glfwPollEvents();
 		//glfwWaitEvents();
 	}
-	glfwTerminate();
 	t_garbage *tmp = g_garbage_collector_root;
 	while (g_garbage_collector_root){
 		free(g_garbage_collector_root->addr);
@@ -88,6 +89,8 @@ int main(int argc, char **argv){
 		g_garbage_collector_root = g_garbage_collector_root->next;
 		free(tmp);
 	}
+	glfwDestroyWindow(window);
+	glfwTerminate();
 	return (0);
 
 }
