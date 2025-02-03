@@ -197,5 +197,5 @@
 
 	void	normalize_vector(t_vertices *p);
 
-	unsigned char	*parse_xpm(char *path);
+	unsigned char	*parse_xpm(char *path, int *width, int *height);
 #endif

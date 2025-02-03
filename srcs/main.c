@@ -105,11 +105,14 @@ void	use_texture(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
+    int width = 0, height = 0, nrChannels;
 	// will really store (width * 3) element per per row, so a 2x2 image will be an malloc(sizeof(unsigned char) * ((width * 3) * height)) = malloc(sizeof(unsigned char) * ((2 * 3) * 2)) = malloc(sizeof(unsigned char) * 12)
     //unsigned char *data = stbi_load("texture/not_found.png", &width, &height, &nrChannels, 0);			
-	unsigned char	*date = parse_xpm("texture/not_found.png")
-	printf("%d %d\n", height, width);
+	(void)nrChannels;
+	unsigned char	*data = parse_xpm("texture/64xbeehive_front_honey.xpm", &width, &height);
+	if (!data)
+		free_garbage();
+	/*printf("%d %d\n", height, width);
 	for (int i = 0; i < height; i++){
 		for (int j = 0; j < width; j++){
 			for (int k = 0; k< 3; k++)
@@ -117,8 +120,7 @@ void	use_texture(){
 			printf("| ");
 		}
 		printf("\n");
-	}
-
+	}*/
 
     if (data)
     {
