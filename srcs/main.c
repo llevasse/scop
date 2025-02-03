@@ -47,6 +47,25 @@ GLFWwindow	*init_opengl(){
 	return (window);
 }
 
+void	print_command(){
+	printf("translation :\n");
+	printf("\t [x|y|z] + [keypad add || keypad minus]\n");
+	printf("scale :\n");
+	printf("\t 's' + [x|y|z] + [keypad add || keypad minus]\n");
+	printf("rotation :\n");
+	printf("\t [x|y|z] + [down arrow || up arrow]\n");
+	printf("auto rotation toggle :\n");
+	printf("\t 'o' + [x|y|z]\n");
+	printf("change colour mode :\n");
+	printf("\t 'v'\n");
+	printf("toggle wireframe mode :\n");
+	printf("\t 'w'\n");
+	printf("toggle texture mode :\n");
+	printf("\t 't'\n");
+	printf("zoom in/out :\n");
+	printf("\t only [keypad add || keypad minus]\n");
+}
+
 int main(int argc, char **argv){
 	if (argc != 2){
 		dprintf(2, "wrong number of arguments\n");
@@ -88,7 +107,7 @@ int main(int argc, char **argv){
 		}
 	}
 
-
+	print_command();
 	while (!glfwWindowShouldClose(window)){
 		render(window);
 		glfwPollEvents();

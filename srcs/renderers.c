@@ -73,7 +73,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 					else{
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
-						g_vertex_buffer_data[j++] = colour_palette[palette_idx++];
+						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
 						if (palette_idx >= 10)
 							palette_idx = 0;
 					}
@@ -103,6 +103,7 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				i++;
 			}
 			face = face->next;
+			palette_idx++;
 			count++;
 		}
 		obj = obj->next;
