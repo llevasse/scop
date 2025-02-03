@@ -1,7 +1,7 @@
 # Blender v3.0.1 OBJ File: ''
 # www.blender.org
 # mtllib untitled.mtl
-mtllib ./model/Low_Cube/untitled.mtl
+mtllib cube.mtl
 o Cube
 v 1.000000 1.000000 -1.000000
 v 1.000000 -1.000000 -1.000000

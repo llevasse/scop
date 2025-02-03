@@ -81,22 +81,16 @@ t_scene *parse_scene(int fd, char *obj_path){
 			add_to_garbage(line_content[line_content_size]);
 		}
 		if (*s != '#' && line_content[0]){
-			if (!line_content){
-				dprintf(2, "Couldn't allocate memory\n");
-				exit(1);
-			}
 			if (!ft_strcmp(line_content[0], "mtllib")){
 				if (line_content[1]){
 					scene->material_list = parse_mtl(line_content[1], obj_path);
 					if (!scene->material_list){
-						free(s);
 						free_garbage();
 					}
 
 				}
 				else{
 					dprintf(2,"Missing path to .mtl file");
-					free(s);
 					free_garbage();
 				}
 			}
