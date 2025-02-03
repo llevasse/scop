@@ -13,8 +13,9 @@ unsigned char	***alloc_xpm_map(size_t nb_colours, size_t char_per_pixel){
 		return (0x0);
 	for (size_t i=0;i < nb_colours; i++){
 		map[i] = malloc(sizeof(char *) * 4);
-		if (map[i])
+		if (map[i]){
 			map[i][0] = malloc(sizeof(char) * (char_per_pixel + 1));
+		}
 		if (!map[i] || !map[i][0]){
 			for (size_t j=0; j<i; j++){
 				free(map[j][0]);
@@ -36,8 +37,10 @@ unsigned char	***alloc_xpm_map(size_t nb_colours, size_t char_per_pixel){
 					free(map[k][3]);
 					free(map[k]);
 				}
-				if (map[i])
-					free(map[i]);
+				for (int k=0; k<j; k++){
+					free(map[i][k]);
+				}			
+				free(map[i]);
 				free(map);
 				return (0x0);
 			}
@@ -111,14 +114,14 @@ unsigned char	*parse_xpm(char *path, int *width, int *height){
 				if (!data){
 					close(fd);
 					free(s);
-					add_to_garbage(0x0);
+					return(0x0);
 				}
 				map = alloc_xpm_map(nb_colours, char_per_pixel);
 				if (!map){
 					close(fd);
 					free(s);
 					free(data);
-					add_to_garbage(0x0);
+					return(0x0);
 				}
 				data_ptr = data;
 			}

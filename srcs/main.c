@@ -16,6 +16,37 @@ GLfloat				*g_vertex_buffer_data;
 short				key_press[348];
 float				texture_change;
 
+
+GLFWwindow	*init_opengl(){
+	if (glfwInit() == GLFW_FALSE){
+		free_garbage();
+	}
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFWwindow* window = glfwCreateWindow(scene->width, scene->height, "Scop", NULL, NULL);
+	if (window == NULL)
+	{
+		dprintf(2, "Failed to create GLFW window\n");
+		glfwTerminate();
+		return 0x0;
+	}
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, resizeViewport);
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+		dprintf(2, "Failed to initialize GLAD\n");
+		glfwTerminate();
+        return 0x0;
+    }
+	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
+	//glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	use_texture();
+	return (window);
+}
+
 int main(int argc, char **argv){
 	if (argc != 2){
 		dprintf(2, "wrong number of arguments\n");
@@ -31,7 +62,6 @@ int main(int argc, char **argv){
 		g_garbage_collector->next = 0x0;
 		g_garbage_collector->addr = 0x0;
 	}
-	(void)argv;
 
 	int fd = open_file(argv[1], ".obj");
 	if (fd < 0)
@@ -47,40 +77,21 @@ int main(int argc, char **argv){
 		key_press[i] = 0;
 	}
 
-	if (glfwInit() == GLFW_FALSE){
-		free_garbage();
+	GLFWwindow *window = init_opengl();
+	if (!window){
+		t_garbage *tmp = g_garbage_collector_root;
+		while (g_garbage_collector_root){
+			free(g_garbage_collector_root->addr);
+			tmp = g_garbage_collector_root;
+			g_garbage_collector_root = g_garbage_collector_root->next;
+			free(tmp);
+		}
 	}
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(scene->width, scene->height, "Scop", NULL, NULL);
-	if (window == NULL)
-	{
-		dprintf(2, "Failed to create GLFW window\n");
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, resizeViewport);
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-		dprintf(2, "Failed to initialize GLAD\n");
-        return -1;
-    }
-	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-	//glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	use_texture();
 
 
 	while (!glfwWindowShouldClose(window)){
-		input_handler(window);
-		openglObjInit();
 		render(window);
-
 		glfwPollEvents();
-		//glfwWaitEvents();
 	}
 	t_garbage *tmp = g_garbage_collector_root;
 	while (g_garbage_collector_root){
@@ -107,8 +118,10 @@ void	use_texture(){
     // load image, create texture and generate mipmaps
     int width = 0, height = 0;
 	unsigned char	*data = parse_xpm("texture/beehive_front_honey.xpm", &width, &height);
-	if (!data)
-		free_garbage();
+	if (!data){
+		glfwTerminate();
+		add_to_garbage(0x0);
+	}
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	free(data);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -119,6 +132,9 @@ void	print_error(const char *fmt, va_list ap){
 }
 
 void	render(GLFWwindow *window){
+	input_handler(window);
+	openglObjInit();
+
 	setMatrix(scene);
 	
 	render_obj(scene, scene->objs_list);
@@ -179,7 +195,6 @@ void	render(GLFWwindow *window){
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
-	
 }
 
 void	resizeViewport(GLFWwindow *window, int width, int height){

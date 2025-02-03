@@ -28,10 +28,6 @@
 		float					z;
 		float					w;			//optional, weight default is 1.0;
 
-		float					matrixed_x;
-		float					matrixed_y;
-		float					matrixed_z;
-
 		double					magnetude;
 		size_t					id;
 		short					focused;
@@ -183,15 +179,11 @@
 	void	openglObjInit();
 
 	float	vector_dot_product(t_vertices *a, t_vertices *b);
-	float	matrixed_vector_dot_product(t_vertices *a, t_vertices *b);
 	float	vector_magnitude(t_vertices *v);
-	float	matrixed_vector_magnitude(t_vertices *v);
 	
 	t_vertices	subtract_vectors(t_vertices *v1, t_vertices *v2);
-	t_vertices	subtract_matrixed_vectors(t_vertices *v1, t_vertices *v2);
 	
 	t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2);
-	t_vertices	vector_matrixed_cross_product(t_vertices *v1, t_vertices *v2);
 
 	void	triangulate(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 
