@@ -1,6 +1,4 @@
 #include "../include/scop.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "../include/stb_image.h"
 
 struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
