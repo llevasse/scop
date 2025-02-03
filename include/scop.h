@@ -145,7 +145,7 @@
 		float					zoom;
 		t_faces					*focus;
 		
-		short					auto_rotate;
+	short					x_auto_rotate, y_auto_rotate, z_auto_rotate;
 
 	}	t_scene;
 

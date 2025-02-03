@@ -177,10 +177,20 @@ void	render(GLFWwindow *window){
 		}
 	}
 
-	if (scene->auto_rotate){
+	if (scene->x_auto_rotate){
+		scene->x_angle++;
+		if (scene->x_angle > 359)
+			scene->x_angle = 0;
+	}
+	if (scene->y_auto_rotate){
 		scene->y_angle++;
 		if (scene->y_angle > 359)
 			scene->y_angle = 0;
+	}
+	if (scene->z_auto_rotate){
+		scene->z_angle++;
+		if (scene->z_angle > 359)
+			scene->z_angle = 0;
 	}
 
 	glUniform1f(colour_oppacity_location, scene->colour_oppacity);

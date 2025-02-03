@@ -34,22 +34,28 @@ void	print_scop(t_scene *scene){
 	}
 }
 
+void	set_auto_rotate(short x, short y, short z){
+	scene->x_auto_rotate = x;
+	scene->y_auto_rotate = y;
+	scene->z_auto_rotate = z;
+}
+
 void	rotate_input(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_DOWN)){
 		if (glfwGetKey(window, GLFW_KEY_X)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->x_angle--;
 			if (scene->x_angle < 0)
 				scene->x_angle = 360;
 		}
 		if (glfwGetKey(window, GLFW_KEY_Y)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->y_angle--;
 			if (scene->y_angle < 0)
 				scene->y_angle = 360;
 		}
 		if (glfwGetKey(window, GLFW_KEY_Z)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->z_angle--;
 			if (scene->z_angle < 0)
 				scene->z_angle = 360;
@@ -57,23 +63,31 @@ void	rotate_input(GLFWwindow *window){
 	}
 	else if (glfwGetKey(window, GLFW_KEY_UP)){
 		if (glfwGetKey(window, GLFW_KEY_X)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->x_angle++;
 			if (scene->x_angle > 360)
 				scene->x_angle = 0;
 		}
 		if (glfwGetKey(window, GLFW_KEY_Y)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->y_angle++;
 			if (scene->y_angle > 360)
 				scene->y_angle = 0;
 		}
 		if (glfwGetKey(window, GLFW_KEY_Z)){
-			scene->auto_rotate = 0;
+			set_auto_rotate(0, 0, 0);
 			scene->z_angle++;
 			if (scene->z_angle > 360)
 				scene->z_angle = 0;
 		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_O)){
+		if (glfwGetKey(window, GLFW_KEY_X) && !key_press[GLFW_KEY_X])
+			scene->x_auto_rotate = !scene->x_auto_rotate;
+		if (glfwGetKey(window, GLFW_KEY_Y) && !key_press[GLFW_KEY_Y])
+			scene->y_auto_rotate = !scene->y_auto_rotate;
+		if (glfwGetKey(window, GLFW_KEY_Z) && !key_press[GLFW_KEY_Z])
+			scene->z_auto_rotate = !scene->z_auto_rotate;
 	}
 }
 
