@@ -55,6 +55,8 @@ t_scene	*init_scene(){
 	scene->colour_mode = 0;
 	scene->texture_mode = 0;
 	scene->normal_mode = 0;
+	scene->material_mode = 0;
+	scene->material_relief_mode = 0;
 	scene->colour_oppacity = 1;
 
 	scene->auto_rotate = 1;

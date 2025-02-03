@@ -148,8 +148,21 @@ void	input_handler(GLFWwindow *window){
 		texture_change = 1;
 	}
 	
-	if (glfwGetKey(window, GLFW_KEY_N) && !key_press[GLFW_KEY_N]){
-		scene->normal_mode = !scene->normal_mode;
+	if (glfwGetKey(window, GLFW_KEY_V) && !key_press[GLFW_KEY_V]){
+		if (scene->material_mode){
+			scene->material_mode = 0;
+			scene->material_relief_mode = 1;
+		}
+		else if (scene->material_relief_mode){
+			scene->material_relief_mode = 0;
+			scene->normal_mode = 1;
+		}
+		else if (scene->normal_mode){
+			scene->normal_mode = 0;
+		}
+		else{
+			scene->material_mode = 1;
+		}
 	}
 	
 	for (int i =0; i<348;i++){

@@ -136,6 +136,8 @@
 		short					movement_mode;
 		short					wireframe_view;
 		short					normal_mode;
+		short					material_mode;
+		short					material_relief_mode;
 		float					zoom;
 		t_faces					*focus;
 		

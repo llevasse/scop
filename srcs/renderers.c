@@ -8,6 +8,8 @@ extern GLfloat			*g_vertex_buffer_data;
 void	render_obj(t_scene *scene, t_obj *obj){
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	double colour_offset;
+	float colour_palette[10] = {.4, .8, .15, .16, .23, .42, .24, .32, .61, .51,};
+	int	palette_idx = 0;
 	while (obj){
 		t_faces	*face = obj->faces;
 		while (face){
@@ -26,10 +28,22 @@ void	render_obj(t_scene *scene, t_obj *obj){
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + face->normal.y;
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + face->normal.z;
 					}
-					else{
+					else if (scene->material_mode){
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->r;
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->g;
+						g_vertex_buffer_data[j++] = face->material->diffuse_color->b;
+					}
+					else if (scene->material_relief_mode){
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
+					}
+					else{
+						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
+						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
+						g_vertex_buffer_data[j++] = colour_palette[palette_idx++];
+						if (palette_idx >= 10)
+							palette_idx = 0;
 					}
 				}
 				else{
