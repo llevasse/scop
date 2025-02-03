@@ -14,6 +14,10 @@
 # define PI 3.1415926535
 # define RADIAN 0.017453292519444445
 
+# ifndef SCOP_DEBUG
+#  define SCOP_DEBUG 0
+# endif
+
 	int open_file(char *path, char *extension);
 
 

@@ -78,37 +78,46 @@ void	rotate_input(GLFWwindow *window){
 }
 
 void	translate_scale_zoom_input(GLFWwindow *window){
+	short	moved = 0;
 	if (glfwGetKey(window, GLFW_KEY_Y)){
 		if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->y_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .1 : -.1;
 		}	
-		else
+		else{
 			scene->y_offset += glfwGetKey(window, GLFW_KEY_KP_ADD) ? scene->translation_step : -scene->translation_step;
+			moved = 1;
+		}
 	}
-	else if (glfwGetKey(window, GLFW_KEY_X)){
+	if (glfwGetKey(window, GLFW_KEY_X)){
 		if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->x_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .1 : -.1;
 		}	
-		else
+		else{
 			scene->x_offset += glfwGetKey(window, GLFW_KEY_KP_ADD) ? scene->translation_step : -scene->translation_step;
+			moved = 1;
+		}
 	}
-	else if (glfwGetKey(window, GLFW_KEY_Z)){
+	if (glfwGetKey(window, GLFW_KEY_Z)){
 		if (glfwGetKey(window, GLFW_KEY_S)){
 			scene->z_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .1 : -.1;
 		}	
-		else
+		else{
 			scene->z_offset += glfwGetKey(window, GLFW_KEY_KP_ADD) ? scene->translation_step : -scene->translation_step;
+			moved = 1;
+		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S)){
 		scene->x_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .05 : -.05;
 		scene->y_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .05 : -.05;
 		scene->z_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .05 : -.05;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
-		scene->fov--;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
-		scene->fov++;
+	if (!moved){
+		if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
+			scene->fov--;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
+			scene->fov++;
+		}
 	}
 }
 
@@ -124,7 +133,7 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_KP_ADD) || glfwGetKey(window, GLFW_KEY_KP_SUBTRACT))
 		translate_scale_zoom_input(window);
 
-	if (glfwGetKey(window, GLFW_KEY_P) && !key_press[GLFW_KEY_P]){
+	if (glfwGetKey(window, GLFW_KEY_P) && !key_press[GLFW_KEY_P] && SCOP_DEBUG){
 		print_scop(scene);
 	}
 

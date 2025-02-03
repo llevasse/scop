@@ -5,6 +5,35 @@ extern struct s_garbage	*g_garbage_collector;
 unsigned int			positionBufferObject;
 extern GLfloat			*g_vertex_buffer_data;
 
+void	focus_render(t_scene *scene, t_faces *face, float colour_offset, int palette_idx, size_t count, size_t *j, size_t i){
+	float colour_palette[10] = {.4, .8, .15, .16, .23, .42, .24, .32, .61, .51,};
+	float r, g, b;
+	if (scene->normal_mode){
+		r = face->material->diffuse_color->r + face->normal.x;
+		g = face->material->diffuse_color->g + face->normal.y;
+		b = face->material->diffuse_color->b + face->normal.z;
+	}
+	else if (scene->material_mode){
+		r = face->material->diffuse_color->r;
+		g = face->material->diffuse_color->g;
+		b = face->material->diffuse_color->b;
+	}
+	else if (scene->material_relief_mode){
+		r = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
+		g = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
+		b = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
+	}
+	else{
+		r = colour_palette[palette_idx];
+		g = colour_palette[palette_idx];
+		b = colour_palette[palette_idx];
+	}
+	printf("%zu %f %f %f %f %f %f\n", count, face->vertices[i]->x - scene->origin.x, face->vertices[i]->y - scene->origin.y, face->vertices[i]->z - scene->origin.z, r, g, b);
+	g_vertex_buffer_data[*j++] = 1;
+	g_vertex_buffer_data[*j++] = 0;
+	g_vertex_buffer_data[*j++] = 0;
+}
+
 void	render_obj(t_scene *scene, t_obj *obj){
 	size_t	i = 0, j = 0, count = 0, pnt_nb = 0;
 	double colour_offset;
@@ -22,7 +51,10 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				g_vertex_buffer_data[j++] = face->vertices[i]->z - scene->origin.z;
 				
 				// colours
-				if (!face->focused){
+				if (face->focused && SCOP_DEBUG){
+					focus_render(scene, face, colour_offset, palette_idx, count, &j, i);
+				}
+				else{
 					if (scene->normal_mode){
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + face->normal.x;
 						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + face->normal.y;
@@ -45,23 +77,6 @@ void	render_obj(t_scene *scene, t_obj *obj){
 						if (palette_idx >= 10)
 							palette_idx = 0;
 					}
-				}
-				else{
-					float r, g, b;
-					if (scene->normal_mode){
-						r = face->material->diffuse_color->r + face->normal.x;
-						g = face->material->diffuse_color->g + face->normal.y;
-						b = face->material->diffuse_color->b + face->normal.z;
-					}
-					else{
-						r = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
-						g = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
-						b = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
-					}
-				printf("%zu %f %f %f %f %f %f\n", count, face->vertices[i]->x - scene->origin.x, face->vertices[i]->y - scene->origin.y, face->vertices[i]->z - scene->origin.z, r, g, b);
-					g_vertex_buffer_data[j++] = 1;
-					g_vertex_buffer_data[j++] = 0;
-					g_vertex_buffer_data[j++] = 0;
 				}
 
 				// textures
