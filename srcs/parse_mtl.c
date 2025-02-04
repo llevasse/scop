@@ -41,7 +41,7 @@ void use_default_mtl(t_scene *scene){
 }
 
 void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
-	t_litle_rgb *rgb = 0x0;						// TODO also parse map_Kd and map_Ks
+	t_litle_rgb *rgb = 0x0;
 	float		float_value = 1;
 	float		min = 0, max = 1;
 	char		*possible_float_key[4] = {"Ns", "Ni", "d", "illum"};

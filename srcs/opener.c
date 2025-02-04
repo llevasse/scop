@@ -14,5 +14,8 @@ int open_file(char *path, char *extension){
 	}
 	int fd = open(trim_path, O_RDONLY);
 	free(trim_path);
+	if (fd < 0){
+		dprintf(2, "Error : could not open %s\n", trim_path);
+	}
 	return (fd);
 }

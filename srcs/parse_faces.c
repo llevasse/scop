@@ -32,13 +32,12 @@ void	map_face_uv(t_faces *face){
 	face->normal = vector_cross_product(&u, &v);
 
 	normalize_vector(&face->normal);
-
-	if (fabsf(face->normal.x) < fabsf(face->normal.z))
-		face->direction = 'x';
-	else
+	if (fabsf(face->normal.x) >= .9)
 		face->direction = 'z';
-	if (fabsf(face->normal.y) >= .9)
+	else if (fabsf(face->normal.y) >= .9)
 		face->direction = 'y';
+	else
+		face->direction = 'x';
 }
 
 void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
@@ -142,5 +141,4 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 			tmp = tmp->next;
 		}
 	}
-	//free_garbage();
 }

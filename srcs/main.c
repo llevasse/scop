@@ -125,16 +125,15 @@ int main(int argc, char **argv){
 
 void	use_texture(){
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glBindTexture(GL_TEXTURE_2D, texture);
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // load image, create texture and generate mipmaps
     int width = 0, height = 0;
-	unsigned char	*data = parse_xpm("texture/beehive_front_honey.xpm", &width, &height);
+	unsigned char	*data = parse_xpm("texture/NewCats.xpm", &width, &height);
+	//unsigned char	*data = parse_xpm("texture/64xbeehive_front_honey.xpm", &width, &height);
 	if (!data){
 		glfwTerminate();
 		add_to_garbage(0x0);
