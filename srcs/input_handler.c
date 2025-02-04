@@ -165,6 +165,11 @@ void	input_handler(GLFWwindow *window){
 		else{
 			scene->focus = scene->objs_list->faces;
 		}
+		
+		render_obj(scene, scene->objs_list);
+		void *ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		ft_memcpy(ptr, g_vertex_buffer_data, (scene->display_vertices_count * 8) * sizeof(float));
+		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){
@@ -190,6 +195,10 @@ void	input_handler(GLFWwindow *window){
 		else{
 			scene->material_mode = 1;
 		}
+		render_obj(scene, scene->objs_list);
+		void *ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		ft_memcpy(ptr, g_vertex_buffer_data, (scene->display_vertices_count * 8) * sizeof(float));
+		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 	
 	for (int i =0; i<348;i++){
