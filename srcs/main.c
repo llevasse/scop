@@ -132,8 +132,8 @@ void	use_texture(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     int width = 0, height = 0;
-	unsigned char	*data = parse_xpm("texture/NewCats.xpm", &width, &height);
-	//unsigned char	*data = parse_xpm("texture/64xbeehive_front_honey.xpm", &width, &height);
+	//unsigned char	*data = parse_xpm("texture/NewCats.xpm", &width, &height);
+	unsigned char	*data = parse_xpm("texture/beehive_front_honey.xpm", &width, &height);
 	if (!data){
 		glfwTerminate();
 		add_to_garbage(0x0);
@@ -155,7 +155,7 @@ void	render(GLFWwindow *window){
 	
 	render_obj(scene, scene->objs_list);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glDepthFunc(GL_LESS);
