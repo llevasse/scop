@@ -3,6 +3,8 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
+t_material	*create_default_material();
+
 t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
@@ -64,6 +66,9 @@ t_scene	*init_scene(){
 	scene->z_auto_rotate = 0;
 
 	scene->focus = 0x0;
+
+	scene->default_material = create_default_material();
+
 	return (scene);
 }
 
@@ -88,14 +93,9 @@ t_scene *parse_scene(int fd, char *obj_path){
 			if (!ft_strcmp(line_content[0], "mtllib")){
 				if (line_content[1]){
 					scene->material_list = parse_mtl(line_content[1], obj_path);
-					if (!scene->material_list){
-						free_garbage();
-					}
-
 				}
 				else{
-					dprintf(2,"Missing path to .mtl file");
-					free_garbage();
+					dprintf(2,"Missing path to .mtl file\nDefault material will be used\n");
 				}
 			}
 			else {
@@ -282,29 +282,22 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		while (tmp && tmp->name && ft_strcmp(name, tmp->name))
 			tmp = tmp->next;
 		if (!tmp){
-			dprintf(2,"Material name on line %d does not exist\n", line_nb);
-			free_garbage();
+			dprintf(2,"Material name on line %d does not exist\nDefault material will be used\n", line_nb);
+			tmp = scene->default_material;
 		}
 		scene->objs_list->material = tmp;
 	}
 	else if (!ft_strcmp(tab[0], "f")){	// f v/vt/vn
 		if (!scene->objs_list->material){
-			use_default_mtl(scene);
+			scene->objs_list->material = scene->default_material;
 		}
 		pass_obj_list_to_tab(scene);
 		parse_face(tab, tab_size, scene, line_nb);
 	}
 }
 
-void use_default_mtl(t_scene *scene){
-	t_material *tmp = scene->material_list;
-	while (tmp && tmp->name){
-		if (!ft_strcmp(tmp->name, "")){
-			scene->objs_list->material = tmp;
-			return ;
-		}
-	}
-	tmp = malloc(sizeof(struct s_material));
+t_material	*create_default_material(){
+	t_material *tmp = malloc(sizeof(struct s_material));
 	add_to_garbage(tmp);
 	t_litle_rgb *ac = malloc(sizeof(struct s_litle_rgb));
 	add_to_garbage(ac);
@@ -322,9 +315,21 @@ void use_default_mtl(t_scene *scene){
 	tmp->nb_faces = 0;
 	tmp->faces = 0x0;
 	tmp->face_index = 0;
-	tmp->next = scene->material_list;
+	return (tmp);
+}
+
+void use_default_mtl(t_scene *scene){
+	t_material *tmp = scene->material_list;
+	while (tmp && tmp->name){
+		if (!ft_strcmp(tmp->name, "")){
+			scene->objs_list->material = tmp;
+			return ;
+		}
+	}
+	tmp = scene->default_material;
 	scene->material_list = tmp;
 	scene->objs_list->material = tmp;
+	scene->default_material = tmp;
 }
 
 void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
@@ -414,7 +419,7 @@ t_material	*parse_mtl(char *path, char *obj_path){
 	int fd = open_file(path, ".mtl");
 
 	if (fd < 0){
-		dprintf(2, "Can't open %s\n", path);
+		dprintf(2, "Can't open %s\nDefault material will be used\n", path);
 		return (0x0);
 	}
 	t_material *material = malloc(sizeof(struct s_material));

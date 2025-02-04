@@ -96,6 +96,7 @@
 		int						material_fd;
 		char					*material_path;
 		t_material				*material_list;
+		t_material				*default_material;
 		t_obj					*objs_list;
 
 		t_vertices				*vertices_current;
