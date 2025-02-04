@@ -9,19 +9,19 @@ void	focus_render(t_scene *scene, t_faces *face, float colour_offset, int palett
 	float colour_palette[10] = {.4, .8, .15, .16, .23, .42, .24, .32, .61, .51,};
 	float r, g, b;
 	if (scene->normal_mode){
-		r = face->material->diffuse_color->r + face->normal.x;
-		g = face->material->diffuse_color->g + face->normal.y;
-		b = face->material->diffuse_color->b + face->normal.z;
+		r = face->material->diffuse_colour->r + face->normal.x;
+		g = face->material->diffuse_colour->g + face->normal.y;
+		b = face->material->diffuse_colour->b + face->normal.z;
 	}
 	else if (scene->material_mode){
-		r = face->material->diffuse_color->r;
-		g = face->material->diffuse_color->g;
-		b = face->material->diffuse_color->b;
+		r = face->material->diffuse_colour->r;
+		g = face->material->diffuse_colour->g;
+		b = face->material->diffuse_colour->b;
 	}
 	else if (scene->material_relief_mode){
-		r = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
-		g = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
-		b = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
+		r = face->material->diffuse_colour->r + colour_offset > 1 ? face->material->diffuse_colour->r - colour_offset : face->material->diffuse_colour->r + colour_offset;
+		g = face->material->diffuse_colour->g + colour_offset > 1 ? face->material->diffuse_colour->g - colour_offset : face->material->diffuse_colour->g + colour_offset;
+		b = face->material->diffuse_colour->b + colour_offset > 1 ? face->material->diffuse_colour->b - colour_offset : face->material->diffuse_colour->b + colour_offset;
 	}
 	else{
 		r = colour_palette[palette_idx];
@@ -50,25 +50,30 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				g_vertex_buffer_data[j++] = face->vertices[i]->y - scene->origin.y;
 				g_vertex_buffer_data[j++] = face->vertices[i]->z - scene->origin.z;
 				
+				if (!face->material->diffuse_colour){
+					dprintf(2,"Material %s is missing it's ambient colours, default will be used\n", face->material->name);
+					face->material->diffuse_colour = scene->default_material->ambient_colour;
+				}
+
 				// colours
 				if (face->focused && SCOP_DEBUG){
 					focus_render(scene, face, colour_offset, palette_idx, count, &j, i);
 				}
 				else{
 					if (scene->normal_mode){
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + face->normal.x;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + face->normal.y;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + face->normal.z;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->r + face->normal.x;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->g + face->normal.y;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->b + face->normal.z;
 					}
 					else if (scene->material_mode){
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->r;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->g;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->b;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->r;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->g;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->b;
 					}
 					else if (scene->material_relief_mode){
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->r + colour_offset > 1 ? face->material->diffuse_color->r - colour_offset : face->material->diffuse_color->r + colour_offset;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->g + colour_offset > 1 ? face->material->diffuse_color->g - colour_offset : face->material->diffuse_color->g + colour_offset;
-						g_vertex_buffer_data[j++] = face->material->diffuse_color->b + colour_offset > 1 ? face->material->diffuse_color->b - colour_offset : face->material->diffuse_color->b + colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->r + colour_offset > 1 ? face->material->diffuse_colour->r - colour_offset : face->material->diffuse_colour->r + colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->g + colour_offset > 1 ? face->material->diffuse_colour->g - colour_offset : face->material->diffuse_colour->g + colour_offset;
+						g_vertex_buffer_data[j++] = face->material->diffuse_colour->b + colour_offset > 1 ? face->material->diffuse_colour->b - colour_offset : face->material->diffuse_colour->b + colour_offset;
 					}
 					else{
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];

@@ -27,6 +27,7 @@ SRC						=	srcs/main.c \
 							srcs/input_handler.c \
 							srcs/vectors.c \
 							srcs/xpm_parser.c \
+							srcs/parse_mtl.c \
 							glad/src/glad.c
 							
 

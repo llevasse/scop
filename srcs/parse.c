@@ -3,8 +3,6 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-t_material	*create_default_material();
-
 t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
@@ -83,30 +81,32 @@ t_scene *parse_scene(int fd, char *obj_path){
 		add_to_garbage(s);
 		s = ft_strtrim(s, " \n\t\r");
 		add_to_garbage(s);
-		line_content = ft_split(s, ' ');	//TODO add tab to garbage collector
-		add_to_garbage(line_content);
-		line_content_size = 0;
-		for (; line_content[line_content_size]; line_content_size++){
-			add_to_garbage(line_content[line_content_size]);
-		}
-		if (*s != '#' && line_content[0]){
-			if (!ft_strcmp(line_content[0], "mtllib")){
-				if (line_content[1]){
-					scene->material_list = parse_mtl(line_content[1], obj_path);
+		if (*s != '#'){
+			line_content = ft_split(s, ' ');
+			add_to_garbage(line_content);
+			line_content_size = 0;
+			for (; line_content[line_content_size]; line_content_size++){
+				add_to_garbage(line_content[line_content_size]);
+			}
+			if (line_content[0]){
+				if (!ft_strcmp(line_content[0], "mtllib")){
+					if (line_content[1]){
+						scene->material_list = parse_mtl(line_content[1], obj_path);
+					}
+					else{
+						dprintf(2,"\033[0;33mWarning\033[0m : Missing path to .mtl file\nDefault material will be used\n");
+					}
 				}
-				else{
-					dprintf(2,"Missing path to .mtl file\nDefault material will be used\n");
+				else {
+					parse_scene_line(line_content, line_content_size, scene, line_count);
+					if (!root_obj_list && scene->objs_list)
+						root_obj_list = scene->objs_list;
 				}
 			}
-			else {
-				parse_scene_line(line_content, line_content_size, scene, line_count);
-				if (!root_obj_list && scene->objs_list)
-					root_obj_list = scene->objs_list;
-			}
-		}
-		if (line_content){
+			if (line_content){
 			line_content = 0x0;
 			line_content_size = 0;
+		}
 		}
 		s = get_next_line(fd);
 		line_count++;
@@ -153,7 +153,6 @@ void	link_faces_to_materials(t_scene *scene){
 		obj = obj->next;
 	}
 }
-
 
 void	pass_obj_list_to_tab(t_scene *scene){
 	size_t i=0;
@@ -242,7 +241,7 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		scene->vertex_normals_root = 0x0;
 		scene->texture_coordinates_root = 0x0;
 	}
-	
+
 	if (!ft_strcmp(tab[0], "v")){
 		parse_vertices(tab, tab_size, scene, line_nb);
 	}
@@ -254,27 +253,24 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	}
 	else if (!ft_strcmp(tab[0], "o") || !ft_strcmp(tab[0], "g")){
 		if (tab_size < 2){
-			dprintf(2,"%s on line %d is missing a name value\n", tab[0], line_nb);
-			free_garbage();
+			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a name value\n", tab[0], line_nb);
 		}
-		else {
-			if (scene->objs_list->name){ // if not first object
-				scene->objs_list->next = malloc(sizeof(struct s_obj));
-				add_to_garbage(scene->objs_list->next);
-				scene->objs_list = scene->objs_list->next;
-				scene->objs_list->name	= 0x0;
-				scene->objs_list->next = 0x0;
-				scene->objs_list->faces = 0x0;
-				scene->objs_list->material = 0x0;
-			}
-			scene->objs_list->name = ft_strdup(tab[1]);
-			add_to_garbage(scene->objs_list->name);
+		if (scene->objs_list->name){ // if not first object
+			scene->objs_list->next = malloc(sizeof(struct s_obj));
+			add_to_garbage(scene->objs_list->next);
+			scene->objs_list = scene->objs_list->next;
+			scene->objs_list->name	= 0x0;
+			scene->objs_list->next = 0x0;
+			scene->objs_list->faces = 0x0;
+			scene->objs_list->material = 0x0;
 		}
+		scene->objs_list->name = ft_strdup(tab[1]);
+		add_to_garbage(scene->objs_list->name);
 	}
 	else if (!ft_strcmp(tab[0], "usemtl")){
 		if (tab_size < 2){
-			dprintf(2,"%s on line %d is missing a name value\n", tab[0], line_nb);
-			free_garbage();
+			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a name value. Default material will be used\n", tab[0], line_nb);
+			return ;
 		}
 		char	*name = ft_strtrim(tab[1], " \t\r\n");
 		add_to_garbage(name);
@@ -282,7 +278,7 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		while (tmp && tmp->name && ft_strcmp(name, tmp->name))
 			tmp = tmp->next;
 		if (!tmp){
-			dprintf(2,"Material name on line %d does not exist\nDefault material will be used\n", line_nb);
+			dprintf(2,"\033[0;33mWarning\033[0m : Material name on line %d does not exist\nDefault material will be used\n", line_nb);
 			tmp = scene->default_material;
 		}
 		scene->objs_list->material = tmp;
@@ -294,190 +290,4 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		pass_obj_list_to_tab(scene);
 		parse_face(tab, tab_size, scene, line_nb);
 	}
-}
-
-t_material	*create_default_material(){
-	t_material *tmp = malloc(sizeof(struct s_material));
-	add_to_garbage(tmp);
-	t_litle_rgb *ac = malloc(sizeof(struct s_litle_rgb));
-	add_to_garbage(ac);
-	ac->r = .5;
-	ac->g = .5;
-	ac->b = .5;
-	tmp->name = "";
-	tmp->ambient_color = ac;
-	tmp->diffuse_color = ac;
-	tmp->specular_color = ac;
-	tmp->shininess = 1.0;
-	tmp->optical_density =1.0;
-	tmp->dissolve = 1.0;
-	tmp->illum = 0;
-	tmp->nb_faces = 0;
-	tmp->faces = 0x0;
-	tmp->face_index = 0;
-	return (tmp);
-}
-
-void use_default_mtl(t_scene *scene){
-	t_material *tmp = scene->material_list;
-	while (tmp && tmp->name){
-		if (!ft_strcmp(tmp->name, "")){
-			scene->objs_list->material = tmp;
-			return ;
-		}
-	}
-	tmp = scene->default_material;
-	scene->material_list = tmp;
-	scene->objs_list->material = tmp;
-	scene->default_material = tmp;
-}
-
-void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
-	t_litle_rgb *rgb = 0x0;						// TODO also parse map_Kd and map_Ks
-	float		float_value = 1;
-	float		min = 0, max = 1;
-	char		*possible_float_key[4] = {"Ns", "Ni", "d", "illum"};
-	float		possible_float_min[4] = {0.0, 0.001, 0.0, 0.0};
-	float		possible_float_max[4] = {1000.0, 10.0, 1.0, 10.0};
-	char		*possible_rgb_key[3] = {"Ka", "Kd", "Ks"};
-	
-	for (int i=0;i<3;i++){
-		if (!ft_strcmp(possible_rgb_key[i], tab[0])){
-			rgb = malloc(sizeof(struct s_litle_rgb));
-			add_to_garbage(rgb);
-			if (tab_size < 4){
-				dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
-				free_garbage();
-			}
-			rgb->r = atof(tab[1]);
-			rgb->g = atof(tab[2]);
-			rgb->b = atof(tab[3]);
-			min = 0.0;
-			max = 1.0;
-			if (i == 0)
-				material->ambient_color = rgb;
-			if (i == 1)
-				material->diffuse_color = rgb;
-			if (i == 2)
-				material->specular_color = rgb;
-			break ;
-		}
-	}
-	for (int i=0; i<4;i++){
-		if (!ft_strcmp(possible_float_key[i], tab[0])){
-			if (tab_size < 2){
-				dprintf(2,"%s on line %d is missing a float value\n", tab[0], line_nb);
-				free_garbage();
-			}
-			float_value = atof(tab[1]);
-			min = possible_float_min[i];
-			max = possible_float_max[i];
-			if (i == 0)
-				material->shininess = float_value;
-			else if (i == 1)
-				material->optical_density = float_value;
-			else if (i == 2)
-				material->dissolve = float_value;
-			else
-				material->illum = float_value;
-			break;
-		}
-	}
-	
-	if ((rgb && ((rgb->r < min || rgb->r > max) || (rgb->g < min || rgb->g > max) || (rgb->b < min || rgb->b > max))) 
-		|| (float_value < min || float_value > max)){
-		dprintf(2, "%s on line %d value out of bound (should be between %.2f and %.2f)\n", tab[0], line_nb, min, max);
-		free_garbage();
-	}
-}
-
-void print_material(t_material *material){
-	printf("\t%s material\n", material->name);
-	if (material->ambient_color)
-		printf("\t\tr: %f g: %f b: %f ka\n", material->ambient_color->r, material->ambient_color->g, material->ambient_color->b);
-	if (material->diffuse_color)
-		printf("\t\tr: %f g: %f b: %f kd\n", material->diffuse_color->r, material->diffuse_color->g, material->diffuse_color->b);
-	if (material->specular_color)
-		printf("\t\tr: %f g: %f b: %f ks\n", material->specular_color->r, material->specular_color->g, material->specular_color->b);
-	printf("\t\t%f ns\n", material->shininess);
-	printf("\t\t%f ni\n", material->optical_density);
-	printf("\t\t%f d\n", material->dissolve);
-	printf("\t\t%d illum\n", material->illum);
-}
-
-size_t ft_strrchr_pos(char *s, char c){
-	return (ft_strrchr(s, c) - s);
-}
-
-t_material	*parse_mtl(char *path, char *obj_path){
-	if (path[0] != '/'){
-		char *s_path = ft_substr(obj_path, 0, ft_strrchr_pos(obj_path, '/') + 1);
-		add_to_garbage(s_path);
-		path = ft_strjoin(s_path, path);
-		add_to_garbage(path);
-	}
-	int fd = open_file(path, ".mtl");
-
-	if (fd < 0){
-		dprintf(2, "Can't open %s\nDefault material will be used\n", path);
-		return (0x0);
-	}
-	t_material *material = malloc(sizeof(struct s_material));
-	add_to_garbage(material);
-	t_material *root = material;
-	material->next = 0x0;
-	char	*s = get_next_line(fd);
-	char	*s_trim = ft_strtrim(s, " \n\t\r");
-	free(s);
-	add_to_garbage(s_trim);
-	char	**tab;
-	int		tab_size;
-	int		line = 1;
-	while (s_trim){
-		if (*s_trim != '#'){
-			tab = ft_split(s_trim, ' ');
-			add_to_garbage(tab);
-			tab_size = 0;
-			for (; tab[tab_size];tab_size++){
-				add_to_garbage(tab[tab_size]);
-			}
-			if (tab[0]){
-				if (!ft_strcmp(tab[0], "newmtl")){
-					material->next = malloc(sizeof(struct s_material));
-					add_to_garbage(material->next);
-					material = material->next;
-					material->next = 0x0;
-					if (tab[1]){
-						material->name = ft_strdup(tab[1]);
-						add_to_garbage(material->name);
-					}
-					else{
-						dprintf(2,"newmtl on line %d is missing a name\n", line);
-					}
-					material->ambient_color = 0x0;
-					material->diffuse_color = 0x0;
-					material->specular_color = 0x0;
-					material->shininess = 1.0;
-					material->optical_density =1.0;
-					material->dissolve = 1.0;
-					material->illum = 0;
-					material->nb_faces = 0;
-					material->faces = 0x0;
-					material->face_index = 0;
-				}
-				else {
-					parse_mtl_line(tab, tab_size, material, line);
-				}
-			}
-		}
-		s = get_next_line(fd);
-		s_trim = ft_strtrim(s, " \t\r\n");
-		free(s);
-		if (s_trim)
-			add_to_garbage(s_trim);
-		line++;
-	}
-
-	material->next = 0x0;
-	return (root->next);
 }

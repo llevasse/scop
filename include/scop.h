@@ -71,9 +71,9 @@
 
 	typedef struct s_material{
 		char					*name;
-		t_litle_rgb				*ambient_color;      //said 'ka'
-		t_litle_rgb				*diffuse_color;      //said 'kd'
-		t_litle_rgb				*specular_color;     //said 'ks'
+		t_litle_rgb				*ambient_colour;      //said 'ka'
+		t_litle_rgb				*diffuse_colour;      //said 'kd'
+		t_litle_rgb				*specular_colour;     //said 'ks'
 		float					shininess;		     //said 'ns'
 		float					optical_density;	 //said 'Ni',1.0 is default
 		float					dissolve;		     //said 'd'
@@ -197,4 +197,12 @@
 	void	normalize_vector(t_vertices *p);
 
 	unsigned char	*parse_xpm(char *path, int *width, int *height);
+
+
+	t_material	*create_default_material();
+	void use_default_mtl(t_scene *scene);
+	void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
+	void print_material(t_material *material);
+	size_t ft_strrchr_pos(char *s, char c);
+	t_material	*parse_mtl(char *path, char *obj_path);
 #endif
