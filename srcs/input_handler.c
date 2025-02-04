@@ -182,6 +182,10 @@ void	input_handler(GLFWwindow *window){
 		}
 		else if (scene->normal_mode){
 			scene->normal_mode = 0;
+			scene->material_normal_mode = 1;
+		}
+		else if (scene->material_normal_mode){
+			scene->material_normal_mode = 0;
 		}
 		else{
 			scene->material_mode = 1;

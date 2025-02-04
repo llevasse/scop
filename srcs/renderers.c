@@ -9,6 +9,11 @@ void	focus_render(t_scene *scene, t_faces *face, float colour_offset, int palett
 	float colour_palette[10] = {.4, .8, .15, .16, .23, .42, .24, .32, .61, .51,};
 	float r, g, b;
 	if (scene->normal_mode){
+		r = face->normal.x;
+		g = face->normal.y;
+		b = face->normal.z;
+	}
+	else if (scene->material_normal_mode){
 		r = face->material->diffuse_colour->r + face->normal.x;
 		g = face->material->diffuse_colour->g + face->normal.y;
 		b = face->material->diffuse_colour->b + face->normal.z;
@@ -29,9 +34,10 @@ void	focus_render(t_scene *scene, t_faces *face, float colour_offset, int palett
 		b = colour_palette[palette_idx];
 	}
 	printf("%zu %f %f %f %f %f %f\n", count, face->vertices[i]->x - scene->origin.x, face->vertices[i]->y - scene->origin.y, face->vertices[i]->z - scene->origin.z, r, g, b);
-	g_vertex_buffer_data[*j++] = 1;
-	g_vertex_buffer_data[*j++] = 0;
-	g_vertex_buffer_data[*j++] = 0;
+	g_vertex_buffer_data[*j ] = 1;
+	g_vertex_buffer_data[*j + 1] = 0;
+	g_vertex_buffer_data[*j + 2] = 0;
+	*j += 3;
 }
 
 void	render_obj(t_scene *scene, t_obj *obj){
@@ -61,6 +67,11 @@ void	render_obj(t_scene *scene, t_obj *obj){
 				}
 				else{
 					if (scene->normal_mode){
+						g_vertex_buffer_data[j++] = face->normal.x;
+						g_vertex_buffer_data[j++] = face->normal.y;
+						g_vertex_buffer_data[j++] = face->normal.z;
+					}
+					else if (scene->material_normal_mode){
 						g_vertex_buffer_data[j++] = face->material->diffuse_colour->r + face->normal.x;
 						g_vertex_buffer_data[j++] = face->material->diffuse_colour->g + face->normal.y;
 						g_vertex_buffer_data[j++] = face->material->diffuse_colour->b + face->normal.z;
@@ -79,10 +90,10 @@ void	render_obj(t_scene *scene, t_obj *obj){
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
 						g_vertex_buffer_data[j++] = colour_palette[palette_idx];
-						if (palette_idx >= 10)
-							palette_idx = 0;
 					}
 				}
+				if (palette_idx >= 9)
+					palette_idx = 0;
 
 				// textures
 				if (face->texture_coordinates[i]){
