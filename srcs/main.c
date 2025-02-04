@@ -106,7 +106,12 @@ int main(int argc, char **argv){
 	}
 
 	print_command();
+	render_obj(scene, scene->objs_list);
+	openglObjInit();
 	while (!glfwWindowShouldClose(window)){
+		iteration++;
+		if (iteration >= 42000)
+			break;
 		render(window);
 		glfwPollEvents();
 	}
@@ -149,11 +154,9 @@ void	print_error(const char *fmt, va_list ap){
 
 void	render(GLFWwindow *window){
 	input_handler(window);
-	openglObjInit();
 
 	setMatrix(scene);
 	
-	render_obj(scene, scene->objs_list);
 
 	glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
 
@@ -218,8 +221,6 @@ void	render(GLFWwindow *window){
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 
 	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
 	glfwSwapBuffers(window);
 }
 
