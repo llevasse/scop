@@ -3,12 +3,9 @@
 extern struct s_garbage	*g_garbage_collector_root;
 extern struct s_garbage	*g_garbage_collector;
 
-int count = 0;
-
 void add_to_garbage(void *addr){
 	if (!addr)
 		free_garbage();
-	count++;
 	if (g_garbage_collector->addr){
 		g_garbage_collector->next = malloc(sizeof(struct s_garbage));
 		if (!g_garbage_collector->next){

@@ -1,7 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
 extern short			key_press[348];
 
 void	d4x4MatrixMult(float (*m)[4][4], float m1[4][4], float m2[4][4]){

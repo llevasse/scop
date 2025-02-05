@@ -1,7 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
 unsigned int			positionBufferObject;
 extern GLfloat			*g_vertex_buffer_data;
 

@@ -3,16 +3,9 @@
 struct s_garbage	*g_garbage_collector_root = 0x0;
 struct s_garbage	*g_garbage_collector = 0x0;
 struct s_scene		*scene;
-int					window_fd = -1;
-unsigned int		texture;
-GLuint 				programID = -1, programTextureID, VAO = -1;
-GLuint				VBO, EBO;
-unsigned long long	iteration = 0;
 
 GLfloat				*g_vertex_buffer_data;
 
-short				key_press[348];
-float				texture_change;
 
 
 GLFWwindow	*init_opengl(){
@@ -38,8 +31,7 @@ GLFWwindow	*init_opengl(){
 		glfwTerminate();
         return 0x0;
     }
-	programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-	//glEnable(GL_CULL_FACE);
+	scene->programID = loadShaders("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
 	glEnable(GL_DEPTH_TEST);
 	use_texture();
 	return (window);
@@ -91,7 +83,7 @@ int main(int argc, char **argv){
 		g_vertex_buffer_data[i] = 0.0;
 	}
 	for (int i =0;i<348;i++){
-		key_press[i] = 0;
+		scene->key_press[i] = 0;
 	}
 
 	GLFWwindow *window = init_opengl();
@@ -109,9 +101,6 @@ int main(int argc, char **argv){
 	render_obj(scene, scene->objs_list);
 	openglObjInit();
 	while (!glfwWindowShouldClose(window)){
-		iteration++;
-		if (iteration >= 42000)
-			break;
 		render(window);
 		glfwPollEvents();
 	}
@@ -129,8 +118,8 @@ int main(int argc, char **argv){
 }
 
 void	use_texture(){
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(1, &scene->texture);
+    glBindTexture(GL_TEXTURE_2D, scene->texture);
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -162,24 +151,24 @@ void	render(GLFWwindow *window){
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glDepthFunc(GL_LESS);
-	float	colour_oppacity_location = glGetUniformLocation(programID, "textureOppacity");
+	float	colour_oppacity_location = glGetUniformLocation(scene->programID, "textureOppacity");
 
-	GLuint modelMatrix = glGetUniformLocation(programID, "model");
-	GLuint viewMatrix = glGetUniformLocation(programID, "view");
-	GLuint projectionMatrix = glGetUniformLocation(programID, "projection");
+	GLuint modelMatrix = glGetUniformLocation(scene->programID, "model");
+	GLuint viewMatrix = glGetUniformLocation(scene->programID, "view");
+	GLuint projectionMatrix = glGetUniformLocation(scene->programID, "projection");
 
-	glUseProgram(programID);
+	glUseProgram(scene->programID);
 
 	glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, &scene->model_matrix[0][0]);
 	glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, &scene->matrix_camera[0][0]);
 	glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, &scene->persepective_matrix[0][0]);
 
 	
-	if (texture_change){
+	if (scene->texture_change){
 		if (scene->colour_mode){
 			scene->colour_oppacity += .05;
 			if (scene->colour_oppacity >= 1){
-				texture_change = 0;
+				scene->texture_change = 0;
 				scene->colour_mode = 0;
 				scene->texture_mode = 1;
 				scene->colour_oppacity = 1;
@@ -188,7 +177,7 @@ void	render(GLFWwindow *window){
 		else{
 			scene->colour_oppacity -= .05;
 			if (scene->colour_oppacity <= 0){
-				texture_change = 0;
+				scene->texture_change = 0;
 				scene->colour_mode = 1;
 				scene->texture_mode = 0;
 				scene->colour_oppacity = 0;
@@ -215,9 +204,9 @@ void	render(GLFWwindow *window){
 	glUniform1f(colour_oppacity_location, scene->colour_oppacity);
 
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, scene->texture);
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(scene->VAO);
 	glPolygonMode(GL_FRONT_AND_BACK, scene->wireframe_view ? GL_LINE : GL_FILL);
 
 	glDrawArrays(GL_TRIANGLES, 0, scene->display_vertices_count);
@@ -231,11 +220,11 @@ void	resizeViewport(GLFWwindow *window, int width, int height){
 }
 
 void	openglObjInit(){
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &scene->VAO);
+	glGenBuffers(1, &scene->VBO);
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(scene->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, scene->VBO);
 	glBufferData(GL_ARRAY_BUFFER, (scene->display_vertices_count * 8) * sizeof(float), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -246,8 +235,4 @@ void	openglObjInit(){
 
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-/*
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
 }

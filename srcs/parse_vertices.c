@@ -1,8 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
-
 void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb){
 	float	weight = 1.0;
 	if (tab_size < 4){

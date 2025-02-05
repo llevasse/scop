@@ -1,9 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
-
-
 t_material	*create_default_material(){
 	t_material *tmp = malloc(sizeof(struct s_material));
 	add_to_garbage(tmp);

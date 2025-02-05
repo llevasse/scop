@@ -1,10 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
-extern struct s_scene	*scene;
-extern GLfloat			*g_vertex_buffer_data;
-
 float	vector_dot_product(t_vertices *a, t_vertices *b){
 	return ((a->x * b->x) + (a->y * b->y) + (a->z * b->z));
 }

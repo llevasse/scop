@@ -146,8 +146,14 @@
 		short					material_relief_mode;
 		float					zoom;
 		t_faces					*focus;
+
+
+		unsigned int		texture;
+		GLuint 				programID, VAO, VBO;
+		float				texture_change;
+		short				key_press[348];
 		
-	short					x_auto_rotate, y_auto_rotate, z_auto_rotate;
+		short					x_auto_rotate, y_auto_rotate, z_auto_rotate;
 
 	}	t_scene;
 

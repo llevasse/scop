@@ -1,11 +1,7 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
 extern GLfloat			*g_vertex_buffer_data;
 extern struct s_scene	*scene;
-extern short			key_press[348];
-extern float			texture_change;
 
 
 void	print_scop(t_scene *scene){
@@ -82,11 +78,11 @@ void	rotate_input(GLFWwindow *window){
 		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_O)){
-		if (glfwGetKey(window, GLFW_KEY_X) && !key_press[GLFW_KEY_X])
+		if (glfwGetKey(window, GLFW_KEY_X) && !scene->key_press[GLFW_KEY_X])
 			scene->x_auto_rotate = !scene->x_auto_rotate;
-		if (glfwGetKey(window, GLFW_KEY_Y) && !key_press[GLFW_KEY_Y])
+		if (glfwGetKey(window, GLFW_KEY_Y) && !scene->key_press[GLFW_KEY_Y])
 			scene->y_auto_rotate = !scene->y_auto_rotate;
-		if (glfwGetKey(window, GLFW_KEY_Z) && !key_press[GLFW_KEY_Z])
+		if (glfwGetKey(window, GLFW_KEY_Z) && !scene->key_press[GLFW_KEY_Z])
 			scene->z_auto_rotate = !scene->z_auto_rotate;
 	}
 }
@@ -126,10 +122,10 @@ void	translate_scale_zoom_input(GLFWwindow *window){
 		scene->z_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .05 : -.05;
 	}
 	if (!moved){
-		if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !key_press[GLFW_KEY_KP_ADD]){
+		if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !scene->key_press[GLFW_KEY_KP_ADD]){
 			scene->fov--;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !key_press[GLFW_KEY_KP_SUBTRACT]){
+		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !scene->key_press[GLFW_KEY_KP_SUBTRACT]){
 			scene->fov++;
 		}
 	}
@@ -139,7 +135,7 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(window, 1);
 
-	if (glfwGetKey(window, GLFW_KEY_W) && !key_press[GLFW_KEY_W])
+	if (glfwGetKey(window, GLFW_KEY_W) && !scene->key_press[GLFW_KEY_W])
 		scene->wireframe_view = scene->wireframe_view == 1 ? 0 : 1;
 
 	rotate_input(window);
@@ -147,11 +143,11 @@ void	input_handler(GLFWwindow *window){
 	if (glfwGetKey(window, GLFW_KEY_KP_ADD) || glfwGetKey(window, GLFW_KEY_KP_SUBTRACT))
 		translate_scale_zoom_input(window);
 
-	if (glfwGetKey(window, GLFW_KEY_P) && !key_press[GLFW_KEY_P] && SCOP_DEBUG){
+	if (glfwGetKey(window, GLFW_KEY_P) && !scene->key_press[GLFW_KEY_P] && SCOP_DEBUG){
 		print_scop(scene);
 	}
 
-	else if ((glfwGetKey(window, GLFW_KEY_TAB) && (key_press[GLFW_KEY_TAB] == 1 || key_press[GLFW_KEY_TAB] == 42))){
+	else if ((glfwGetKey(window, GLFW_KEY_TAB) && (scene->key_press[GLFW_KEY_TAB] == 1 || scene->key_press[GLFW_KEY_TAB] == 42))){
 		if (scene->focus){
 			scene->focus->focused = 0;
 			if (scene->focus->next){
@@ -172,11 +168,11 @@ void	input_handler(GLFWwindow *window){
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_T) && !key_press[GLFW_KEY_T]){
-		texture_change = 1;
+	if (glfwGetKey(window, GLFW_KEY_T) && !scene->key_press[GLFW_KEY_T]){
+		scene->texture_change = 1;
 	}
 	
-	if (glfwGetKey(window, GLFW_KEY_V) && !key_press[GLFW_KEY_V]){
+	if (glfwGetKey(window, GLFW_KEY_V) && !scene->key_press[GLFW_KEY_V]){
 		if (scene->material_mode){
 			scene->material_mode = 0;
 			scene->material_relief_mode = 1;
@@ -203,10 +199,10 @@ void	input_handler(GLFWwindow *window){
 	
 	for (int i =0; i<348;i++){
 		if (glfwGetKey(window, i)){
-			if (key_press[i] != 42)
-				key_press[i]++;
+			if (scene->key_press[i] != 42)
+				scene->key_press[i]++;
 		}
 		else
-			key_press[i] = 0;
+			scene->key_press[i] = 0;
 	}
 }

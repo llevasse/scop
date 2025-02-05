@@ -1,8 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
-
 t_scene	*init_scene(){
  	t_scene *scene = malloc(sizeof(struct s_scene));
 	add_to_garbage(scene);
@@ -55,6 +52,7 @@ t_scene	*init_scene(){
 	scene->colour_mode = 0;
 	scene->texture_mode = 0;
 	scene->normal_mode = 0;
+	scene->material_normal_mode = 0;
 	scene->material_mode = 0;
 	scene->material_relief_mode = 0;
 	scene->colour_oppacity = 1;
@@ -64,6 +62,10 @@ t_scene	*init_scene(){
 	scene->z_auto_rotate = 0;
 
 	scene->focus = 0x0;
+
+	scene->programID = -1;
+	scene->VAO = -1;
+	scene->texture_change = 0;
 
 	scene->default_material = create_default_material();
 

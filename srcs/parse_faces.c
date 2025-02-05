@@ -1,8 +1,5 @@
 #include "../include/scop.h"
 
-extern struct s_garbage	*g_garbage_collector_root;
-extern struct s_garbage	*g_garbage_collector;
-
 void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb);
 
 t_faces	*face_contructor(){
