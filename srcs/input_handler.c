@@ -122,10 +122,10 @@ void	translate_scale_zoom_input(GLFWwindow *window){
 		scene->z_scale += glfwGetKey(window, GLFW_KEY_KP_ADD) ? .05 : -.05;
 	}
 	if (!moved){
-		if (glfwGetKey(window, GLFW_KEY_KP_ADD) && !scene->key_press[GLFW_KEY_KP_ADD]){
+		if (glfwGetKey(window, GLFW_KEY_KP_ADD)){
 			scene->fov--;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) && !scene->key_press[GLFW_KEY_KP_SUBTRACT]){
+		else if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)){
 			scene->fov++;
 		}
 	}
