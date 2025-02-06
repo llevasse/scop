@@ -162,15 +162,15 @@
 	t_vertices *create_vertices(float x, float y, float z, t_scene *scene);
 	t_texture_coordinates *create_texture_coordinates(char **tab, int tab_size);
 	void	link_faces_to_materials(t_scene *scene);
-	void	parse_vertices(char **tab, int tab_size, t_scene *scene, int line_nb);
-	void	parse_vertex_normals(char **tab, int tab_size, t_scene *scene, int line_nb);
-	void	parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, int line_nb);
+	void	*parse_vertices(char **tab, int tab_size, t_scene *scene, size_t line_nb);
+	void	*parse_vertex_normals(char **tab, int tab_size, t_scene *scene, size_t line_nb);
+	void	*parse_texture_coordinates(char **tab, int tab_size, t_scene *scene, size_t line_nb);
 	void use_default_mtl(t_scene *scene);
-	void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb);
-	void	parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb);
-	void	parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
+	void	*parse_face(char **tab, size_t tab_size, t_scene *scene, size_t line_nb);
+	void	*parse_scene_line(char **tab, int tab_size, t_scene *scene, size_t line_nb);
+	void	parse_mtl_line(char **tab, int tab_size, t_material *material, size_t line_nb);
 	t_material	*parse_mtl(char *path, char *obj_path);
-	void	pass_obj_list_to_tab(t_scene *scene);
+	void	*pass_obj_list_to_tab(t_scene *scene);
 
 	void	add_to_garbage(void *addr);
 	void	free_garbage();
@@ -199,7 +199,7 @@
 	
 	t_vertices	vector_cross_product(t_vertices *v1, t_vertices *v2);
 
-	void	triangulate(char **tab, size_t tab_size, t_scene *scene, int line_nb);
+	void	triangulate(char **tab, size_t tab_size, t_scene *scene, size_t line_nb);
 
 	void	normalize_vector(t_vertices *p);
 
@@ -208,7 +208,7 @@
 
 	t_material	*create_default_material();
 	void use_default_mtl(t_scene *scene);
-	void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb);
+	void parse_mtl_line(char **tab, int tab_size, t_material *material, size_t line_nb);
 	void print_material(t_material *material);
 	size_t ft_strrchr_pos(char *s, char c);
 	t_material	*parse_mtl(char *path, char *obj_path);

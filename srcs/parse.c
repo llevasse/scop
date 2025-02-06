@@ -75,21 +75,26 @@ t_scene	*init_scene(){
 t_scene *parse_scene(int fd, char *obj_path){
 	t_scene *scene = init_scene();
  	t_obj *root_obj_list = 0x0;
-	char	*s = get_next_line(fd);
+	char	*s = get_next_line(fd), *trim;
 	char	**line_content = 0x0;
 	size_t	line_content_size = 0;
 	size_t	line_count = 1;
 	while (s){
-		add_to_garbage(s);
-		s = ft_strtrim(s, " \n\t\r");
-		add_to_garbage(s);
-		if (*s != '#'){
-			line_content = ft_split(s, ' ');
-			add_to_garbage(line_content);
-			line_content_size = 0;
-			for (; line_content[line_content_size]; line_content_size++){
-				add_to_garbage(line_content[line_content_size]);
+		trim = ft_strtrim(s, " \n\t\r");
+		if (!trim){
+			free(s);
+			free_garbage();
+		}
+		if (*trim != '#'){
+			printf("Parse line %zu: %s\n", line_count, trim);
+			line_content = ft_split(trim, ' ');
+			if (!line_content){
+				free(trim);
+				free(s);
+				free_garbage();
 			}
+			line_content_size = 0;
+			for (; line_content[line_content_size]; line_content_size++){}
 			if (line_content[0]){
 				if (!ft_strcmp(line_content[0], "mtllib")){
 					if (line_content[1]){
@@ -100,28 +105,35 @@ t_scene *parse_scene(int fd, char *obj_path){
 					}
 				}
 				else {
-					parse_scene_line(line_content, line_content_size, scene, line_count);
+					if (!parse_scene_line(line_content, line_content_size, scene, line_count)){
+						free(s);
+						free(trim);
+						for (line_content_size = 0; line_content[line_content_size]; line_content_size++){
+							free(line_content[line_content_size]);
+						}
+						free(line_content);
+						free_garbage();
+					}
 					if (!root_obj_list && scene->objs_list)
 						root_obj_list = scene->objs_list;
 				}
 			}
-			if (line_content){
+			for (line_content_size = 0; line_content[line_content_size]; line_content_size++){
+				free(line_content[line_content_size]);
+			}
+			free(line_content);
 			line_content = 0x0;
 			line_content_size = 0;
 		}
-		}
+		free(s);
+		free(trim);
 		s = get_next_line(fd);
 		line_count++;
 	}
 	
-	scene->objs_list = root_obj_list;
-	link_faces_to_materials(scene);
-	/*printf("unique vertices : %zu, displaied vertices : %zu\n", scene->vertices_count, scene->display_vertices_count);
-
-	for (size_t i=0; i<scene->vertices_count;i++){
-		printf("\tvertices[%zu] : id : %zu; xyz : %f %f %f\n", i, scene->vertices_tab[i]->id, scene->vertices_tab[i]->x, scene->vertices_tab[i]->y, scene->vertices_tab[i]->z);
-	}*/
 	
+	scene->objs_list = root_obj_list;
+	link_faces_to_materials(scene);	
 	
 	scene->translation_step = (scene->max_x - scene->min_x) / 100;
 	float tmp = (scene->max_y - scene->min_y) / 100;
@@ -156,11 +168,13 @@ void	link_faces_to_materials(t_scene *scene){
 	}
 }
 
-void	pass_obj_list_to_tab(t_scene *scene){
+void	*pass_obj_list_to_tab(t_scene *scene){
 	size_t i=0;
 	if (scene->vertices_root){
 		if (scene->vertices_tab){
 			t_vertices	**tmp = malloc((scene->vertices_count + 1) * sizeof(t_vertices *));
+			if (!tmp)
+				return (0x0);
 			add_to_garbage(tmp);
 			while (scene->vertices_tab[i]){
 				tmp[i] = scene->vertices_tab[i];
@@ -170,6 +184,8 @@ void	pass_obj_list_to_tab(t_scene *scene){
 		}
 		else{
 			scene->vertices_tab = malloc((scene->vertices_count + 1) * sizeof(t_vertices *));
+			if (!scene->vertices_tab)
+				return (0x0);
 			add_to_garbage(scene->vertices_tab);
 		}
 		t_vertices *tmp = scene->vertices_root;
@@ -185,6 +201,8 @@ void	pass_obj_list_to_tab(t_scene *scene){
 	if (scene->vertex_normals_root){
 		if (scene->vertex_normals_tab){
 			t_vertices	**tmp = malloc((scene->vertex_normals_count + 1) * sizeof(t_vertices *));
+			if (!tmp)
+				return (0x0);
 			add_to_garbage(tmp);
 			while (scene->vertex_normals_tab[i]){
 				tmp[i] = scene->vertex_normals_tab[i];
@@ -194,6 +212,8 @@ void	pass_obj_list_to_tab(t_scene *scene){
 		}
 		else{
 			scene->vertex_normals_tab = malloc((scene->vertex_normals_count + 1) * sizeof(t_vertices *));
+			if (!scene->vertex_normals_tab)
+				return (0x0);
 			add_to_garbage(scene->vertex_normals_tab);
 		}
 		t_vertices *tmp = scene->vertex_normals_root;
@@ -209,6 +229,8 @@ void	pass_obj_list_to_tab(t_scene *scene){
 	if (scene->texture_coordinates_root){
 		if (scene->texture_coordinates_tab){
 			t_texture_coordinates	**tmp = malloc((scene->texture_coordinates_count + 1) * sizeof(t_texture_coordinates *));
+			if (!tmp)
+				return (0x0);
 			add_to_garbage(tmp);
 			while (scene->texture_coordinates_tab[i]){
 				tmp[i] = scene->texture_coordinates_tab[i];
@@ -218,6 +240,8 @@ void	pass_obj_list_to_tab(t_scene *scene){
 		}
 		else{
 			scene->texture_coordinates_tab = malloc((scene->texture_coordinates_count + 1) * sizeof(t_texture_coordinates *));
+			if (!scene->texture_coordinates_tab)
+				return (0x0);
 			add_to_garbage(scene->texture_coordinates_tab);
 		}
 		t_texture_coordinates *tmp = scene->texture_coordinates_root;
@@ -229,11 +253,14 @@ void	pass_obj_list_to_tab(t_scene *scene){
 		}
 		scene->texture_coordinates_tab[i++] = 0x0;
 	}
+	return (scene);
 }
 
-void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
+void *parse_scene_line(char **tab, int tab_size, t_scene *scene, size_t line_nb){
 	if (!scene->objs_list){
 		scene->objs_list = malloc(sizeof(struct s_obj));
+		if (!scene->objs_list)
+			return (0x0);
 		add_to_garbage((scene->objs_list));
 		scene->objs_list->name	= 0x0;
 		scene->objs_list->next = 0x0;
@@ -245,20 +272,28 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 	}
 
 	if (!ft_strcmp(tab[0], "v")){
-		parse_vertices(tab, tab_size, scene, line_nb);
+		if (!parse_vertices(tab, tab_size, scene, line_nb)){
+			return (0x0);
+		}
 	}
 	else if (!ft_strcmp(tab[0], "vn")){
-		parse_vertex_normals(tab, tab_size, scene, line_nb);
+		if (!parse_vertex_normals(tab, tab_size, scene, line_nb)){
+			return (0x0);
+		}
 	}
 	else if (!ft_strcmp(tab[0], "vt")){
-		parse_texture_coordinates(tab, tab_size, scene, line_nb);
+		if (!parse_texture_coordinates(tab, tab_size, scene, line_nb)){
+			return (0x0);
+		}
 	}
 	else if (!ft_strcmp(tab[0], "o") || !ft_strcmp(tab[0], "g")){
 		if (tab_size < 2){
-			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a name value\n", tab[0], line_nb);
+			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %zu is missing a name value\n", tab[0], line_nb);
 		}
 		if (scene->objs_list->name){ // if not first object
 			scene->objs_list->next = malloc(sizeof(struct s_obj));
+			if (!scene->objs_list->next)
+				return (0x0);
 			add_to_garbage(scene->objs_list->next);
 			scene->objs_list = scene->objs_list->next;
 			scene->objs_list->name	= 0x0;
@@ -267,20 +302,24 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 			scene->objs_list->material = 0x0;
 		}
 		scene->objs_list->name = ft_strdup(tab[1]);
+		if (!scene->objs_list->name)
+			return (0x0);
 		add_to_garbage(scene->objs_list->name);
 	}
 	else if (!ft_strcmp(tab[0], "usemtl")){
 		if (tab_size < 2){
-			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a name value. Default material will be used\n", tab[0], line_nb);
-			return ;
+			dprintf(2,"\033[0;33mWarning\033[0m : %s on line %zu is missing a name value. Default material will be used\n", tab[0], line_nb);
+			return (tab[0]);
 		}
 		char	*name = ft_strtrim(tab[1], " \t\r\n");
+		if (!name)
+			return (0x0);
 		add_to_garbage(name);
 		t_material *tmp = scene->material_list;
 		while (tmp && tmp->name && ft_strcmp(name, tmp->name))
 			tmp = tmp->next;
 		if (!tmp){
-			dprintf(2,"\033[0;33mWarning\033[0m : Material name on line %d does not exist\nDefault material will be used\n", line_nb);
+			dprintf(2,"\033[0;33mWarning\033[0m : Material name on line %zu does not exist\nDefault material will be used\n", line_nb);
 			tmp = scene->default_material;
 		}
 		scene->objs_list->material = tmp;
@@ -289,7 +328,10 @@ void parse_scene_line(char **tab, int tab_size, t_scene *scene, int line_nb){
 		if (!scene->objs_list->material){
 			scene->objs_list->material = scene->default_material;
 		}
-		pass_obj_list_to_tab(scene);
-		parse_face(tab, tab_size, scene, line_nb);
+		if (!pass_obj_list_to_tab(scene))
+			return (0x0);
+		if (!parse_face(tab, tab_size, scene, line_nb))
+			return (0x0);
 	}
+	return (tab[0]);
 }

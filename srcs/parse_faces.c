@@ -1,9 +1,11 @@
 #include "../include/scop.h"
 
-void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb);
+void	*add_mesh(char **tab, size_t tab_size, t_scene *scene, size_t line_nb);
 
 t_faces	*face_contructor(){
 	t_faces *face = malloc(sizeof(struct s_faces));
+	if (!face)
+		return (0x0);
 	add_to_garbage(face);
 	face->next = 0x0;
 	face->vertices[3] = 0x0;
@@ -15,12 +17,12 @@ t_faces	*face_contructor(){
 	return (face);
 }
 
-void	parse_face(char **tab, size_t tab_size, t_scene *scene, int line_nb){
+void	*parse_face(char **tab, size_t tab_size, t_scene *scene, size_t line_nb){
 	if (tab_size < 3){
-		dprintf(2,"Face on line %d is not a complete face\n", line_nb);
+		dprintf(2,"Face on line %zu is not a complete face\n", line_nb);
 		free_garbage();
 	}
-	add_mesh(tab, tab_size, scene, line_nb);
+	return (add_mesh(tab, tab_size, scene, line_nb));
 }
 
 void	map_face_uv(t_faces *face){
@@ -37,11 +39,13 @@ void	map_face_uv(t_faces *face){
 		face->direction = 'x';
 }
 
-void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
+void	*add_mesh(char **tab, size_t tab_size, t_scene *scene, size_t line_nb){
 	size_t	nb_faces = tab_size - 3, nb_vertices = tab_size - 1;
 	t_faces	*faces[nb_faces];
 	for (size_t i = 0 ; i < nb_faces; i++){
 		faces[i] = face_contructor();
+		if (!faces[i])
+			return (0x0);
 		faces[i]->material = scene->objs_list->material;
 	}
 
@@ -60,8 +64,8 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 	for (size_t i =0; i < nb_vertices; i++){
 		index = atoi(tab[i + 1]);
 		if (index > scene->vertices_count){
-			dprintf(2,"Face on line %d call un declared vertex :(\n", line_nb);
-			free_garbage();
+			dprintf(2,"Face on line %zu call un declared vertex :(\n", line_nb);
+			return (0x0);
 		}
 		vs[i] = scene->vertices_tab[index - 1];
 
@@ -72,23 +76,23 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 				if (tab[i+1][get_int_len(index)+1] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + 2);
 					if (vertex_normal_index > scene->vertex_normals_count){
-						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
-						free_garbage();
+						dprintf(2,"Face on line %zu call un declared vertex normal :(\n", line_nb);
+						return (0x0);
 					}
 					vns[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
 			}
 			else {
 				if (texture_index > scene->texture_coordinates_count){
-					dprintf(2,"Face on line %d call un declared texture coordinate :(\n", line_nb);
-					free_garbage();
+					dprintf(2,"Face on line %zu call un declared texture coordinate :(\n", line_nb);
+					return (0x0);
 				}
 				vts[i] = scene->texture_coordinates_tab[texture_index - 1];
 				if (tab[i + 1][get_int_len(index) + 1 + get_int_len(texture_index)] == '/'){
 					vertex_normal_index = atoi(tab[i+1] + get_int_len(index) + get_int_len(texture_index) + 2);
 					if (vertex_normal_index > scene->vertex_normals_count){
-						dprintf(2,"Face on line %d call un declared vertex normal :(\n", line_nb);
-						free_garbage();
+						dprintf(2,"Face on line %zu call un declared vertex normal :(\n", line_nb);
+						return (0x0);
 					}
 					vns[i] = scene->vertex_normals_tab[vertex_normal_index - 1];
 				}
@@ -138,4 +142,5 @@ void	add_mesh(char **tab, size_t tab_size, t_scene *scene, int line_nb){
 			tmp = tmp->next;
 		}
 	}
+	return (scene);
 }

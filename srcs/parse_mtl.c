@@ -36,7 +36,7 @@ void use_default_mtl(t_scene *scene){
 	scene->default_material = tmp;
 }
 
-void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb){
+void parse_mtl_line(char **tab, int tab_size, t_material *material, size_t line_nb){
 	t_litle_rgb *rgb = 0x0;
 	float		float_value = 1;
 	float		min = 0, max = 1;
@@ -48,7 +48,7 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 	for (int i=0;i<3;i++){
 		if (!ft_strcmp(possible_rgb_key[i], tab[0])){
 			if (tab_size < 4){
-				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a float value. This line will be ignored\n", tab[0], line_nb);
+				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %zu is missing a float value. This line will be ignored\n", tab[0], line_nb);
 				return;
 			}
 			rgb = malloc(sizeof(struct s_litle_rgb));
@@ -59,7 +59,7 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 			min = 0.0;
 			max = 1.0;		
 			if (rgb && ((rgb->r < min || rgb->r > max) || (rgb->g < min || rgb->g > max) || (rgb->b < min || rgb->b > max))){
-				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a float value. This line will be ignored\n", tab[0], line_nb);
+				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %zu is missing a float value. This line will be ignored\n", tab[0], line_nb);
 				return ;
 			}
 
@@ -93,14 +93,14 @@ void parse_mtl_line(char **tab, int tab_size, t_material *material, int line_nb)
 	for (int i=0; i<4;i++){
 		if (!ft_strcmp(possible_float_key[i], tab[0])){
 			if (tab_size < 2){
-				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %d is missing a float value. This line will be ignored\n", tab[0], line_nb);
+				dprintf(2,"\033[0;33mWarning\033[0m : %s on line %zu is missing a float value. This line will be ignored\n", tab[0], line_nb);
 				return ;
 			}
 			float_value = atof(tab[1]);
 			min = possible_float_min[i];
 			max = possible_float_max[i];
 			if (float_value < min || float_value > max){
-				dprintf(2, "\033[0;33mWarning\033[0m : %s on line %d value out of bound (should be between %.2f and %.2f). This line will be ignored\n", tab[0], line_nb, min, max);
+				dprintf(2, "\033[0;33mWarning\033[0m : %s on line %zu value out of bound (should be between %.2f and %.2f). This line will be ignored\n", tab[0], line_nb, min, max);
 				return ;
 			}
 			if (i == 0)
@@ -157,7 +157,7 @@ t_material	*parse_mtl(char *path, char *obj_path){
 	add_to_garbage(s_trim);
 	char	**tab;
 	int		tab_size;
-	int		line = 1;
+	size_t		line = 1;
 	while (s_trim){
 		if (*s_trim != '#'){
 			tab = ft_split(s_trim, ' ');
@@ -169,7 +169,7 @@ t_material	*parse_mtl(char *path, char *obj_path){
 			if (tab[0]){
 				if (!ft_strcmp(tab[0], "newmtl")){
 					if (!tab[1]){
-						dprintf(2,"\033[0;33mWarning\033[0m : newmtl on line %d is missing a name, it will be ignored\n", line);
+						dprintf(2,"\033[0;33mWarning\033[0m : newmtl on line %zu is missing a name, it will be ignored\n", line);
 					}
 					else{
 						material->next = malloc(sizeof(struct s_material));
