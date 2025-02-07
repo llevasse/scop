@@ -86,7 +86,8 @@ t_scene *parse_scene(int fd, char *obj_path){
 			free_garbage();
 		}
 		if (*trim != '#'){
-			printf("Parse line %zu: %s\n", line_count, trim);
+			if (SCOP_DEBUG)
+				printf("Parse line %zu: %s\n", line_count, trim);
 			line_content = ft_split(trim, ' ');
 			if (!line_content){
 				free(trim);
@@ -324,7 +325,7 @@ void *parse_scene_line(char **tab, int tab_size, t_scene *scene, size_t line_nb)
 		}
 		scene->objs_list->material = tmp;
 	}
-	else if (!ft_strcmp(tab[0], "f")){	// f v/vt/vn
+	else if (!ft_strcmp(tab[0], "f")){
 		if (!scene->objs_list->material){
 			scene->objs_list->material = scene->default_material;
 		}
